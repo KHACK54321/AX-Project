@@ -413,13 +413,14 @@
         }
 
         function fetchUpdateLog() {
-            // Thay bằng link raw file updatelog.txt trên Github của ông
-            const logUrl = "https://raw.githubusercontent.com/KHACK54321/AX-Project/refs/heads/main/updatelog.txt?v=" + new Date().getTime(); 
-            fetch(logUrl)
-                .then(response => { if (!response.ok) throw new Error(""); return response.text(); })
-                .then(text => { document.getElementById("update-log-box").innerText = text; })
-                .catch(err => { document.getElementById("update-log-box").innerText = "Vui lòng lên GitHub tạo file updatelog.txt và dán link vào code để xem nhật ký cập nhật."; });
-        }
+    // Đã thay link GitHub của ông vào đây:
+    const logUrl = "https://raw.githubusercontent.com/KHACK54321/AX-Project/refs/heads/main/updatelog.txt?v=" + new Date().getTime(); 
+    
+    fetch(logUrl)
+        .then(response => { if (!response.ok) throw new Error(""); return response.text(); })
+        .then(text => { document.getElementById("update-log-box").innerText = text; })
+        .catch(err => { document.getElementById("update-log-box").innerText = "Đang chờ cập nhật nhật ký hệ thống..."; });
+}
     </script>
 </body>
 </html>
