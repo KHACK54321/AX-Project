@@ -13,7 +13,7 @@
             --card-border: rgba(255, 255, 255, 0.08);
             --text-main: #f4f4f5;
             --text-muted: #a1a1aa;
-            --accent-color: #06b6d4; /* Cyan ngầu lòi */
+            --accent-color: #06b6d4; 
             --accent-gradient: linear-gradient(135deg, #06b6d4, #3b82f6);
             --danger-gradient: linear-gradient(135deg, #ef4444, #b91c1c);
             --success-color: #10b981;
@@ -21,7 +21,7 @@
 
         body, html { margin: 0; padding: 0; width: 100vw; height: 100vh; font-family: 'Inter', sans-serif; color: var(--text-main); background-color: var(--bg-color); overflow: hidden; }
 
-        /* --- MÀN HÌNH LOAD (Giữ nguyên) --- */
+        /* --- MÀN HÌNH LOAD --- */
         #loader { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column; transition: opacity 0.8s ease; background-color: #000; background-size: cover; background-position: center; box-shadow: inset 0 0 0 2000px rgba(0, 0, 0, 0.85); }
         #loader .avatar-container { width: 150px; height: 150px; position: relative; margin-bottom: 20px; }
         #loader .rotating-avatar { width: 100%; height: 100%; border-radius: 50%; border: 4px solid rgba(255, 255, 255, 0.2); animation: spin 3s linear infinite; object-fit: cover; }
@@ -31,23 +31,19 @@
         /* --- GIAO DIỆN CHÍNH REDESIGN --- */
         #main-app { display: none; height: 100vh; width: 100vw; background-size: cover; background-position: center; box-shadow: inset 0 0 0 2000px rgba(9, 9, 11, 0.85); flex-direction: column; }
         
-        /* Top Header */
         .app-header { padding: 20px; text-align: center; font-size: 18px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, transparent 100%); color: var(--accent-color); text-shadow: 0 0 10px rgba(6, 182, 212, 0.5); z-index: 10; }
 
-        /* Khu vực cuộn nội dung */
         .tab-container { flex: 1; padding: 10px 20px 90px 20px; box-sizing: border-box; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
         .tab-content { display: none; width: 100%; max-width: 450px; animation: fadeIn 0.4s ease; }
         .tab-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Bottom Navigation Bar (Chuyên nghiệp) */
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; display: flex; background: rgba(15, 15, 15, 0.9); backdrop-filter: blur(15px); border-top: 1px solid var(--card-border); padding-bottom: env(safe-area-inset-bottom); z-index: 50; }
         .nav-item { flex: 1; text-align: center; padding: 15px 5px; color: var(--text-muted); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: 0.3s; display: flex; flex-direction: column; align-items: center; gap: 5px; }
         .nav-item.active { color: var(--accent-color); text-shadow: 0 0 8px rgba(6, 182, 212, 0.4); }
         .nav-indicator { width: 4px; height: 4px; border-radius: 50%; background: transparent; transition: 0.3s; }
         .nav-item.active .nav-indicator { background: var(--accent-color); box-shadow: 0 0 8px var(--accent-color); }
 
-        /* Cards (Thẻ nội dung) */
         .card { background: var(--card-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid var(--card-border); border-radius: 24px; padding: 25px; margin-bottom: 20px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4); }
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid var(--card-border); padding-bottom: 12px; }
         h2 { margin: 0; font-weight: 700; font-size: 16px; text-transform: uppercase; color: #fff; }
@@ -56,7 +52,6 @@
         strong { color: #fff; font-weight: 600; }
         .realm-name-big { font-size: 26px; color: #fff; font-weight: 700; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-        /* Nhiệm vụ Item (Redesign) */
         .task-row { display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.02); padding: 15px; border-radius: 16px; margin-bottom: 12px; border: 1px solid rgba(255, 255, 255, 0.04); transition: 0.3s; }
         .task-row:hover { background: rgba(255, 255, 255, 0.05); }
         .task-info { display: flex; flex-direction: column; width: 60%; }
@@ -64,7 +59,6 @@
         .task-prog { font-size: 11px; color: var(--accent-color); font-weight: 600; }
         .task-status-text { font-size: 12px; font-weight: 600; color: var(--success-color); }
 
-        /* Buttons */
         button.action-btn { background: rgba(255, 255, 255, 0.05); color: #fff; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 10px 14px; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
         button.action-btn:hover { background: rgba(255, 255, 255, 0.1); }
         button.action-btn:active { transform: scale(0.95); }
@@ -73,11 +67,9 @@
         button.main-btn:hover { box-shadow: 0 6px 20px rgba(6, 182, 212, 0.5); }
         button.danger-btn { background: var(--danger-gradient); box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3); }
 
-        /* Progress Bar */
         .progress-bar { width: 100%; background: rgba(0, 0, 0, 0.5); height: 8px; border-radius: 10px; overflow: hidden; margin-top: 15px; border: 1px solid rgba(255, 255, 255, 0.05); }
         .progress { height: 100%; background: var(--accent-gradient); width: 0%; box-shadow: 0 0 10px rgba(6, 182, 212, 0.5); transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 10px; }
 
-        /* Khung Log & Backup */
         .log-box { background: rgba(0,0,0,0.4); border: 1px solid var(--card-border); padding: 15px; border-radius: 16px; font-family: 'Courier Prime', monospace; font-size: 11px; color: var(--success-color); height: 150px; overflow-y: auto; white-space: pre-wrap; margin-bottom: 15px; line-height: 1.5; }
         textarea.backup-area { width: 100%; height: 80px; background: rgba(0,0,0,0.4); color: #fff; border: 1px solid var(--card-border); border-radius: 16px; padding: 15px; font-size: 12px; box-sizing: border-box; margin-top: 10px; resize: none; font-family: monospace; }
         
@@ -215,7 +207,7 @@
                     <p>Copy mã dưới đây cất đi để không bao giờ mất Tu Vi.</p>
                     <textarea id="backup-code" class="backup-area" placeholder="Dán mã phục hồi vào đây..."></textarea>
                     <div style="display: flex; gap: 15px; margin-top: 15px;">
-                        <button class="action-btn main-btn" style="margin-top: 0;" onclick="exportData()">Tạo Mã Sao Lưu</button>
+                        <button class="action-btn main-btn" style="margin-top: 0;" onclick="exportData()">Tạo Mã</button>
                         <button class="action-btn main-btn danger-btn" style="margin-top: 0;" onclick="importData()">Phục Hồi</button>
                     </div>
                 </div>
@@ -244,37 +236,31 @@
     </div>
 
     <script>
-        // --- THƯ MỤC IMG ---
-        // Ông nhớ tạo thư mục tên là 'img' và thả hết hình vào đó cho gọn nhé!
+        // --- ĐÃ FIX ĐƯỜNG DẪN ẢNH NẰM CHUNG THƯ MỤC GỐC ---
         const loadingAvatars = [
-            'img/image_8f11a9.jpg', 
-            'img/image_8f1227.jpg', 
-            'img/image_8f1262.jpg', 
-            'img/image_8f15e7.png'
+            'image_4.png', 
+            'image_5.png', 
+            'image_6.png', 
+            'image_7.png'
         ];
         const waifuImages = [
-            'img/image_300557.jpg', 
-            'img/image_300594.jpg', 
-            'img/image_3005d8.jpg', 
-            'img/image_3008bf.jpg'
+            'image_0.png', 
+            'image_1.png', 
+            'image_2.png', 
+            'image_3.png'
         ];
 
         // Milestone Icons (Lửa)
-        const ICON_FIRE = "img/image_fire1.png";
-        const ICON_BLUE_FIRE = "img/image_fire2.png";
-        const ICON_PURPLE_FIRE = "img/image_fire3.png";
+        const ICON_FIRE = "image_fire1.png";
+        const ICON_BLUE_FIRE = "image_fire2.png";
+        const ICON_PURPLE_FIRE = "image_fire3.png";
 
         const realms = [
-            { name: "Phàm Nhân", maxExp: 50 }, 
-            { name: "Ngưng Khí", maxExp: 150 },
-            { name: "Trúc Cơ", maxExp: 400 }, 
-            { name: "Kết Đan", maxExp: 1000 },
-            { name: "Nguyên Anh", maxExp: 2500 }, 
-            { name: "Hóa Thần", maxExp: 6000 },
-            { name: "Anh Biến", maxExp: 15000 }, 
-            { name: "Vấn Đỉnh Sơ Kỳ", maxExp: 30000 },
-            { name: "Vấn Đỉnh Trung Kỳ", maxExp: 50000 }, 
-            { name: "Vấn Đỉnh Hậu Kỳ", maxExp: 80000 },
+            { name: "Phàm Nhân", maxExp: 50 }, { name: "Ngưng Khí", maxExp: 150 },
+            { name: "Trúc Cơ", maxExp: 400 }, { name: "Kết Đan", maxExp: 1000 },
+            { name: "Nguyên Anh", maxExp: 2500 }, { name: "Hóa Thần", maxExp: 6000 },
+            { name: "Anh Biến", maxExp: 15000 }, { name: "Vấn Đỉnh Sơ Kỳ", maxExp: 30000 },
+            { name: "Vấn Đỉnh Trung Kỳ", maxExp: 50000 }, { name: "Vấn Đỉnh Hậu Kỳ", maxExp: 80000 },
             { name: "Vấn Đỉnh Đại Viên Mãn", maxExp: 999999 }
         ];
 
@@ -287,7 +273,7 @@
             weeklyTasks: { dailyDone: 0, checkins: 0, rw1: false, rw2: false, fullCompleted: false }
         };
 
-        const logs = ["> Booting Pro System...", "> Injecting Glassmorphism UI...", "> Optimizing Base64 Encoders...", "> Loading Asset Directory (img/)...", "> System Ready."];
+        const logs = ["> Booting Pro System...", "> Fixing Display Bugs...", "> Optimizing Base64 Encoders...", "> Loading Local Assets...", "> System Ready."];
         let i = 0;
 
         window.onload = () => {
@@ -299,13 +285,20 @@
                 if (i < logs.length) {
                     document.getElementById("hacker-log").innerHTML += logs[i] + "<br>"; i++; setTimeout(showLogs, 400);
                 } else {
-                    setTimeout(() => { loader.style.opacity = "0"; setTimeout(() => { loader.style.display = "flex"; initApp(); }, 600); }, 800);
+                    setTimeout(() => { 
+                        loader.style.opacity = "0"; 
+                        setTimeout(() => { 
+                            loader.style.display = "none"; // FIX LỖI MÀN HÌNH TRỐNG
+                            initApp(); 
+                        }, 600); 
+                    }, 800);
                 }
             }
             showLogs();
         };
 
         function initApp() {
+            document.getElementById("main-app").style.display = "flex"; // BẬT HIỂN THỊ APP CHÍNH
             document.getElementById("main-app").style.backgroundImage = `url('${waifuImages[Math.floor(Math.random() * waifuImages.length)]}')`;
             loadData(); checkResets(); updateUI(); fetchUpdateLog();
         }
@@ -497,7 +490,6 @@
         /* --- SỬA LỖI SAO LƯU TIẾNG VIỆT (BUG FIX) --- */
         function exportData() {
             try {
-                // Encode UTF-8 -> Latin1 -> Base64
                 let encodedData = btoa(unescape(encodeURIComponent(JSON.stringify(userData))));
                 document.getElementById("backup-code").value = encodedData;
                 alert("Đã tạo mã sao lưu! Hãy Copy đoạn mã này cất vào chỗ an toàn.");
@@ -507,7 +499,6 @@
             let code = document.getElementById("backup-code").value;
             if (!code) { alert("Vui lòng dán mã vào ô!"); return; }
             try {
-                // Base64 -> Latin1 -> Decode UTF-8
                 let decodedStr = decodeURIComponent(escape(atob(code)));
                 userData = JSON.parse(decodedStr); saveData(); updateUI();
                 alert("Phục hồi dữ liệu thành công!");
