@@ -256,12 +256,48 @@
         const ICON_PURPLE_FIRE = "img/image_fire3.png";
 
         const realms = [
-            { name: "Phàm Nhân", maxExp: 50 }, { name: "Ngưng Khí", maxExp: 150 },
-            { name: "Trúc Cơ", maxExp: 400 }, { name: "Kết Đan", maxExp: 1000 },
-            { name: "Nguyên Anh", maxExp: 2500 }, { name: "Hóa Thần", maxExp: 6000 },
-            { name: "Anh Biến", maxExp: 15000 }, { name: "Vấn Đỉnh Sơ Kỳ", maxExp: 30000 },
-            { name: "Vấn Đỉnh Trung Kỳ", maxExp: 50000 }, { name: "Vấn Đỉnh Hậu Kỳ", maxExp: 80000 },
-            { name: "Vấn Đỉnh Đại Viên Mãn", maxExp: 999999 }
+            { name: "Phàm Nhân", maxExp: 100 }, 
+            { name: "Ngưng Khí Tầng 1", maxExp: 200 },
+            { name: "Ngưng Khí Tầng 2", maxExp: 400 },
+            { name: "Ngưng Khí Tầng 3", maxExp: 600 },
+            { name: "Ngưng Khí Tầng 4", maxExp: 800 },
+            { name: "Ngưng Khí Tầng 5", maxExp: 1000 },
+            { name: "Ngưng Khí Tầng 6", maxExp: 1500 },
+            { name: "Ngưng Khí Tầng 7", maxExp: 2000 },
+            { name: "Ngưng Khí Tầng 8", maxExp: 2500 },
+            { name: "Ngưng Khí Tầng 9", maxExp: 3000 },
+            { name: "Ngưng Khí Tầng 10", maxExp: 4000 },
+            { name: "Ngưng Khí Tầng 11", maxExp: 5000 },
+            { name: "Ngưng Khí Tầng 12", maxExp: 6000 },
+            { name: "Ngưng Khí Tầng 13", maxExp: 8000 },
+            { name: "Ngưng Khí Tầng 14", maxExp: 10000 },
+            { name: "Ngưng Khí Tầng 15", maxExp: 15000 },
+            { name: "Trúc Cơ Sơ Kì", maxExp: 20000 }, 
+            { name: "Trúc Cơ Trung Kì", maxExp: 25000 }, 
+            { name: "Trúc Cơ Hậu Kì", maxExp: 30000 }, 
+            { name: "Trúc Cơ Viên Mãn", maxExp: 35000 }, 
+            { name: "Kết Đan Sơ Kì", maxExp: 40000 },
+            { name: "Kết Đan Trung Kì", maxExp: 50000 },
+            { name: "Kết Đan Hậu Kì", maxExp: 60000 },
+            { name: "Kết Đan Viên Mãn", maxExp: 70000 },
+            { name: "Nguyên Anh Sơ Kì", maxExp: 80000 }, 
+            { name: "Nguyên Anh Trung Kì", maxExp: 90000 },
+            { name: "Nguyên Anh Hậu Kì", maxExp: 100000 },
+            { name: "Nguyên Anh Viên Mãn", maxExp: 110000 },
+            { name: "Hóa Thần Sơ Kì", maxExp: 120000 },
+            { name: "Hóa Thần Trung Kì", maxExp: 130000 },
+            { name: "Hóa Thần Hậu Kì", maxExp: 140000 },
+            { name: "Hóa Thần Viên Mãn", maxExp: 150000 },
+            { name: "Anh Biến Sơ Kì", maxExp: 160000 }, 
+            { name: "Anh Biến Trung Kì", maxExp: 170000 },
+            { name: "Anh Biến Hậu Kì", maxExp: 180000 },
+            { name: "Anh Biến Viên Mãn", maxExp: 190000 },
+            { name: "Vấn Đỉnh Sơ Kỳ", maxExp: 200000 },
+            { name: "Vấn Đỉnh Trung Kỳ", maxExp: 220000 }, 
+            { name: "Vấn Đỉnh Hậu Kỳ", maxExp: 250000 },
+            { name: "Vấn Đỉnh Đại Viên Mãn", maxExp: 300000 },
+            { name: "Cảnh Giới Quá Độ Âm Hư", maxExp: 400000 },
+            { name: "Cảnh Giới Quá Độ Dương Thực", maxExp: 500000 }
         ];
 
         /* --- DỮ LIỆU --- */
@@ -310,17 +346,18 @@
         }
 
         /* --- LOGIC NGẪU NHIÊN HÓA NHIỆM VỤ --- */
+       /* --- LOGIC NGẪU NHIÊN HÓA NHIỆM VỤ --- */
         function generateRandomTasks() {
-            const subjectsG11 = ['Toán', 'Ngữ Văn', 'Tiếng Anh', 'Vật lí', 'Hóa học', 'Sinh học', 'Lịch sử', 'Địa lí', 'GDTX'];
+            const subjectsG11 = ['Toán', 'Ngữ Văn', 'Tiếng Anh', 'Vật lí', 'Hóa học','Lịch sử', 'Địa lí',];
             let pool = [
-                () => { let hw = Math.floor(Math.random() * 10) + 1; return { desc: `Hoàn thành ${hw} bài tập về nhà`, max: hw, exp: 20 * hw }; },
-                () => { let sub = Math.floor(Math.random() * 3) + 1; return { desc: `Học ${sub} môn học`, max: sub, exp: 50 * sub }; },
-                () => { return { desc: `Không ăn đồ ngọt trong cả ngày`, max: 1, exp: 100 }; },
-                () => { let randomSub = subjectsG11[Math.floor(Math.random() * subjectsG11.length)]; return { desc: `Học môn ${randomSub} lớp 11 (25-26)`, max: 1, exp: 80 }; },
-                () => { return { desc: `Dọn dẹp góc học tập`, max: 1, exp: 40 }; },
-                () => { return { desc: `Đọc 10 trang sách/tài liệu`, max: 10, exp: 50 }; },
-                () => { return { desc: `Giải 1 đề trắc nghiệm tổng hợp`, max: 1, exp: 150 }; },
-                () => { return { desc: `Uống đủ 2 lít nước`, max: 4, exp: 60 }; }
+                () => { let hw = Math.floor(Math.random() * 10) + 1; return { desc: `Hoàn thành ${hw} bài tập về nhà`, max: hw, exp: 100 * hw }; },
+                () => { let sub = Math.floor(Math.random() * 3) + 1; return { desc: `Học ${sub} môn học`, max: sub, exp: 300 * sub }; },
+                () => { return { desc: `Không ăn đồ ngọt trong cả ngày`, max: 1, exp: 1000 }; },
+                () => { let randomSub = subjectsG11[Math.floor(Math.random() * subjectsG11.length)]; return { desc: `Học môn ${randomSub} lớp 11 (25-26)`, max: 1, exp: 1000 }; },
+                () => { return { desc: `Dọn dẹp góc học tập`, max: 1, exp: 700 }; },
+                () => { return { desc: `Đọc 10 trang sách/tài liệu`, max: 10, exp: 800 }; },
+                () => { return { desc: `Giải 1 đề trắc nghiệm tổng hợp`, max: 1, exp: 1500 }; },
+                () => { return { desc: `Uống đủ 2 lít nước`, max: 4, exp: 600 }; }
             ];
             pool = pool.sort(() => 0.5 - Math.random()).slice(0, 5);
             return pool.map(generator => { let t = generator(); return { desc: t.desc, max: t.max, current: 0, exp: t.exp, completed: false }; });
@@ -399,7 +436,8 @@
             userData.lastCheckinMidnight = todayMidnight;
             userData.points += 1; userData.checkinStreak += 1; userData.weeklyTasks.checkins += 1;
             
-            addExp(20); checkWeeklyRewards(); saveData();
+            // Đã buff từ 20 lên 500 EXP
+            addExp(500); checkWeeklyRewards(); saveData();
             alert("✦ KÝ DANH THÀNH CÔNG ✦\n+1 Điểm danh vọng\nĐã nhận Tu Vi");
         }
 
@@ -419,10 +457,12 @@
 
         function checkWeeklyRewards() {
             if (userData.weeklyTasks.dailyDone >= 25 && !userData.weeklyTasks.rw1) {
-                userData.weeklyTasks.rw1 = true; addExp(500); alert("✦ MỐC TUẦN ✦\nĐã làm đủ 25 NV ngày! Thưởng Lớn EXP");
+                // Đã buff thưởng 25 NV từ 500 lên 3500 EXP
+                userData.weeklyTasks.rw1 = true; addExp(3500); alert("✦ MỐC TUẦN ✦\nĐã làm đủ 25 NV ngày! Thưởng Lớn EXP");
             }
             if (userData.weeklyTasks.checkins >= 7 && !userData.weeklyTasks.rw2) {
-                userData.weeklyTasks.rw2 = true; addExp(300); alert("✦ MỐC TUẦN ✦\nĐiểm danh đủ 7 ngày! Thưởng Lớn EXP");
+                // Đã buff thưởng 7 ngày từ 300 lên 2100 EXP
+                userData.weeklyTasks.rw2 = true; addExp(2100); alert("✦ MỐC TUẦN ✦\nĐiểm danh đủ 7 ngày! Thưởng Lớn EXP");
             }
             if (userData.weeklyTasks.rw1 && userData.weeklyTasks.rw2 && !userData.weeklyTasks.fullCompleted) {
                 userData.weeklyTasks.fullCompleted = true; userData.totalWeeklyTasksDone += 1;
