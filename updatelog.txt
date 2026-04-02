@@ -2,3 +2,7 @@ Version 0.1.0 (31/03/2026)
 Version 0.1.0 (1/4/2026)
   Cập nhật lại giao diện load
 Version 0.2.0 (2/4/2026)
+  Chỉnh lại hệ thống nhiệm vụ 
+  Chỉnh lại hệ thống điểm danh
+  Thêm Tính năng thành tựu +buff exp
+  Chỉnh lại danh sách cảnh giới
