@@ -25,7 +25,7 @@
 
         *, *::before, *::after { box-sizing: border-box; }
 
-        body, html {
+       body, html {
             margin: 0; padding: 0;
             width: 100vw; height: 100vh;
             font-family: 'Inter', sans-serif;
@@ -34,6 +34,7 @@
             background-color: var(--bg);
             overflow: hidden;
             -webkit-font-smoothing: antialiased;
+            overscroll-behavior: none; /* DÒNG HACK CHỐNG RESET APP Ở ĐÂY */
         }
 
         #loader {
@@ -585,12 +586,12 @@
             { name: "Ngũ Sắc Thảo",   emoji: "🌈", duration: 604800, yield: 5000, desc: "7 ngày · +5000🌿" }
         ];
 
-        const PILLS = [
-            { name: "Tụ Linh Đan",   emoji: "💊", cost: 30,   craftDuration: 7200,   exp: 500 },
-            { name: "Hồi Linh Đan",  emoji: "💊", cost: 100,  craftDuration: 21600,  exp: 2000 },
-            { name: "Thanh Tâm Đan", emoji: "🌀", cost: 300,  craftDuration: 64800,  exp: 7000 },
-            { name: "Luyện Khí Đan", emoji: "🌟", cost: 800,  craftDuration: 172800, exp: 25000 },
-            { name: "Sinh Cơ Đan",   emoji: "✨", cost: 2000, craftDuration: 604800, exp: 100000 }
+       const PILLS = [
+            { name: "Tụ Linh Đan",   emoji: "💊", cost: 30,   craftDuration: 7200,   exp: 100 },
+            { name: "Hồi Linh Đan",  emoji: "💊", cost: 100,  craftDuration: 21600,  exp: 400 },
+            { name: "Thanh Tâm Đan", emoji: "🌀", cost: 300,  craftDuration: 64800,  exp: 1500 },
+            { name: "Luyện Khí Đan", emoji: "🌟", cost: 800,  craftDuration: 172800, exp: 5000 },
+            { name: "Sinh Cơ Đan",   emoji: "✨", cost: 2000, craftDuration: 604800, exp: 15000 }
         ];
 
         const MAX_QUEUE = 5;
