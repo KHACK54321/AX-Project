@@ -6,3 +6,7 @@ Version 0.2.0 (2/4/2026)
   Chỉnh lại hệ thống điểm danh
   Thêm Tính năng thành tựu +buff exp
   Chỉnh lại danh sách cảnh giới
+Version 0.3.0 (4/4/2026)
+  Thêm tính năng trồng linh thảo 
+  Thêm Tính năng luyện đang dược
+  Fix lỗi
