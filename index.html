@@ -3,620 +3,712 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Hệ Thống - Beta Edition</title>
-    
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    
+    <title>Hệ Thống v0.4.0 (Beta)</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Courier+Prime&family=Inter:wght@300;400;500;600;700&display=swap');
-
         :root {
-            --bg: #050810;
-            --card-bg: rgba(15, 20, 35, 0.65);
-            --card-border: rgba(6, 182, 212, 0.15);
-            --card-border-top: rgba(6, 182, 212, 0.4);
-            --text-main: #e2e8f6;
-            --text-muted: #8b9bb4;
-            --cyan: #00d2ff;
-            --gold: #fbbf24;
-            --purple: #9d4edd;
-            --green: #10b981;
-            --accent-gradient: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
-            --danger-gradient: linear-gradient(135deg, #ef4444, #991b1b);
-            --success: #10b981;
+            --bg:#050810;--card-bg:rgba(15,20,35,0.65);--card-border:rgba(6,182,212,0.15);
+            --card-border-top:rgba(6,182,212,0.4);--text-main:#e2e8f6;--text-muted:#8b9bb4;
+            --cyan:#00d2ff;--gold:#fbbf24;--purple:#9d4edd;--green:#10b981;--red:#ef4444;
+            --accent-gradient:linear-gradient(135deg,#00d2ff 0%,#3a7bd5 100%);
+            --gold-gradient:linear-gradient(135deg,#fbbf24,#f59e0b);
+            --danger-gradient:linear-gradient(135deg,#ef4444,#991b1b);
+            --purple-gradient:linear-gradient(135deg,#9d4edd,#6d28d9);
+            --green-gradient:linear-gradient(135deg,#10b981,#059669);
+            --success:#10b981;
         }
-
-        *, *::before, *::after { box-sizing: border-box; }
-
-       body, html {
-            margin: 0; padding: 0;
-            width: 100vw; height: 100vh;
-            font-family: 'Inter', sans-serif;
-            font-size: 14px;
-            color: var(--text-main);
-            background-color: var(--bg);
-            overflow: hidden;
-            -webkit-font-smoothing: antialiased;
-            overscroll-behavior: none;
-        }
-
-        #loader {
-            position: fixed; top: 0; left: 0;
-            width: 100vw; height: 100vh;
-            z-index: 9999;
-            display: flex; justify-content: center; align-items: center; flex-direction: column;
-            transition: opacity 0.6s ease;
-            background-color: #050810;
-            background-size: cover; background-position: center;
-            box-shadow: inset 0 0 0 2000px rgba(5, 8, 16, 0.9);
-        }
+        *,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+        body,html{margin:0;padding:0;width:100vw;height:100vh;font-family:'Inter',sans-serif;font-size:14px;
+            color:var(--text-main);background-color:var(--bg);overflow:hidden;-webkit-font-smoothing:antialiased;overscroll-behavior:none;}
         
-        #loader .avatar-container {
-            width: 130px; height: 130px;
-            position: relative; margin-bottom: 30px;
-        }
+        /* ── LOADER ── */
+        #loader{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:9999;display:flex;
+            justify-content:center;align-items:center;flex-direction:column;transition:opacity 0.6s ease;
+            background-color:#050810;background-size:cover;background-position:center;
+            box-shadow:inset 0 0 0 2000px rgba(5,8,16,0.9);}
+        #loader .avatar-container{width:130px;height:130px;position:relative;margin-bottom:30px;}
+        #loader .avatar-container::before,#loader .avatar-container::after{content:'';position:absolute;
+            top:50%;left:50%;transform:translate(-50%,-50%);border-radius:50%;
+            border:1px solid rgba(0,210,255,0.4);animation:pulseRing 2s cubic-bezier(0.4,0,0.6,1) infinite;}
+        #loader .avatar-container::after{animation-delay:1s;border-color:rgba(157,78,221,0.3);}
+        @keyframes pulseRing{0%{width:130px;height:130px;opacity:1;}100%{width:240px;height:240px;opacity:0;}}
+        #loader .rotating-avatar{width:100%;height:100%;border-radius:50%;border:2px solid rgba(0,210,255,0.6);
+            box-shadow:0 0 20px rgba(0,210,255,0.2);animation:spin 8s linear infinite;object-fit:cover;background:#1a1a2e;}
+        @keyframes spin{to{transform:rotate(360deg);}}
+        #hacker-log{font-family:'Courier Prime',monospace;font-size:13px;color:rgba(0,210,255,0.9);text-align:left;
+            width:80%;max-width:320px;height:90px;overflow-y:hidden;border-left:2px solid rgba(0,210,255,0.4);padding-left:12px;}
+        .log-line{opacity:0;animation:fadeInLine 0.4s ease forwards;line-height:1.5;}
+        @keyframes fadeInLine{to{opacity:1;transform:translateX(0);}from{transform:translateX(-10px);}}
+
+        /* ── MAIN APP ── */
+        #main-app{display:none;height:100vh;width:100vw;background-color:var(--bg);background-size:cover;
+            background-position:center;box-shadow:inset 0 0 0 2000px rgba(5,8,16,0.88);
+            flex-direction:column;position:relative;overflow:hidden;}
+        #main-app::before{content:'';position:absolute;top:-20%;left:-20%;width:60%;height:60%;
+            background:radial-gradient(circle,rgba(0,210,255,0.05) 0%,transparent 60%);border-radius:50%;
+            animation:orbA 12s ease-in-out infinite alternate;pointer-events:none;z-index:0;}
+        #main-app::after{content:'';position:absolute;bottom:-20%;right:-20%;width:60%;height:60%;
+            background:radial-gradient(circle,rgba(157,78,221,0.05) 0%,transparent 60%);border-radius:50%;
+            animation:orbB 15s ease-in-out infinite alternate;pointer-events:none;z-index:0;}
+        @keyframes orbA{0%{transform:translate(0,0) scale(1);}100%{transform:translate(10%,15%) scale(1.1);}}
+        @keyframes orbB{0%{transform:translate(0,0) scale(1);}100%{transform:translate(-10%,-15%) scale(1.1);}}
+
+        /* ── HAMBURGER ── */
+        .hamburger-btn{position:fixed;top:12px;left:14px;z-index:200;background:rgba(0,210,255,0.1);
+            border:1px solid rgba(0,210,255,0.3);color:var(--cyan);font-size:20px;width:44px;height:44px;
+            border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+            backdrop-filter:blur(10px);transition:all 0.2s;}
+        .hamburger-btn:active{transform:scale(0.92);background:rgba(0,210,255,0.2);}
+
+        /* ── DRAWER ── */
+        #drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);
+            z-index:300;opacity:0;pointer-events:none;transition:opacity 0.3s;}
+        #drawer-overlay.open{opacity:1;pointer-events:all;}
+        #side-drawer{position:fixed;top:0;left:-82%;width:78%;max-width:300px;height:100vh;
+            background:rgba(10,14,25,0.97);backdrop-filter:blur(20px);border-right:1px solid rgba(0,210,255,0.15);
+            z-index:400;transition:left 0.35s cubic-bezier(0.34,1.1,0.64,1);overflow-y:auto;
+            padding:0 0 env(safe-area-inset-bottom) 0;display:flex;flex-direction:column;}
+        #side-drawer.open{left:0;}
+        .drawer-header{padding:54px 20px 20px;border-bottom:1px solid rgba(255,255,255,0.06);
+            font-size:13px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--cyan);
+            text-shadow:0 0 20px rgba(0,210,255,0.4);}
+        .drawer-item{display:flex;align-items:center;gap:14px;padding:15px 20px;cursor:pointer;
+            font-size:14px;font-weight:500;color:var(--text-muted);transition:all 0.2s;
+            border-left:3px solid transparent;}
+        .drawer-item:active{background:rgba(255,255,255,0.04);}
+        .drawer-item.active{color:var(--cyan);border-left-color:var(--cyan);background:rgba(0,210,255,0.06);}
+        .di-icon{font-size:20px;width:28px;text-align:center;flex-shrink:0;}
+
+        /* ── APP HEADER ── */
+        .app-header{padding:16px 56px 10px;text-align:center;font-size:14px;font-weight:700;
+            letter-spacing:4px;text-transform:uppercase;
+            background:linear-gradient(180deg,rgba(5,8,16,0.97) 0%,transparent 100%);
+            color:var(--cyan);text-shadow:0 2px 10px rgba(0,210,255,0.4);z-index:10;position:relative;}
+
+        /* ── GLOBAL RESOURCE BAR ── */
+        .global-res-bar{display:flex;gap:8px;padding:0 14px 10px;position:relative;z-index:10;}
+        .gres{flex:1;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);
+            border-radius:10px;padding:8px 12px;display:flex;align-items:center;gap:8px;}
+        .gres-icon{font-size:16px;flex-shrink:0;}
+        .gres-val{font-size:14px;font-weight:700;color:#fff;}
+        .gres-lbl{font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;}
+
+        /* ── TAB CONTAINER ── */
+        .tab-container{flex:1;padding:6px 14px 30px;overflow-y:auto;overflow-x:hidden;
+            display:flex;flex-direction:column;align-items:center;
+            position:relative;z-index:1;-webkit-overflow-scrolling:touch;scroll-behavior:smooth;}
+        .tab-container::-webkit-scrollbar{display:none;}
+        .tab-container{scrollbar-width:none;}
+        .tab-content{display:none;width:100%;max-width:480px;animation:fadeIn 0.35s cubic-bezier(0.2,0.8,0.2,1);}
+        .tab-content.active{display:block;}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+
+        /* ── SCROLL TOOLBAR ── */
+        #scroll-toolbar{position:fixed;right:8px;bottom:50%;transform:translateY(50%);z-index:100;
+            display:flex;flex-direction:column;gap:6px;transition:opacity 0.3s;}
+        #scroll-toolbar.hidden{opacity:0;pointer-events:none;}
+        .stb-btn{width:36px;height:36px;border-radius:10px;border:1px solid rgba(0,210,255,0.2);
+            background:rgba(10,15,28,0.85);backdrop-filter:blur(10px);color:var(--cyan);
+            font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+            transition:all 0.2s;}
+        .stb-btn:active{transform:scale(0.9);background:rgba(0,210,255,0.15);}
+
+        /* ── CARDS ── */
+        .card{background:var(--card-bg);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+            border:1px solid var(--card-border);border-top-color:var(--card-border-top);
+            border-radius:16px;padding:18px;margin-bottom:14px;box-shadow:0 8px 32px rgba(0,0,0,0.3);
+            position:relative;overflow:hidden;}
+        .card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;
+            background:linear-gradient(90deg,transparent,rgba(0,210,255,0.3),rgba(157,78,221,0.3),transparent);}
+        .card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;
+            border-bottom:1px solid rgba(255,255,255,0.05);padding-bottom:12px;}
+        h2{margin:0;font-weight:700;font-size:14px;text-transform:uppercase;color:#fff;letter-spacing:1px;}
+        h3{margin:0 0 10px 0;font-size:12px;color:var(--cyan);text-transform:uppercase;font-weight:600;letter-spacing:1px;}
+        p{font-size:13px;line-height:1.6;color:var(--text-muted);margin:6px 0;}
+        strong{color:#fff;font-weight:600;}
+
+        /* ── REALM ── */
+        .realm-name-big{font-size:22px;color:#fff;font-weight:800;background:var(--accent-gradient);
+            -webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:10px 0;line-height:1.3;}
         
-        #loader .avatar-container::before,
-        #loader .avatar-container::after {
-            content: '';
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            border-radius: 50%;
-            border: 1px solid rgba(0, 210, 255, 0.4);
-            animation: pulseRing 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
+        /* ── TASK ── */
+        .task-row{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.03);
+            padding:13px 14px;border-radius:12px;margin-bottom:10px;border:1px solid rgba(255,255,255,0.05);transition:background 0.2s;}
+        .task-row:active{background:rgba(255,255,255,0.06);}
+        .task-info{display:flex;flex-direction:column;flex:1;padding-right:10px;}
+        .task-title{font-size:13px;color:#fff;font-weight:500;margin-bottom:3px;line-height:1.4;}
+        .task-prog{font-size:12px;color:var(--cyan);font-weight:500;}
+        .task-status-text{font-size:12px;font-weight:600;color:var(--success);white-space:nowrap;}
+
+        /* ── BUTTONS ── */
+        button.action-btn{background:rgba(0,210,255,0.1);color:#fff;border:1px solid rgba(0,210,255,0.25);
+            border-radius:10px;padding:10px 14px;font-family:inherit;font-size:12px;font-weight:600;
+            cursor:pointer;transition:all 0.2s ease;min-height:44px;}
+        button.action-btn:active{transform:scale(0.96);background:rgba(0,210,255,0.2);}
+        button.action-btn:disabled{opacity:0.4;cursor:not-allowed;transform:none!important;
+            background:rgba(255,255,255,0.05);border-color:rgba(255,255,255,0.1);color:var(--text-muted);}
+        button.main-btn{width:100%;padding:15px;font-size:13px;margin-top:14px;background:var(--accent-gradient);
+            border:none;border-radius:12px;text-transform:uppercase;letter-spacing:1.5px;font-weight:700;color:#fff;
+            box-shadow:0 4px 15px rgba(0,210,255,0.25);min-height:48px;}
+        button.main-btn:active{box-shadow:0 2px 8px rgba(0,210,255,0.2);}
+        button.danger-btn{background:var(--danger-gradient);box-shadow:0 4px 15px rgba(239,68,68,0.2);}
+        button.gold-btn{background:var(--gold-gradient);box-shadow:0 4px 15px rgba(251,191,36,0.2);color:#000;}
+        button.purple-btn{background:var(--purple-gradient);box-shadow:0 4px 15px rgba(157,78,221,0.2);}
+
+        /* ── PROGRESS BAR ── */
+        .progress-bar{width:100%;background:rgba(0,0,0,0.4);height:10px;border-radius:20px;overflow:hidden;
+            margin-top:14px;border:1px solid rgba(255,255,255,0.05);}
+        .progress{height:100%;background:var(--accent-gradient);width:0%;box-shadow:0 0 10px rgba(0,210,255,0.4);
+            transition:width 0.8s cubic-bezier(0.4,0,0.2,1);border-radius:20px;position:relative;overflow:hidden;}
+        .progress::after{content:'absolute';top:0;left:-100%;width:50%;height:100%;
+            background:linear-gradient(90deg,transparent,rgba(255,255,255,0.3),transparent);
+            animation:shimmer 2.5s ease-in-out infinite;}
+        @keyframes shimmer{0%{left:-100%;}100%{left:200%;}}
+
+        /* ── BUFF TEXT ── */
+        .buff-text{font-weight:700;font-size:15px;}
+        .buff-10{color:var(--text-main);}
+        .buff-11{color:#fbbf24;}
+        .buff-12{color:#f97316;}
+        .buff-13p{color:#ef4444;}
+        .achievement-icon{width:28px;height:28px;vertical-align:middle;margin-left:8px;
+            filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3));}
+        .flex-row{display:flex;justify-content:space-between;align-items:center;margin-top:12px;gap:10px;}
+        .stat-box{background:rgba(255,255,255,0.03);padding:14px 10px;border-radius:12px;text-align:center;flex:1;
+            border:1px solid rgba(255,255,255,0.05);}
+        .stat-box .num{font-size:22px;font-weight:700;color:#fff;display:block;margin-bottom:4px;}
+        .stat-box .lbl{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;}
+        .streak-active{color:var(--cyan)!important;text-shadow:0 0 10px rgba(0,210,255,0.3);}
+
+        /* ── LOG BOX ── */
+        .log-box{background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.05);padding:14px;border-radius:12px;
+            font-family:'Courier Prime',monospace;font-size:12px;color:var(--success);
+            height:130px;overflow-y:auto;white-space:pre-wrap;margin-bottom:14px;line-height:1.5;}
+        textarea.backup-area{width:100%;height:80px;background:rgba(0,0,0,0.3);color:#fff;
+            border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:14px;font-size:12px;
+            box-sizing:border-box;margin-top:12px;resize:none;font-family:'Courier Prime',monospace;
+            outline:none;transition:border-color 0.3s;}
+        textarea.backup-area:focus{border-color:var(--cyan);}
+
+        /* ════════════════════════════════════════
+           FARM STYLES
+        ════════════════════════════════════════ */
+        .farm-resource-bar{display:flex;gap:8px;margin-bottom:14px;flex-wrap:nowrap;}
+        .farm-res{flex:1;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);
+            border-radius:12px;padding:10px;display:flex;align-items:center;gap:8px;min-width:0;}
+        .farm-res.lt-r{background:rgba(0,210,255,0.08);border-color:rgba(0,210,255,0.2);}
+        .farm-res.pill-r{background:rgba(157,78,221,0.08);border-color:rgba(157,78,221,0.2);}
+        .farm-res .ricon{font-size:18px;flex-shrink:0;}
+        .farm-res .rval{color:#fff;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;}
+        .farm-res .rlbl{font-size:10px;color:var(--text-muted);display:block;white-space:nowrap;margin-bottom:2px;}
+        .farm-res img.ricon-img{width:22px;height:22px;object-fit:contain;flex-shrink:0;}
+
+        /* Farm Sub-Tabs */
+        .farm-sub-nav{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;}
+        .farm-sub-nav::-webkit-scrollbar{display:none;}
+        .farm-sub-btn{padding:8px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.08);
+            background:rgba(255,255,255,0.03);color:var(--text-muted);font-size:12px;font-weight:600;
+            cursor:pointer;white-space:nowrap;font-family:inherit;transition:all 0.2s;min-height:36px;}
+        .farm-sub-btn.active{background:rgba(0,210,255,0.12);border-color:rgba(0,210,255,0.35);color:var(--cyan);}
+        .farm-sub-tab-content{display:none;}
+        .farm-sub-tab-content.active{display:block;}
+
+        /* Plots */
+        .plot-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px;}
+        .plot-card{background:rgba(0,0,0,0.2);border:1px solid rgba(16,185,129,0.15);border-radius:14px;
+            padding:12px 6px;text-align:center;display:flex;flex-direction:column;align-items:center;
+            gap:5px;min-height:130px;transition:all 0.3s;position:relative;}
+        .plot-card.growing{border-color:rgba(16,185,129,0.4);background:rgba(16,185,129,0.05);}
+        .plot-card.ready{border-color:var(--gold);background:rgba(251,191,36,0.05);animation:readyPulse 2s ease-in-out infinite;}
+        @keyframes readyPulse{0%,100%{box-shadow:0 0 5px rgba(251,191,36,0.1);}50%{box-shadow:0 0 15px rgba(251,191,36,0.3);}}
+        .plot-emoji{font-size:24px;line-height:1;margin-bottom:2px;}
+        .plot-img{width:36px;height:36px;object-fit:contain;margin-bottom:2px;}
+        .plot-timer{font-size:11px;color:var(--cyan);font-weight:600;font-family:'Courier Prime',monospace;}
+        .plot-lbl{font-size:10px;color:var(--text-main);font-weight:500;line-height:1.3;}
+        .plot-btn{font-size:11px;padding:6px 8px;border-radius:8px;font-weight:600;margin-top:auto;
+            background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.3);color:var(--green);
+            cursor:pointer;transition:all 0.2s;font-family:inherit;width:100%;min-height:32px;}
+        .plot-btn:active{transform:scale(0.95);}
+        .plot-btn:disabled{opacity:0.5;cursor:not-allowed;background:transparent;border-color:rgba(255,255,255,0.1);color:var(--text-muted);}
+        .plot-btn.harvest{background:rgba(251,191,36,0.15);border-color:rgba(251,191,36,0.4);color:var(--gold);}
+        .crop-select{display:none;flex-direction:column;gap:5px;width:100%;max-height:130px;
+            overflow-y:auto;-webkit-overflow-scrolling:touch;background:rgba(5,8,16,0.95);
+            border:1px solid rgba(16,185,129,0.2);border-radius:10px;padding:6px;scrollbar-width:none;
+            position:absolute;top:0;left:0;right:0;bottom:0;z-index:5;}
+        .crop-select::-webkit-scrollbar{display:none;}
+        .crop-select.visible{display:flex;}
+        .crop-opt{background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);border-radius:8px;
+            padding:7px 8px;font-size:11px;color:#fff;cursor:pointer;font-family:inherit;font-weight:500;
+            text-align:left;transition:background 0.2s;display:flex;align-items:center;gap:6px;}
+        .crop-opt:active{background:rgba(16,185,129,0.25);}
+        .crop-opt small{color:var(--text-muted);font-size:9px;display:block;margin-top:1px;}
+        .crop-opt-img{width:22px;height:22px;object-fit:contain;flex-shrink:0;}
+
+        /* Factory */
+        .pill-selector{display:flex;gap:7px;overflow-x:auto;-webkit-overflow-scrolling:touch;
+            padding-bottom:8px;margin:10px 0 7px;scrollbar-width:none;}
+        .pill-selector::-webkit-scrollbar{display:none;}
+        .pill-opt{background:rgba(157,78,221,0.05);border:1px solid rgba(157,78,221,0.2);border-radius:10px;
+            padding:8px 10px;font-size:11px;color:#fff;cursor:pointer;font-family:inherit;font-weight:500;
+            text-align:center;white-space:nowrap;min-width:82px;flex-shrink:0;transition:all 0.2s;display:flex;flex-direction:column;align-items:center;gap:4px;}
+        .pill-opt.active{border-color:var(--purple);background:rgba(157,78,221,0.2);box-shadow:0 0 15px rgba(157,78,221,0.15);}
+        .pill-opt small{color:var(--text-muted);font-size:9px;display:block;}
+        .pill-opt-img{width:28px;height:28px;object-fit:contain;}
+        .pill-info-bar{font-size:11px;color:var(--text-muted);text-align:center;padding:5px 0 9px;
+            border-bottom:1px solid rgba(255,255,255,0.05);margin-bottom:10px;font-weight:500;}
+        .factory-section{background:rgba(0,0,0,0.2);border:1px solid rgba(157,78,221,0.2);
+            border-top-color:rgba(157,78,221,0.4);border-radius:16px;padding:18px;margin-bottom:14px;position:relative;}
+        .factory-queue{display:flex;gap:7px;margin:10px 0 7px;justify-content:flex-end;flex-wrap:wrap;}
+        .q-slot{width:30px;height:30px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);
+            background:rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;font-size:14px;transition:all 0.3s;}
+        .q-slot.active-q{border-color:var(--purple);background:rgba(157,78,221,0.1);box-shadow:0 0 10px rgba(157,78,221,0.2);}
+        .factory-timer{font-size:26px;font-weight:700;color:var(--purple);font-family:'Courier Prime',monospace;
+            text-align:center;margin:14px 0;letter-spacing:2px;}
+        .factory-btns{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;}
+        .factory-btns button{flex:1;font-size:12px;padding:11px 6px;min-height:44px;}
+        .farm-status{font-size:12px;color:var(--success);text-align:center;padding:6px;min-height:26px;
+            font-weight:500;transition:opacity 0.3s;margin-bottom:8px;}
         
-        #loader .avatar-container::after {
-            animation-delay: 1s;
-            border-color: rgba(157, 78, 221, 0.3);
-        }
-        
-        @keyframes pulseRing {
-            0%   { width: 130px; height: 130px; opacity: 1; }
-            100% { width: 240px; height: 240px; opacity: 0; }
-        }
-        
-        #loader .rotating-avatar {
-            width: 100%; height: 100%;
-            border-radius: 50%;
-            border: 2px solid rgba(0, 210, 255, 0.6);
-            box-shadow: 0 0 20px rgba(0, 210, 255, 0.2);
-            animation: spin 8s linear infinite;
-            object-fit: cover;
-            background: #1a1a2e;
-        }
-        
-        @keyframes spin { to { transform: rotate(360deg); } }
+        /* Furnace display in factory */
+        .active-furnace-bar{display:flex;align-items:center;gap:10px;background:rgba(157,78,221,0.08);
+            border:1px solid rgba(157,78,221,0.2);border-radius:12px;padding:10px 14px;margin-bottom:12px;}
+        .active-furnace-bar img{width:40px;height:40px;object-fit:contain;}
+        .active-furnace-bar .fname{font-size:13px;font-weight:600;color:#fff;}
+        .active-furnace-bar .fstats{font-size:11px;color:var(--text-muted);margin-top:2px;}
 
-        #hacker-log {
-            font-family: 'Courier Prime', monospace; font-size: 13px;
-            color: rgba(0, 210, 255, 0.9); text-align: left;
-            width: 80%; max-width: 320px; height: 90px; overflow-y: hidden;
-            border-left: 2px solid rgba(0, 210, 255, 0.4); padding-left: 12px;
-        }
-        
-        .log-line { opacity: 0; animation: fadeInLine 0.4s ease forwards; line-height: 1.5; }
-        @keyframes fadeInLine { to { opacity: 1; transform: translateX(0); } from { transform: translateX(-10px); } }
+        /* Upgrade rows */
+        .upgrade-row{display:flex;justify-content:space-between;align-items:center;
+            background:rgba(251,191,36,0.05);border:1px solid rgba(251,191,36,0.15);border-radius:12px;
+            padding:13px 14px;margin-bottom:10px;}
+        .upgrade-info{flex:1;padding-right:10px;}
+        .upgrade-name{font-size:13px;font-weight:600;color:#fff;margin-bottom:3px;}
+        .upgrade-desc{font-size:11px;color:var(--text-muted);line-height:1.4;}
+        .upg-btn{background:rgba(251,191,36,0.15);border:1px solid rgba(251,191,36,0.4);border-radius:10px;
+            padding:8px 14px;color:var(--gold);font-size:12px;font-weight:700;cursor:pointer;
+            font-family:inherit;transition:all 0.2s;white-space:nowrap;min-height:44px;}
+        .upg-btn:active{transform:scale(0.95);}
+        .upg-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none!important;}
+        .upg-btn.owned{background:rgba(16,185,129,0.1);border-color:rgba(16,185,129,0.3);color:var(--success);}
+        .lt-upg-btn{background:rgba(0,210,255,0.1);border:1px solid rgba(0,210,255,0.3);color:var(--cyan);}
 
-        #main-app {
-            display: none;
-            height: 100vh; width: 100vw;
-            background-color: var(--bg);
-            background-size: cover; background-position: center;
-            box-shadow: inset 0 0 0 2000px rgba(5, 8, 16, 0.88);
-            flex-direction: column;
-            position: relative;
-            overflow: hidden;
-        }
+        /* Inventory / Kho */
+        .inv-row{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.03);
+            border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:12px 14px;margin-bottom:10px;}
+        .inv-img{width:38px;height:38px;object-fit:contain;flex-shrink:0;}
+        .inv-info{flex:1;}
+        .inv-name{font-size:13px;font-weight:600;color:#fff;margin-bottom:3px;}
+        .inv-count{font-size:12px;color:var(--text-muted);}
+        .inv-btns{display:flex;flex-direction:column;gap:6px;}
+        .inv-btn{border-radius:8px;padding:6px 10px;font-size:11px;font-weight:700;cursor:pointer;
+            font-family:inherit;transition:all 0.2s;border:1px solid;min-height:32px;}
+        .inv-btn.use-btn{background:rgba(16,185,129,0.1);border-color:rgba(16,185,129,0.3);color:var(--green);}
+        .inv-btn.sell-btn{background:rgba(0,210,255,0.1);border-color:rgba(0,210,255,0.3);color:var(--cyan);}
+        .inv-btn:active{transform:scale(0.95);}
+        .inv-btn:disabled{opacity:0.4;cursor:not-allowed;transform:none!important;}
 
-        #main-app::before {
-            content: '';
-            position: absolute; top: -20%; left: -20%;
-            width: 60%; height: 60%;
-            background: radial-gradient(circle, rgba(0, 210, 255, 0.05) 0%, transparent 60%);
-            border-radius: 50%;
-            animation: orbA 12s ease-in-out infinite alternate;
-            pointer-events: none; z-index: 0;
-        }
-        #main-app::after {
-            content: '';
-            position: absolute; bottom: -20%; right: -20%;
-            width: 60%; height: 60%;
-            background: radial-gradient(circle, rgba(157, 78, 221, 0.05) 0%, transparent 60%);
-            border-radius: 50%;
-            animation: orbB 15s ease-in-out infinite alternate;
-            pointer-events: none; z-index: 0;
-        }
-        @keyframes orbA { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(10%,15%) scale(1.1); } }
-        @keyframes orbB { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(-10%,-15%) scale(1.1); } }
+        /* Shop */
+        .furnace-card{background:rgba(0,0,0,0.2);border:1px solid rgba(157,78,221,0.2);border-radius:16px;
+            padding:16px;margin-bottom:14px;display:flex;align-items:center;gap:14px;}
+        .furnace-card.owned-card{border-color:rgba(16,185,129,0.4);background:rgba(16,185,129,0.04);}
+        .furnace-card.active-card{border-color:var(--cyan);background:rgba(0,210,255,0.04);}
+        .furnace-img{width:60px;height:60px;object-fit:contain;flex-shrink:0;}
+        .furnace-info{flex:1;}
+        .furnace-name{font-size:13px;font-weight:700;color:#fff;margin-bottom:4px;}
+        .furnace-stats{font-size:11px;color:var(--text-muted);line-height:1.6;}
+        .furnace-btns{display:flex;flex-direction:column;gap:6px;}
+        .furnace-btn{border-radius:10px;padding:8px 12px;font-size:11px;font-weight:700;cursor:pointer;
+            font-family:inherit;transition:all 0.2s;min-height:36px;border:1px solid;white-space:nowrap;}
+        .buy-furnace-btn{background:rgba(0,210,255,0.1);border-color:rgba(0,210,255,0.3);color:var(--cyan);}
+        .use-furnace-btn{background:rgba(157,78,221,0.1);border-color:rgba(157,78,221,0.3);color:var(--purple);}
+        .furnace-btn.active-furnace{background:rgba(16,185,129,0.1);border-color:var(--success);color:var(--success);}
+        .furnace-btn:active{transform:scale(0.95);}
+        .furnace-btn:disabled{opacity:0.4;cursor:not-allowed;}
 
-        .app-header {
-            padding: 24px 20px 16px;
-            text-align: center;
-            font-size: 15px; font-weight: 700;
-            letter-spacing: 4px; text-transform: uppercase;
-            background: linear-gradient(180deg, rgba(5,8,16,0.95) 0%, transparent 100%);
-            color: var(--cyan);
-            text-shadow: 0 2px 10px rgba(0, 210, 255, 0.4);
-            z-index: 10; position: relative;
-        }
+        /* ════════════════════════════════════════
+           MEDITATION TAB
+        ════════════════════════════════════════ */
+        .meditation-timer-display{font-size:48px;font-weight:700;color:var(--cyan);
+            font-family:'Courier Prime',monospace;text-align:center;margin:20px 0;
+            text-shadow:0 0 30px rgba(0,210,255,0.4);letter-spacing:4px;}
+        .med-btn-row{display:flex;gap:8px;justify-content:center;margin-bottom:16px;flex-wrap:wrap;}
+        .med-time-btn{padding:10px 18px;border-radius:12px;border:1px solid rgba(0,210,255,0.25);
+            background:rgba(0,210,255,0.07);color:var(--cyan);font-size:13px;font-weight:600;
+            cursor:pointer;font-family:inherit;transition:all 0.2s;min-height:44px;}
+        .med-time-btn.active{background:rgba(0,210,255,0.2);border-color:var(--cyan);}
+        .med-time-btn:active{transform:scale(0.96);}
+        .med-progress-ring{display:flex;justify-content:center;margin:10px 0;}
+        .med-streak-bar{display:flex;gap:6px;justify-content:center;margin-top:10px;flex-wrap:wrap;}
+        .med-streak-dot{width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,0.1);
+            border:1px solid rgba(255,255,255,0.15);transition:all 0.3s;}
+        .med-streak-dot.done{background:var(--cyan);border-color:var(--cyan);box-shadow:0 0 6px rgba(0,210,255,0.5);}
 
-        .tab-container {
-            flex: 1; padding: 10px 16px 90px 16px; box-sizing: border-box;
-            overflow-y: auto; overflow-x: hidden;
-            display: flex; flex-direction: column; align-items: center;
-            position: relative; z-index: 1; -webkit-overflow-scrolling: touch; scroll-behavior: smooth;
-        }
-        .tab-container::-webkit-scrollbar { display: none; }
-        .tab-container { scrollbar-width: none; }
+        /* ════════════════════════════════════════
+           ACHIEVEMENTS TAB
+        ════════════════════════════════════════ */
+        .ach-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;}
+        .ach-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;
+            padding:14px;text-align:center;transition:all 0.3s;position:relative;overflow:hidden;}
+        .ach-card.unlocked{border-color:rgba(251,191,36,0.4);background:rgba(251,191,36,0.05);}
+        .ach-card.unlocked::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+            background:var(--gold-gradient);}
+        .ach-icon{font-size:28px;margin-bottom:8px;display:block;}
+        .ach-name{font-size:12px;font-weight:700;color:#fff;margin-bottom:4px;line-height:1.3;}
+        .ach-desc{font-size:10px;color:var(--text-muted);line-height:1.4;}
+        .ach-buff{font-size:10px;color:var(--gold);font-weight:600;margin-top:6px;}
+        .ach-locked{filter:grayscale(1);opacity:0.5;}
 
-        .tab-content { display: none; width: 100%; max-width: 480px; animation: fadeIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); }
-        .tab-content.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        /* ════════════════════════════════════════
+           MINECRAFT ACHIEVEMENT TOAST
+        ════════════════════════════════════════ */
+        #mc-achievement{position:fixed;top:-120px;left:50%;transform:translateX(-50%);
+            width:92%;max-width:360px;background:rgba(12,12,12,0.97);border:2px solid #6d4c1f;
+            border-radius:4px;padding:12px 16px;display:flex;align-items:center;gap:12px;
+            z-index:9998;transition:top 0.5s cubic-bezier(0.34,1.2,0.64,1);
+            box-shadow:0 6px 30px rgba(0,0,0,0.9),inset 0 1px 0 rgba(255,255,255,0.04);}
+        #mc-achievement.show{top:calc(env(safe-area-inset-top,0px) + 12px);}
+        .mc-icon{font-size:36px;flex-shrink:0;image-rendering:pixelated;}
+        .mc-header{font-size:10px;color:#ffaa00;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px;}
+        .mc-title{font-size:14px;color:#fff;font-weight:700;}
+        .mc-desc{font-size:11px;color:#aaa;margin-top:2px;}
 
-        .bottom-nav {
-            position: fixed; bottom: 0; left: 0; width: 100%; display: flex;
-            background: rgba(10, 15, 28, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-            border-top: 1px solid rgba(255,255,255,0.05); padding-bottom: env(safe-area-inset-bottom); z-index: 50;
-        }
-        
-        .nav-item {
-            flex: 1; text-align: center; padding: 12px 4px 10px; color: var(--text-muted);
-            font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer;
-            transition: all 0.3s ease; display: flex; flex-direction: column; align-items: center; gap: 4px;
-            position: relative; -webkit-tap-highlight-color: transparent;
-        }
-        
-        .nav-item.active { color: var(--cyan); transform: translateY(-2px); }
-        
-        .nav-pill {
-            position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-            width: 0; height: 3px; border-radius: 0 0 4px 4px; background: var(--accent-gradient);
-            transition: width 0.4s cubic-bezier(0.34,1.56,0.64,1);
-        }
-        .nav-item.active .nav-pill { width: 32px; box-shadow: 0 2px 8px rgba(0,210,255,0.5); }
-        .nav-icon { font-size: 18px; line-height: 1; margin-bottom: 2px; }
-
-        .card {
-            background: var(--card-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-            border: 1px solid var(--card-border); border-top-color: var(--card-border-top);
-            border-radius: 16px; padding: 20px; margin-bottom: 16px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            position: relative; overflow: hidden;
-        }
-        
-        .card::before {
-            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(0,210,255,0.3), rgba(157,78,221,0.3), transparent);
-        }
-        
-        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px; }
-        h2 { margin: 0; font-weight: 700; font-size: 15px; text-transform: uppercase; color: #fff; letter-spacing: 1px; }
-        h3 { margin: 0 0 10px 0; font-size: 13px; color: var(--cyan); text-transform: uppercase; font-weight: 600; letter-spacing: 1px; }
-        p { font-size: 13px; line-height: 1.6; color: var(--text-muted); margin: 6px 0; }
-        strong { color: #fff; font-weight: 600; }
-
-        .realm-name-big {
-            font-size: 24px; color: #fff; font-weight: 800; background: var(--accent-gradient);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 10px 0; line-height: 1.3;
-        }
-
-        .task-row {
-            display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03);
-            padding: 14px 16px; border-radius: 12px; margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.05); transition: background 0.2s;
-        }
-        .task-row:active { background: rgba(255,255,255,0.06); }
-        .task-info { display: flex; flex-direction: column; width: 65%; }
-        .task-title { font-size: 14px; color: #fff; font-weight: 500; margin-bottom: 4px; line-height: 1.4; }
-        .task-prog { font-size: 12px; color: var(--cyan); font-weight: 500; }
-        .task-status-text { font-size: 12px; font-weight: 600; color: var(--success); }
-
-        button.action-btn {
-            background: rgba(0,210,255,0.1); color: #fff; border: 1px solid rgba(0,210,255,0.25);
-            border-radius: 10px; padding: 10px 16px; font-family: inherit; font-size: 12px; font-weight: 600;
-            cursor: pointer; transition: all 0.2s ease; -webkit-tap-highlight-color: transparent;
-        }
-        button.action-btn:active { transform: scale(0.96); background: rgba(0,210,255,0.2); }
-        button.action-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); color: var(--text-muted); }
-
-        button.main-btn {
-            width: 100%; padding: 16px; font-size: 14px; margin-top: 16px; background: var(--accent-gradient);
-            border: none; border-radius: 12px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700; color: #fff;
-            box-shadow: 0 4px 15px rgba(0,210,255,0.25);
-        }
-        button.main-btn:active { box-shadow: 0 2px 8px rgba(0,210,255,0.2); }
-        button.danger-btn { background: var(--danger-gradient); box-shadow: 0 4px 15px rgba(239,68,68,0.2); }
-
-        .progress-bar { width: 100%; background: rgba(0,0,0,0.4); height: 10px; border-radius: 20px; overflow: hidden; margin-top: 16px; border: 1px solid rgba(255,255,255,0.05); }
-        .progress {
-            height: 100%; background: var(--accent-gradient); width: 0%; box-shadow: 0 0 10px rgba(0,210,255,0.4);
-            transition: width 0.8s cubic-bezier(0.4,0,0.2,1); border-radius: 20px; position: relative; overflow: hidden;
-        }
-        .progress::after {
-            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            animation: shimmer 2.5s ease-in-out infinite;
-        }
-        @keyframes shimmer { 0% { left: -100%; } 100% { left: 200%; } }
-
-        .log-box {
-            background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); padding: 14px; border-radius: 12px;
-            font-family: 'Courier Prime', monospace; font-size: 12px; color: var(--success);
-            height: 140px; overflow-y: auto; white-space: pre-wrap; margin-bottom: 14px; line-height: 1.5;
-        }
-        
-        textarea.backup-area {
-            width: 100%; height: 80px; background: rgba(0,0,0,0.3); color: #fff;
-            border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 14px;
-            font-size: 12px; box-sizing: border-box; margin-top: 12px; resize: none; font-family: 'Courier Prime', monospace;
-            outline: none; transition: border-color 0.3s;
-        }
-        textarea.backup-area:focus { border-color: var(--cyan); }
-
-        .buff-text { font-weight: 700; font-size: 15px; }
-        .buff-10  { color: var(--text-main); }
-        .buff-11  { color: #fbbf24; }
-        .buff-12  { color: #f97316; }
-        .buff-13p { color: #ef4444; }
-
-        .achievement-icon { width: 28px; height: 28px; vertical-align: middle; margin-left: 8px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
-
-        .flex-row { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; gap: 10px; }
-        .stat-box {
-            background: rgba(255,255,255,0.03); padding: 16px 10px; border-radius: 12px; text-align: center; flex: 1; border: 1px solid rgba(255,255,255,0.05);
-        }
-        .stat-box .num { font-size: 24px; font-weight: 700; color: #fff; display: block; margin-bottom: 4px; }
-        .stat-box .lbl { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-        .streak-active { color: var(--cyan) !important; text-shadow: 0 0 10px rgba(0,210,255,0.3); }
-
-        /* ═══════════════════════════════════════════
-           FARM TAB
-        ═══════════════════════════════════════════ */
-        .farm-resource-bar { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: nowrap; }
-        .farm-res {
-            flex: 1; background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.2);
-            border-radius: 12px; padding: 10px; display: flex; align-items: center; gap: 8px; min-width: 0;
-        }
-        .farm-res.pill-r { background: rgba(157,78,221,0.08); border-color: rgba(157,78,221,0.2); }
-        .farm-res .ricon { font-size: 18px; flex-shrink: 0; }
-        .farm-res .rval { color: #fff; font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
-        .farm-res .rlbl { font-size: 10px; color: var(--text-muted); display: block; white-space: nowrap; margin-bottom: 2px; }
-
-        .plot-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 16px; }
-        .plot-card {
-            background: rgba(0,0,0,0.2); border: 1px solid rgba(16,185,129,0.15); border-radius: 14px; padding: 14px 8px;
-            text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px; min-height: 140px;
-            transition: all 0.3s ease;
-        }
-        .plot-card.growing { border-color: rgba(16,185,129,0.4); background: rgba(16,185,129,0.05); }
-        .plot-card.ready { border-color: var(--gold); background: rgba(251,191,36,0.05); animation: readyPulse 2s ease-in-out infinite; }
-        @keyframes readyPulse { 0%,100% { box-shadow: 0 0 5px rgba(251,191,36,0.1); } 50% { box-shadow: 0 0 15px rgba(251,191,36,0.3); } }
-
-        .plot-emoji { font-size: 28px; line-height: 1; margin-bottom: 4px; }
-        .plot-timer { font-size: 12px; color: var(--cyan); font-weight: 600; font-family: 'Courier Prime', monospace; }
-        .plot-lbl { font-size: 11px; color: var(--text-main); font-weight: 500; line-height: 1.3; }
-
-        .plot-btn {
-            font-size: 11px; padding: 6px 10px; border-radius: 8px; font-weight: 600; margin-top: auto;
-            background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.3); color: var(--green);
-            cursor: pointer; transition: all 0.2s; font-family: inherit; -webkit-tap-highlight-color: transparent; width: 100%;
-        }
-        .plot-btn:active { transform: scale(0.95); }
-        .plot-btn:disabled { opacity: 0.5; cursor: not-allowed; background: transparent; border-color: rgba(255,255,255,0.1); color: var(--text-muted); }
-        .plot-btn.harvest { background: rgba(251,191,36,0.15); border-color: rgba(251,191,36,0.4); color: var(--gold); }
-
-        .crop-select {
-            display: none; flex-direction: column; gap: 6px; width: 100%; max-height: 140px;
-            overflow-y: auto; -webkit-overflow-scrolling: touch; background: rgba(5,8,16,0.9);
-            border: 1px solid rgba(16,185,129,0.2); border-radius: 10px; padding: 6px; scrollbar-width: none;
-            position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 5;
-        }
-        .plot-card { position: relative; }
-        .crop-select::-webkit-scrollbar { display: none; }
-        .crop-select.visible { display: flex; }
-        .crop-opt {
-            background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.2); border-radius: 8px; padding: 8px;
-            font-size: 11px; color: #fff; cursor: pointer; font-family: inherit; font-weight: 500; text-align: left;
-            transition: background 0.2s; -webkit-tap-highlight-color: transparent; line-height: 1.4;
-        }
-        .crop-opt:active { background: rgba(16,185,129,0.25); }
-        .crop-opt small { color: var(--text-muted); font-size: 9px; display: block; margin-top: 2px; }
-
-        .pill-selector {
-            display: flex; gap: 8px; overflow-x: auto; -webkit-overflow-scrolling: touch;
-            padding-bottom: 8px; margin: 12px 0 8px; scrollbar-width: none;
-        }
-        .pill-selector::-webkit-scrollbar { display: none; }
-        .pill-opt {
-            background: rgba(157,78,221,0.05); border: 1px solid rgba(157,78,221,0.2);
-            border-radius: 10px; padding: 8px 12px;
-            font-size: 11px; color: #fff; cursor: pointer; font-family: inherit; font-weight: 500;
-            text-align: center; white-space: nowrap; min-width: 85px; flex-shrink: 0;
-            transition: all 0.2s; -webkit-tap-highlight-color: transparent;
-        }
-        .pill-opt.active { border-color: var(--purple); background: rgba(157,78,221,0.2); box-shadow: 0 0 15px rgba(157,78,221,0.15); }
-        .pill-opt small { color: var(--text-muted); font-size: 9px; display: block; margin-top: 3px; }
-
-        .pill-info-bar {
-            font-size: 11px; color: var(--text-muted); text-align: center; padding: 6px 0 10px;
-            border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 12px; font-weight: 500;
-        }
-
-        .factory-section {
-            background: rgba(0,0,0,0.2); border: 1px solid rgba(157,78,221,0.2); border-top-color: rgba(157,78,221,0.4);
-            border-radius: 16px; padding: 20px; margin-bottom: 16px; position: relative;
-        }
-        
-        .factory-queue { display: flex; gap: 8px; margin: 12px 0 8px; justify-content: flex-end; }
-        .q-slot {
-            width: 32px; height: 32px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.4);
-            display: flex; align-items: center; justify-content: center; font-size: 16px; transition: all 0.3s;
-        }
-        .q-slot.active-q { border-color: var(--purple); background: rgba(157,78,221,0.1); box-shadow: 0 0 10px rgba(157,78,221,0.2); }
-
-        .factory-timer {
-            font-size: 28px; font-weight: 700; color: var(--purple); font-family: 'Courier Prime', monospace;
-            text-align: center; margin: 16px 0; letter-spacing: 2px;
-        }
-        
-        .factory-btns { display: flex; gap: 12px; margin-top: 16px; }
-        .factory-btns button { flex: 1; font-size: 12px; padding: 12px 8px; }
-
-        .farm-status { font-size: 12px; color: var(--success); text-align: center; padding: 6px; min-height: 28px; font-weight: 500; transition: opacity 0.3s; margin-bottom: 8px;}
-
-        .upgrade-row { display: flex; justify-content: space-between; align-items: center; background: rgba(251,191,36,0.05); border: 1px solid rgba(251,191,36,0.15); border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; }
-        .upgrade-info { flex: 1; padding-right: 10px; }
-        .upgrade-name { font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 4px; }
-        .upgrade-desc { font-size: 11px; color: var(--text-muted); line-height: 1.4; }
-        .upg-btn {
-            background: rgba(251,191,36,0.15); border: 1px solid rgba(251,191,36,0.4); border-radius: 10px;
-            padding: 8px 16px; color: var(--gold); font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; transition: all 0.2s; -webkit-tap-highlight-color: transparent; white-space: nowrap;
-        }
-        .upg-btn:active { transform: scale(0.95); }
-        .upg-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
-        .upg-btn.owned { background: rgba(16,185,129,0.1); border-color: rgba(16,185,129,0.3); color: var(--success); }
-
-        /* ═══════════════════════════════════════════
+        /* ════════════════════════════════════════
            TOAST SYSTEM
-        ═══════════════════════════════════════════ */
-        #toast-container {
-            position: fixed;
-            bottom: 80px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            flex-direction: column-reverse;
-            align-items: center;
-            gap: 8px;
-            z-index: 9997;
-            pointer-events: none;
-            width: 92%;
-            max-width: 420px;
-        }
+        ════════════════════════════════════════ */
+        #toast-container{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+            display:flex;flex-direction:column-reverse;align-items:center;gap:8px;z-index:9997;
+            pointer-events:none;width:92%;max-width:420px;}
+        .toast{background:rgba(12,18,32,0.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+            border:1px solid rgba(6,182,212,0.2);border-radius:14px;padding:12px 16px;font-size:13px;
+            font-weight:500;color:var(--text-main);display:flex;align-items:center;gap:10px;
+            pointer-events:all;animation:toastIn 0.38s cubic-bezier(0.34,1.56,0.64,1) forwards;
+            box-shadow:0 8px 32px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.05);
+            width:100%;position:relative;overflow:hidden;}
+        .toast::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:14px 0 0 14px;}
+        .toast.success{border-color:rgba(16,185,129,0.35);}
+        .toast.success::before{background:var(--green);box-shadow:0 0 8px rgba(16,185,129,0.6);}
+        .toast.error{border-color:rgba(239,68,68,0.35);}
+        .toast.error::before{background:#ef4444;box-shadow:0 0 8px rgba(239,68,68,0.6);}
+        .toast.info{border-color:rgba(0,210,255,0.35);}
+        .toast.info::before{background:var(--cyan);box-shadow:0 0 8px rgba(0,210,255,0.6);}
+        .toast-msg{flex:1;line-height:1.4;padding-left:6px;}
+        .toast-btn{background:rgba(0,210,255,0.15);border:1px solid rgba(0,210,255,0.3);border-radius:8px;
+            padding:6px 12px;color:var(--cyan);font-size:11px;font-weight:700;cursor:pointer;
+            font-family:inherit;white-space:nowrap;flex-shrink:0;transition:background 0.2s;}
+        .toast-btn:active{background:rgba(0,210,255,0.25);}
+        @keyframes toastIn{from{opacity:0;transform:translateY(24px) scale(0.92);}to{opacity:1;transform:translateY(0) scale(1);}}
+        @keyframes toastOut{to{opacity:0;transform:translateY(10px) scale(0.95);}}
+        .toast.dismissing{animation:toastOut 0.28s ease forwards;}
 
-        .toast {
-            background: rgba(12, 18, 32, 0.95);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(6, 182, 212, 0.2);
-            border-radius: 14px;
-            padding: 12px 16px;
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--text-main);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            pointer-events: all;
-            animation: toastIn 0.38s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
-            width: 100%;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .toast::before {
-            content: '';
-            position: absolute;
-            left: 0; top: 0; bottom: 0;
-            width: 3px;
-            border-radius: 14px 0 0 14px;
-        }
-
-        .toast.success { border-color: rgba(16, 185, 129, 0.35); }
-        .toast.success::before { background: var(--green); box-shadow: 0 0 8px rgba(16,185,129,0.6); }
-
-        .toast.error { border-color: rgba(239, 68, 68, 0.35); }
-        .toast.error::before { background: #ef4444; box-shadow: 0 0 8px rgba(239,68,68,0.6); }
-
-        .toast.info { border-color: rgba(0, 210, 255, 0.35); }
-        .toast.info::before { background: var(--cyan); box-shadow: 0 0 8px rgba(0,210,255,0.6); }
-
-        .toast-msg { flex: 1; line-height: 1.4; padding-left: 6px; }
-
-        .toast-btn {
-            background: rgba(0,210,255,0.15);
-            border: 1px solid rgba(0,210,255,0.3);
-            border-radius: 8px;
-            padding: 6px 12px;
-            color: var(--cyan);
-            font-size: 11px;
-            font-weight: 700;
-            cursor: pointer;
-            font-family: inherit;
-            white-space: nowrap;
-            flex-shrink: 0;
-            transition: background 0.2s;
-            -webkit-tap-highlight-color: transparent;
-        }
-        .toast-btn:active { background: rgba(0,210,255,0.25); }
-
-        @keyframes toastIn {
-            from { opacity: 0; transform: translateY(24px) scale(0.92); }
-            to   { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        @keyframes toastOut {
-            to { opacity: 0; transform: translateY(10px) scale(0.95); }
-        }
-        .toast.dismissing {
-            animation: toastOut 0.28s ease forwards;
-        }
-
+        /* ── MISC ── */
+        .section-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;
+            color:var(--text-muted);margin:16px 0 8px;padding-left:2px;}
+        .divider{height:1px;background:rgba(255,255,255,0.06);margin:14px 0;}
+        .chip{display:inline-flex;align-items:center;gap:4px;background:rgba(0,210,255,0.08);
+            border:1px solid rgba(0,210,255,0.2);border-radius:20px;padding:4px 10px;
+            font-size:11px;font-weight:600;color:var(--cyan);}
+        .chip.gold-chip{background:rgba(251,191,36,0.08);border-color:rgba(251,191,36,0.2);color:var(--gold);}
     </style>
 </head>
 <body>
 
-    <div id="loader">
-        <div class="avatar-container"><img src="" class="rotating-avatar" id="loader-img" alt="System Loader"></div>
-        <div id="hacker-log"></div>
+<!-- ════════ LOADER ════════ -->
+<div id="loader">
+    <div class="avatar-container"><img src="" class="rotating-avatar" id="loader-img" alt="System Loader"></div>
+    <div id="hacker-log"></div>
+</div>
+
+<!-- ════════ MC ACHIEVEMENT TOAST ════════ -->
+<div id="mc-achievement">
+    <div class="mc-icon" id="mc-icon">🏆</div>
+    <div>
+        <div class="mc-header">✦ Thành Tựu Mở Khoá ✦</div>
+        <div class="mc-title" id="mc-title">Nông Dân Tập Sự</div>
+        <div class="mc-desc" id="mc-desc">Thu hoạch 100 cây trồng</div>
+    </div>
+</div>
+
+<!-- ════════ TOAST CONTAINER ════════ -->
+<div id="toast-container"></div>
+
+<!-- ════════ MAIN APP ════════ -->
+<div id="main-app">
+    <!-- Hamburger -->
+    <button class="hamburger-btn" onclick="toggleDrawer()">☰</button>
+
+    <!-- Drawer Overlay -->
+    <div id="drawer-overlay" onclick="closeDrawer()"></div>
+
+    <!-- Side Drawer -->
+    <div id="side-drawer">
+        <div class="drawer-header">⚔ Hệ Thống ⚔</div>
+        <div id="drawer-nav">
+            <div class="drawer-item active" id="dnav-tab-checkin" onclick="showTab('tab-checkin','tab-checkin')">
+                <span class="di-icon">📅</span><span>Ký Danh</span>
+            </div>
+            <div class="drawer-item" id="dnav-tab-tasks" onclick="showTab('tab-tasks','tab-tasks')">
+                <span class="di-icon">📋</span><span>Nhiệm Vụ</span>
+            </div>
+            <div class="drawer-item" id="dnav-tab-realm" onclick="showTab('tab-realm','tab-realm')">
+                <span class="di-icon">⚔️</span><span>Tu Vi</span>
+            </div>
+            <div class="drawer-item" id="dnav-tab-meditation" onclick="showTab('tab-meditation','tab-meditation')">
+                <span class="di-icon">💤</span><span>Treo AFK</span>
+            </div>
+            <div class="drawer-item" id="dnav-tab-farm" onclick="showTab('tab-farm','tab-farm')">
+                <span class="di-icon">🌾</span><span>Nông Trại</span>
+            </div>
+            <div class="drawer-item" id="dnav-tab-achievements" onclick="showTab('tab-achievements','tab-achievements')">
+                <span class="di-icon">🏆</span><span>Thành Tựu</span>
+            </div>
+            <div class="drawer-item" id="dnav-tab-system" onclick="showTab('tab-system','tab-system')">
+                <span class="di-icon">⚙️</span><span>Hệ Thống</span>
+            </div>
+        </div>
     </div>
 
-    <div id="main-app">
-        <div class="app-header">⚔ Hệ Thống ⚔</div>
+    <!-- App Header -->
+    <div class="app-header">⚔ Hệ Thống ⚔</div>
 
-        <div class="tab-container">
-            <div id="tab-checkin" class="tab-content active">
+    <!-- Global Resource Bar -->
+    <div class="global-res-bar">
+        <div class="gres">
+            <img src="linhthach.png" class="gres-icon" style="width:20px;height:20px;object-fit:contain;" alt="💎" onerror="this.outerHTML='<span class=\'gres-icon\'>💎</span>'">
+            <div>
+                <div class="gres-lbl">Linh Thạch</div>
+                <div class="gres-val" id="global-lt">0</div>
+            </div>
+        </div>
+        <div class="gres">
+            <span class="gres-icon">🏆</span>
+            <div>
+                <div class="gres-lbl">Danh Vọng</div>
+                <div class="gres-val" id="global-dv">0</div>
+            </div>
+        </div>
+        <div class="gres">
+            <span class="gres-icon">⚡</span>
+            <div>
+                <div class="gres-lbl">Tu Vi</div>
+                <div class="gres-val" id="global-exp">0</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab Container -->
+    <div class="tab-container" id="main-scroll">
+
+        <!-- ══════ KÝ DANH ══════ -->
+        <div id="tab-checkin" class="tab-content active">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Ký Danh Mỗi Ngày</h2><span id="streak-icon"></span>
+                </div>
+                <p>Reset vào 00:00 hàng ngày. Bỏ lỡ 1 ngày sẽ mất chuỗi và xóa Buff.</p>
+                <div class="flex-row" style="margin:18px 0;">
+                    <div class="stat-box"><span class="num" id="consecutive-days">0</span><span class="lbl">Chuỗi Ngày</span></div>
+                    <div class="stat-box"><span class="num" id="buff-checkin-display">1.0x</span><span class="lbl">Buff Chuỗi</span></div>
+                </div>
+                <button id="btn-checkin" class="action-btn main-btn" onclick="dailyCheckIn()">Ký danh nhận thưởng</button>
+            </div>
+            <div class="card">
+                <h3>Thống Kê Đạo Hạnh</h3>
+                <div class="flex-row">
+                    <div class="stat-box"><span class="num" id="stat-total-daily">0</span><span class="lbl">Tổng NV Ngày</span></div>
+                    <div class="stat-box"><span class="num" id="stat-total-weekly">0</span><span class="lbl">Tổng Mốc Tuần</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══════ NHIỆM VỤ ══════ -->
+        <div id="tab-tasks" class="tab-content">
+            <div class="card">
+                <h3>Nhiệm vụ Ngày (Random)</h3>
+                <p>5 nhiệm vụ mới xuất hiện lúc 00:00 mỗi ngày.</p>
+                <div id="daily-tasks-container" style="margin-top:14px;"></div>
+            </div>
+            <div class="card">
+                <h3>Mục tiêu Tuần</h3>
+                <p>Reset vào 00:00 Chủ Nhật.</p>
+                <div class="task-row" style="margin-top:14px;">
+                    <div class="task-info">
+                        <span class="task-title">Chăm chỉ (25 NV Ngày)</span>
+                        <span class="task-prog">Tiến độ: <span id="prog-wt1">0</span>/25</span>
+                    </div>
+                    <span id="status-wt1" class="task-status-text">Chưa đạt</span>
+                </div>
+                <div class="task-row">
+                    <div class="task-info">
+                        <span class="task-title">Bền bỉ (Điểm danh 7 ngày)</span>
+                        <span class="task-prog">Tiến độ: <span id="prog-wt2">0</span>/7</span>
+                    </div>
+                    <span id="status-wt2" class="task-status-text">Chưa đạt</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══════ TU VI ══════ -->
+        <div id="tab-realm" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Bản Tôn</h2>
+                    <span style="font-size:12px;color:var(--cyan);font-weight:600;">Danh vọng: <span id="points">0</span></span>
+                </div>
+                <p class="realm-name-big" id="realm-name">Ngưng Khí Tầng 1</p>
+                <div style="display:flex;justify-content:space-between;font-size:12px;margin-top:14px;color:#fff;font-weight:500;">
+                    <span>Tiến độ:</span><span><span id="exp">0</span> / <span id="max-exp">100</span></span>
+                </div>
+                <div class="progress-bar"><div class="progress" id="exp-bar"></div></div>
+            </div>
+            <div class="card">
+                <h3>Hiệu Ứng Trợ Công (Buffs)</h3>
+                <p>Hệ số nhân dồn (Multiplicative) trên mọi nguồn Tu Vi.</p>
+                <div class="task-row" style="margin-top:12px;"><span style="font-size:13px;font-weight:500;">Buff Chuỗi Điểm Danh</span><span id="buff-checkin" class="buff-text buff-10">1.0x</span></div>
+                <div class="task-row"><span style="font-size:13px;font-weight:500;">Buff Thành Tích Ngày</span><span id="buff-daily" class="buff-text buff-10">1.0x</span></div>
+                <div class="task-row"><span style="font-size:13px;font-weight:500;">Buff Thành Tích Tuần</span><span id="buff-weekly" class="buff-text buff-10">1.0x</span></div>
+                <div class="task-row"><span style="font-size:13px;font-weight:500;">Buff Luyện Đan (Thành Tựu)</span><span id="buff-alchemy-ach" class="buff-text buff-10">1.0x</span></div>
+                <div class="task-row"><span style="font-size:13px;font-weight:500;">Buff Bán Cây (Thành Tựu)</span><span id="buff-sell-ach" class="buff-text buff-10">1.0x</span></div>
+                <div class="card-header" style="margin-top:14px;padding-bottom:0;border:none;">
+                    <h2 style="color:var(--cyan);">TỔNG HỆ SỐ</h2><span id="buff-total" style="color:var(--green);font-size:22px;font-weight:700;">1.0x</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══════ TREO AFK ══════ -->
+        <div id="tab-meditation" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2>💤 Treo Máy AFK</h2>
+                    <div>
+                        <img src="linhthach.png" style="width:16px;height:16px;vertical-align:middle;object-fit:contain;" onerror="this.style.display='none'">
+                        <span id="med-lt-display" style="font-size:13px;font-weight:700;color:var(--cyan);">0 💎</span>
+                    </div>
+                </div>
+                <p>Treo máy offline để kiếm Linh Thạch 💎. Tối đa <strong>3 lần/ngày</strong>. Chuỗi 3+ ngày nhận ×1.5 thưởng.</p>
+                <div class="flex-row" style="margin-top:10px;">
+                    <div class="stat-box"><span class="num" id="med-today">0</span><span class="lbl">Hôm Nay / 3</span></div>
+                    <div class="stat-box"><span class="num streak-active" id="med-streak">0</span><span class="lbl">Chuỗi (ngày)</span></div>
+                </div>
+                <div class="med-streak-bar" id="med-streak-dots"></div>
+            </div>
+            <div class="card">
+                <h3>Chọn thời gian treo AFK</h3>
+                <div class="med-btn-row">
+                    <button class="med-time-btn active" id="med-btn-5" onclick="selectMedTime(5,this)">5 phút<br><small style="font-size:10px;color:var(--text-muted);">+5 💎</small></button>
+                    <button class="med-time-btn" id="med-btn-10" onclick="selectMedTime(10,this)">10 phút<br><small style="font-size:10px;color:var(--text-muted);">+12 💎</small></button>
+                    <button class="med-time-btn" id="med-btn-15" onclick="selectMedTime(15,this)">15 phút<br><small style="font-size:10px;color:var(--text-muted);">+20 💎</small></button>
+                </div>
+                <div class="meditation-timer-display" id="med-timer">05:00</div>
+                <div style="text-align:center;font-size:11px;color:var(--text-muted);margin-bottom:10px;" id="med-bonus-info">Nhận +5 💎 sau khi hoàn thành</div>
+                <button class="action-btn main-btn" id="med-start-btn" onclick="toggleMeditation()">▶ Bắt Đầu AFK</button>
+                <button class="action-btn main-btn danger-btn" id="med-cancel-btn" onclick="cancelMeditation()" style="display:none;">✕ Huỷ AFK</button>
+            </div>
+            <div class="card">
+                <h3>Bonus Treo Máy</h3>
+                <div class="task-row"><span style="font-size:13px;">Chuỗi ≥ 3 ngày</span><span style="color:var(--gold);font-weight:700;">×1.5 💎</span></div>
+                <div class="task-row"><span style="font-size:13px;">Buff Thành Tựu AFK</span><span id="buff-med-ach" style="color:var(--cyan);font-weight:700;">×1.0</span></div>
+            </div>
+        </div>
+
+        <!-- ══════ NÔNG TRẠI ══════ -->
+        <div id="tab-farm" class="tab-content">
+            <!-- Farm Resource Bar -->
+            <div class="farm-resource-bar">
+                <div class="farm-res">
+                    <span class="ricon">🌿</span>
+                    <div style="min-width:0;">
+                        <span class="rlbl">Linh Thảo</span>
+                        <span class="rval" id="farm-linhthao">0</span>
+                    </div>
+                </div>
+                <div class="farm-res lt-r">
+                    <img src="linhthach.png" class="ricon-img" alt="💎" onerror="this.outerHTML='<span class=\'ricon\'>💎</span>'">
+                    <div style="min-width:0;">
+                        <span class="rlbl">Linh Thạch</span>
+                        <span class="rval" id="farm-linhthach">0</span>
+                    </div>
+                </div>
+                <div class="farm-res pill-r">
+                    <span class="ricon">💊</span>
+                    <div style="min-width:0;">
+                        <span class="rlbl">Đan Dược</span>
+                        <span class="rval" id="farm-danduo">0</span>
+                    </div>
+                </div>
+            </div>
+            <div class="farm-status" id="farm-status"></div>
+
+            <!-- Farm Sub Navigation -->
+            <div class="farm-sub-nav">
+                <button class="farm-sub-btn active" onclick="showFarmTab('ruong',this)">🌾 Ruộng</button>
+                <button class="farm-sub-btn" onclick="showFarmTab('lo',this)">⚗️ Lò Luyện</button>
+                <button class="farm-sub-btn" onclick="showFarmTab('kho',this)">📦 Kho</button>
+                <button class="farm-sub-btn" onclick="showFarmTab('shop',this)">🛒 Shop</button>
+                <button class="farm-sub-btn" onclick="showFarmTab('nangcap',this)">⬆️ Nâng Cấp</button>
+            </div>
+
+            <!-- RUỘNG -->
+            <div class="farm-sub-tab-content active" id="farm-sub-ruong">
                 <div class="card">
                     <div class="card-header">
-                        <h2>Ký Danh Mỗi Ngày</h2><span id="streak-icon"></span>
+                        <h3 style="margin:0;">🌾 Ruộng Trồng Trọt</h3>
+                        <span style="font-size:11px;color:var(--text-muted);" id="plot-count-lbl">3/3 ô</span>
                     </div>
-                    <p>Reset vào 00:00 hàng ngày. Bỏ lỡ 1 ngày sẽ mất chuỗi và xóa Buff.</p>
-                    <div class="flex-row" style="margin:20px 0;">
-                        <div class="stat-box"><span class="num" id="consecutive-days">0</span><span class="lbl">Chuỗi Ngày</span></div>
-                        <div class="stat-box"><span class="num" id="buff-checkin-display">1.0x</span><span class="lbl">Buff Chuỗi</span></div>
-                    </div>
-                    <button id="btn-checkin" class="action-btn main-btn" onclick="dailyCheckIn()">Ký danh nhận thưởng</button>
-                </div>
-                <div class="card">
-                    <h3>Thống Kê Đạo Hạnh</h3>
-                    <div class="flex-row">
-                        <div class="stat-box"><span class="num" id="stat-total-daily">0</span><span class="lbl">Tổng NV Ngày</span></div>
-                        <div class="stat-box"><span class="num" id="stat-total-weekly">0</span><span class="lbl">Tổng Mốc Tuần</span></div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="tab-tasks" class="tab-content">
-                <div class="card">
-                    <h3>Nhiệm vụ Ngày (Random)</h3>
-                    <p>5 nhiệm vụ mới xuất hiện lúc 00:00 mỗi ngày.</p>
-                    <div id="daily-tasks-container" style="margin-top:16px;"></div>
-                </div>
-                <div class="card">
-                    <h3>Mục tiêu Tuần</h3>
-                    <p>Reset vào 00:00 Chủ Nhật.</p>
-                    <div class="task-row" style="margin-top:16px;">
-                        <div class="task-info">
-                            <span class="task-title">Chăm chỉ (25 NV Ngày)</span>
-                            <span class="task-prog">Tiến độ: <span id="prog-wt1">0</span>/25</span>
-                        </div>
-                        <span id="status-wt1" class="task-status-text">Chưa đạt</span>
-                    </div>
-                    <div class="task-row">
-                        <div class="task-info">
-                            <span class="task-title">Bền bỉ (Điểm danh 7 ngày)</span>
-                            <span class="task-prog">Tiến độ: <span id="prog-wt2">0</span>/7</span>
-                        </div>
-                        <span id="status-wt2" class="task-status-text">Chưa đạt</span>
-                    </div>
-                </div>
-            </div>
-
-            <div id="tab-realm" class="tab-content">
-                <div class="card">
-                    <div class="card-header">
-                        <h2>Bản Tôn Tu Chân</h2>
-                        <span style="font-size:12px;color:var(--cyan);font-weight:600;">Danh vọng: <span id="points">0</span></span>
-                    </div>
-                    <p class="realm-name-big" id="realm-name">Ngưng Khí Tầng 1</p>
-                    <div style="display:flex;justify-content:space-between;font-size:12px;margin-top:16px;color:#fff;font-weight:500;">
-                        <span>Tiến độ:</span><span><span id="exp">0</span> / <span id="max-exp">100</span></span>
-                    </div>
-                    <div class="progress-bar"><div class="progress" id="exp-bar"></div></div>
-                </div>
-                <div class="card">
-                    <h3>Hiệu Ứng Trợ Công (Buffs)</h3>
-                    <p>Hệ số nhân dồn (Multiplicative) trên mọi nguồn Tu Vi.</p>
-                    <div class="task-row" style="margin-top:12px;"><span style="font-size:13px;font-weight:500;">Buff Chuỗi Điểm Danh</span><span id="buff-checkin" class="buff-text buff-10">1.0x</span></div>
-                    <div class="task-row"><span style="font-size:13px;font-weight:500;">Buff Thành Tích Ngày</span><span id="buff-daily" class="buff-text buff-10">1.0x</span></div>
-                    <div class="task-row"><span style="font-size:13px;font-weight:500;">Buff Thành Tích Tuần</span><span id="buff-weekly" class="buff-text buff-10">1.0x</span></div>
-                    <div class="card-header" style="margin-top:16px;padding-bottom:0;border:none;">
-                        <h2 style="color:var(--cyan);">TỔNG HỆ SỐ</h2><span id="buff-total" style="color:var(--green);font-size:24px;font-weight:700;">1.0x</span>
-                    </div>
-                </div>
-            </div>
-
-            <div id="tab-system" class="tab-content">
-                <div class="card">
-                    <div class="card-header"><h2>Nhật ký cập nhật</h2><button class="action-btn" onclick="fetchUpdateLog()" style="padding:8px 12px;font-size:11px;">Làm Mới</button></div>
-                    <div class="log-box" id="update-log-box">Đang kết nối tới máy chủ đám mây...</div>
-                </div>
-                <div class="card">
-                    <h2>Bảo Mật Dữ Liệu</h2>
-                    <p>Copy mã dưới đây cất đi để không bao giờ mất Tu Vi.</p>
-                    <textarea id="backup-code" class="backup-area" placeholder="Dán mã phục hồi vào đây..."></textarea>
-                    <div style="display:flex;gap:12px;margin-top:16px;">
-                        <button class="action-btn main-btn" style="margin-top:0;" onclick="exportData()">Tạo Mã</button>
-                        <button class="action-btn main-btn danger-btn" style="margin-top:0;" onclick="importData()">Phục Hồi</button>
-                    </div>
-                </div>
-            </div>
-
-            <div id="tab-farm" class="tab-content">
-                <div class="farm-resource-bar">
-                    <div class="farm-res">
-                        <span class="ricon">🌿</span>
-                        <div style="min-width:0;">
-                            <span class="rlbl">Linh Thảo</span>
-                            <span class="rval" id="farm-linhthao">0</span>
-                        </div>
-                    </div>
-                    <div class="farm-res pill-r">
-                        <span class="ricon">💊</span>
-                        <div style="min-width:0;">
-                            <span class="rlbl">Đan Dược</span>
-                            <span class="rval" id="farm-danduo">0</span>
-                        </div>
-                    </div>
-                    <div class="farm-res pill-r">
-                        <span class="ricon">⚗️</span>
-                        <div style="min-width:0;">
-                            <span class="rlbl">Đang chọn</span>
-                            <span class="rval" id="farm-selected-pill" style="font-size:11px;">Tụ Linh Đan</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="farm-status" id="farm-status"></div>
-
-                <div class="card">
-                    <h3>🌾 Ruộng Trồng Trọt</h3>
-                    <p>Trồng cây để thu hoạch Linh Thảo.</p>
+                    <p>Trồng cây để thu hoạch. Thu hoạch vào Kho để Bán hoặc Dùng luyện đan.</p>
                     <div class="plot-grid" id="plots-container"></div>
                 </div>
+            </div>
 
+            <!-- LÒ LUYỆN -->
+            <div class="farm-sub-tab-content" id="farm-sub-lo">
                 <div class="factory-section">
                     <h3>⚗️ Lò Luyện Đan</h3>
+                    <div id="active-furnace-display"></div>
                     <div class="pill-selector" id="pill-selector-row"></div>
-                    <div class="pill-info-bar" id="pill-info-display">Chi phí: 30🌿 · Thời gian: 02:00:00 · +500 EXP</div>
+                    <div class="pill-info-bar" id="pill-info-display">Chọn đan để xem thông tin</div>
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;">
-                        <span style="font-size:12px;color:var(--text-muted);font-weight:500;">Hàng chờ (max 5):</span>
+                        <span style="font-size:12px;color:var(--text-muted);font-weight:500;">Hàng chờ (max <span id="max-queue-lbl">5</span>):</span>
                         <div class="factory-queue" id="factory-queue-display"></div>
                     </div>
                     <div class="factory-timer" id="factory-timer">--:--</div>
                     <div class="factory-btns">
-                        <button class="action-btn" id="btn-craft" style="background:rgba(157,78,221,0.15); border-color:rgba(157,78,221,0.4);" onclick="startCraft()">⚗️ Nạp Liệu</button>
-                        <button class="action-btn" id="btn-claim" onclick="claimPills()" style="background:rgba(16,185,129,0.15); border-color:rgba(16,185,129,0.4); color: var(--green);">💊 Dùng Đan</button>
+                        <button class="action-btn" id="btn-craft" style="background:rgba(157,78,221,0.15);border-color:rgba(157,78,221,0.4);" onclick="startCraft()">⚗️ Nạp Liệu</button>
+                        <button class="action-btn" id="btn-craft-all" style="background:rgba(157,78,221,0.1);border-color:rgba(157,78,221,0.3);display:none;" onclick="startCraftAll()">🔄 Luyện Tất Cả</button>
+                        <button class="action-btn" id="btn-claim" onclick="claimPills()" style="background:rgba(16,185,129,0.15);border-color:rgba(16,185,129,0.4);color:var(--green);">💊 Dùng Đan</button>
                     </div>
+                    <div style="margin-top:10px;font-size:11px;color:var(--text-muted);text-align:center;" id="total-alchemy-lbl">Tổng đan đã luyện: 0</div>
                 </div>
+            </div>
 
+            <!-- KHO CHỨA -->
+            <div class="farm-sub-tab-content" id="farm-sub-kho">
                 <div class="card">
-                    <h3>⬆️ Nâng Cấp</h3>
-                    <p>Dùng Điểm Danh Vọng (kiếm từ Ký Danh Mỗi Ngày) để nâng cấp.</p>
-                    <div class="upgrade-row" style="margin-top:16px;">
+                    <div class="card-header">
+                        <h3 style="margin:0;">📦 Kho Chứa</h3>
+                        <span style="font-size:11px;color:var(--text-muted);">Thu hoạch → Bán hoặc Dùng</span>
+                    </div>
+                    <p>Bán lấy 💎 Linh Thạch · Dùng chuyển thành 🌿 Linh Thảo để luyện đan.</p>
+                    <div id="inventory-container" style="margin-top:12px;"></div>
+                </div>
+            </div>
+
+            <!-- SHOP -->
+            <div class="farm-sub-tab-content" id="farm-sub-shop">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 style="margin:0;">🛒 Shop Lò Luyện</h3>
+                        <span style="font-size:11px;color:var(--cyan);">💎 <span id="shop-lt-display">0</span></span>
+                    </div>
+                    <p>Mua lò để tăng hiệu quả luyện đan. Chỉ 1 lò được dùng tại 1 thời điểm.</p>
+                    <div id="shop-furnace-container" style="margin-top:12px;"></div>
+                </div>
+            </div>
+
+            <!-- NÂNG CẤP -->
+            <div class="farm-sub-tab-content" id="farm-sub-nangcap">
+                <div class="card">
+                    <h3>⬆️ Nâng Cấp Cổ Xưa (Danh Vọng 🏆)</h3>
+                    <div class="upgrade-row" style="margin-top:14px;">
                         <div class="upgrade-info"><div class="upgrade-name">🌱 Tốc độ tăng trưởng</div><div class="upgrade-desc">Giảm 20% thời gian trồng cây</div></div>
                         <button class="upg-btn" id="btn-upg-speed" onclick="buyUpgrade('speedUp',5)">5 🏆</button>
                     </div>
@@ -625,806 +717,1280 @@
                         <button class="upg-btn" id="btn-upg-furnace" onclick="buyUpgrade('furnaceUp',10)">10 🏆</button>
                     </div>
                 </div>
+                <div class="card">
+                    <h3>✨ Nâng Cấp Mới (Linh Thạch 💎)</h3>
+                    <div id="new-upgrades-container"></div>
+                </div>
             </div>
-
         </div>
 
-        <div class="bottom-nav">
-            <div class="nav-item active" onclick="showTab('tab-checkin',this)"><div class="nav-pill"></div><span class="nav-icon">📅</span>Ký Danh</div>
-            <div class="nav-item" onclick="showTab('tab-tasks',this)"><div class="nav-pill"></div><span class="nav-icon">📋</span>Nhiệm Vụ</div>
-            <div class="nav-item" onclick="showTab('tab-realm',this)"><div class="nav-pill"></div><span class="nav-icon">⚔️</span>Tu Vi</div>
-            <div class="nav-item" onclick="showTab('tab-system',this)"><div class="nav-pill"></div><span class="nav-icon">⚙️</span>Hệ Thống</div>
-            <div class="nav-item" onclick="showTab('tab-farm',this)"><div class="nav-pill"></div><span class="nav-icon">🌾</span>Nông Trại</div>
+        <!-- ══════ THÀNH TỰU ══════ -->
+        <div id="tab-achievements" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2>🏆 Thành Tựu</h2>
+                    <span id="ach-count" style="font-size:12px;color:var(--gold);font-weight:700;">0/9</span>
+                </div>
+                <p>Hoàn thành để nhận buff cộng dồn. Tất cả buff nhân với nhau (multiplicative).</p>
+            </div>
+            <div class="card">
+                <h3>🌾 Trồng Cây</h3>
+                <div class="ach-grid" id="ach-farm-grid"></div>
+            </div>
+            <div class="card">
+                <h3>💊 Luyện Đan</h3>
+                <div class="ach-grid" id="ach-alchemy-grid"></div>
+            </div>
+            <div class="card">
+                <h3>🧘 Thiền Định</h3>
+                <div class="ach-grid" id="ach-med-grid"></div>
+            </div>
         </div>
+
+        <!-- ══════ HỆ THỐNG ══════ -->
+        <div id="tab-system" class="tab-content">
+            <div class="card">
+                <div class="card-header"><h2>Nhật ký cập nhật</h2><button class="action-btn" onclick="fetchUpdateLog()" style="padding:8px 12px;font-size:11px;min-height:36px;">Làm Mới</button></div>
+                <div class="log-box" id="update-log-box">Đang kết nối tới máy chủ đám mây...</div>
+            </div>
+            <div class="card">
+                <h2>Bảo Mật Dữ Liệu</h2>
+                <p>Copy mã dưới đây cất đi để không bao giờ mất Tu Vi.</p>
+                <textarea id="backup-code" class="backup-area" placeholder="Dán mã phục hồi vào đây..."></textarea>
+                <div style="display:flex;gap:12px;margin-top:14px;">
+                    <button class="action-btn main-btn" style="margin-top:0;" onclick="exportData()">Tạo Mã</button>
+                    <button class="action-btn main-btn danger-btn" style="margin-top:0;" onclick="importData()">Phục Hồi</button>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- end tab-container -->
+
+    <!-- Scroll Toolbar -->
+    <div id="scroll-toolbar">
+        <button class="stb-btn" onclick="scrollToTop()" title="Về đầu trang">▲</button>
+        <button class="stb-btn" id="stb-toggle" onclick="toggleScrollTb()" title="Ẩn/hiện">≡</button>
     </div>
+</div>
 
-    <!-- Toast container (outside main-app so it's always on top) -->
-    <div id="toast-container"></div>
+<script>
+// ════════════════════════════════════════════
+// CONSTANTS
+// ════════════════════════════════════════════
+var APP_VERSION    = "0.4.0"; // Updated version
+var SCHEMA_VERSION = 2;
+var SAVE_KEY       = "OppoWaifuDataCloudPro";
 
-    <script>
-        // ═══════════════════════════════════════════
-        // VERSION CONSTANTS
-        // ═══════════════════════════════════════════
-        var APP_VERSION    = "1.0.0";
-        var SCHEMA_VERSION = 1;
+const loadingAvatars = ['img/image_4.png','img/image_5.png','img/image_6.png','img/image_7.png'];
+const waifuImages    = ['img/image_0.png','img/image_1.png','img/image_2.png','img/image_3.png'];
+const ICON_FIRE        = "img/image_fire1.png";
+const ICON_BLUE_FIRE   = "img/image_fire2.png";
+const ICON_PURPLE_FIRE = "img/image_fire3.png";
 
-        // ═══════════════════════════════════════════
-        // TOAST SYSTEM
-        // ═══════════════════════════════════════════
-        function showToast(msg, type, btnLabel, btnAction) {
-            var container = document.getElementById('toast-container');
-            var existing  = container.querySelectorAll('.toast');
-            if (existing.length >= 3) {
-                existing[0].classList.add('dismissing');
-                setTimeout(function() { if (existing[0].parentNode) existing[0].remove(); }, 280);
-            }
+const realms = [
+    { name:"Phàm Nhân",maxExp:100 },{ name:"Ngưng Khí Tầng 1",maxExp:200 },{ name:"Ngưng Khí Tầng 2",maxExp:400 },
+    { name:"Ngưng Khí Tầng 3",maxExp:600 },{ name:"Ngưng Khí Tầng 4",maxExp:800 },{ name:"Ngưng Khí Tầng 5",maxExp:1000 },
+    { name:"Ngưng Khí Tầng 6",maxExp:1500 },{ name:"Ngưng Khí Tầng 7",maxExp:2000 },{ name:"Ngưng Khí Tầng 8",maxExp:2500 },
+    { name:"Ngưng Khí Tầng 9",maxExp:3000 },{ name:"Ngưng Khí Tầng 10",maxExp:4000 },{ name:"Ngưng Khí Tầng 11",maxExp:5000 },
+    { name:"Ngưng Khí Tầng 12",maxExp:6000 },{ name:"Ngưng Khí Tầng 13",maxExp:8000 },{ name:"Ngưng Khí Tầng 14",maxExp:10000 },
+    { name:"Ngưng Khí Tầng 15",maxExp:15000 },{ name:"Trúc Cơ Sơ Kì",maxExp:20000 },{ name:"Trúc Cơ Trung Kì",maxExp:25000 },
+    { name:"Trúc Cơ Hậu Kì",maxExp:30000 },{ name:"Trúc Cơ Viên Mãn",maxExp:35000 },{ name:"Kết Đan Sơ Kì",maxExp:40000 },
+    { name:"Kết Đan Trung Kì",maxExp:50000 },{ name:"Kết Đan Hậu Kì",maxExp:60000 },{ name:"Kết Đan Viên Mãn",maxExp:70000 },
+    { name:"Nguyên Anh Sơ Kì",maxExp:80000 },{ name:"Nguyên Anh Trung Kì",maxExp:90000 },{ name:"Nguyên Anh Hậu Kì",maxExp:100000 },
+    { name:"Nguyên Anh Viên Mãn",maxExp:110000 },{ name:"Hóa Thần Sơ Kì",maxExp:120000 },{ name:"Hóa Thần Trung Kì",maxExp:130000 },
+    { name:"Hóa Thần Hậu Kì",maxExp:140000 },{ name:"Hóa Thần Viên Mãn",maxExp:150000 },{ name:"Anh Biến Sơ Kì",maxExp:160000 },
+    { name:"Anh Biến Trung Kì",maxExp:170000 },{ name:"Anh Biến Hậu Kì",maxExp:180000 },{ name:"Anh Biến Viên Mãn",maxExp:190000 },
+    { name:"Vấn Đỉnh Sơ Kỳ",maxExp:200000 },{ name:"Vấn Đỉnh Trung Kỳ",maxExp:220000 },{ name:"Vấn Đỉnh Hậu Kỳ",maxExp:250000 },
+    { name:"Vấn Đỉnh Đại Viên Mãn",maxExp:300000 },{ name:"Cảnh Giới Quá Độ Âm Hư",maxExp:400000 },{ name:"Cảnh Giới Quá Độ Dương Thực",maxExp:500000 }
+];
 
-            var toast = document.createElement('div');
-            toast.className = 'toast ' + (type || 'info');
+// Cây trồng -> Đều dùng ảnh trong.png (Phân biệt qua Emoji/Tên)
+const CROPS = [
+    { name:"Tụ Linh Thảo",   img:"img/tulinhthao.png",  emoji:"🌿", duration:3600,   yield:20,   sellPrice:2,   desc:"1h · +20🌿 · 2💎" },
+    { name:"Thanh Tâm Thảo", img:"img/thanhtamthao.png",  emoji:"🍃", duration:14400,  yield:80,   sellPrice:5,   desc:"4h · +80🌿 · 5💎" },
+    { name:"Luyện Khí Thảo", img:"img/luyenkhithao.png",  emoji:"🌀", duration:57600,  yield:350,  sellPrice:10,  desc:"16h · +350🌿 · 10💎" },
+    { name:"Hồi Linh Thảo",  img:"img/hoilinhthao.png",  emoji:"💧", duration:86400,  yield:800,  sellPrice:20,  desc:"24h · +800🌿 · 20💎" },
+    { name:"Ngũ Sắc Thảo",   img:"img/ngusacthao.png",  emoji:"🌈", duration:604800, yield:5000, sellPrice:50,  desc:"7 ngày · +5000🌿 · 50💎" },
+];
 
-            var msgSpan = document.createElement('span');
-            msgSpan.className = 'toast-msg';
-            msgSpan.textContent = msg;
-            toast.appendChild(msgSpan);
+// Đan Dược -> Dùng dang_1.png đến dang_5.png
+const PILLS = [
+    { name:"Tụ Linh Đan",   img:"img/dang_1.png", emoji:"🟢", cost:30,   craftDuration:7200,   exp:100 },
+    { name:"Hồi Linh Đan",  img:"img/dang_2.png", emoji:"🟣", cost:100,  craftDuration:21600,  exp:400 },
+    { name:"Thanh Tâm Đan", img:"img/dang_3.png", emoji:"🔵", cost:300,  craftDuration:64800,  exp:1500 },
+    { name:"Luyện Khí Đan", img:"img/dang_4.png", emoji:"🔴", cost:800,  craftDuration:172800, exp:5000 },
+    { name:"Sinh Cơ Đan",   img:"img/dang_5.png", emoji:"🟩", cost:2000, craftDuration:604800, exp:15000 }
+];
 
-            if (btnLabel && btnAction) {
-                var btn = document.createElement('button');
-                btn.className = 'toast-btn';
-                btn.textContent = btnLabel;
-                btn.onclick = btnAction;
-                toast.appendChild(btn);
-            }
+// Lò Luyện -> loluyen1.png đến loluyen3.png
+const FURNACES = [
+    { name:"Lò Thạch Cơ",   img:"img/loluyen_1.png", price:100, timeRed:0.20, expBonus:1.0,  desc:"Giảm 20% thời gian luyện" },
+    { name:"Lò Huyền Thiết", img:"img/loluyen_2.png", price:300, timeRed:0.35, expBonus:1.25, desc:"Giảm 35% · +25% EXP đan" },
+    { name:"Lò Long Uyên",   img:"img/loluyen_3.png", price:800, timeRed:0.50, expBonus:1.60, desc:"Giảm 50% · +60% EXP đan" }
+];
 
-            container.appendChild(toast);
+const FARM_UPGRADES2 = [
+    { id:'plotSlot',  name:'🌱 Mở rộng ô Trồng',     desc:'+1 ô trồng cây (tối đa 8 ô)',         maxLevel:5, baseCost:30,  costMult:1.8 },
+    { id:'queueSlot', name:'⚗️ Mở rộng ô Luyện Đan', desc:'+1 slot hàng chờ (tối đa 10 slot)',   maxLevel:5, baseCost:50,  costMult:2.0 },
+    { id:'craftAll',  name:'🔄 Luyện Tất Cả',          desc:'Mở nút luyện toàn bộ slot trống',    maxLevel:1, baseCost:200, costMult:1 },
+    { id:'cropSpeed', name:'⚡ Tốc Độ Trồng',          desc:'Giảm 10% thời gian trồng/cấp (≤5)',  maxLevel:5, baseCost:40,  costMult:2.0 },
+    { id:'sellBonus', name:'💰 Bội Thu',               desc:'+15% Linh Thạch khi bán cây/cấp (≤5)',maxLevel:5, baseCost:60, costMult:1.5 }
+];
 
-            var timer = setTimeout(function() {
-                toast.classList.add('dismissing');
-                setTimeout(function() { if (toast.parentNode) toast.remove(); }, 280);
-            }, 2500);
+const ACHIEVEMENTS = [
+    { id:'plant_100',    name:'Nông Dân Tập Sự',    desc:'Thu hoạch 100 cây',    icon:'🌾', buff:'sellBonus',      mult:1.1, check:function(d){return (d.totalCropsHarvested||0)>=100;} },
+    { id:'plant_500',    name:'Nông Dân Lành Nghề', desc:'Thu hoạch 500 cây',    icon:'🌿', buff:'sellBonus',      mult:1.2, check:function(d){return (d.totalCropsHarvested||0)>=500;} },
+    { id:'plant_1000',   name:'Đại Nông Phu',        desc:'Thu hoạch 1000 cây',  icon:'🏅', buff:'sellBonus',      mult:1.3, check:function(d){return (d.totalCropsHarvested||0)>=1000;} },
+    { id:'alchemy_100',  name:'Luyện Đan Sơ Cấp',   desc:'Luyện 100 đan dược',  icon:'💊', buff:'alchemyExp',     mult:1.1, check:function(d){return (d.totalAlchemyDone||0)>=100;} },
+    { id:'alchemy_200',  name:'Luyện Đan Trung Cấp', desc:'Luyện 200 đan dược', icon:'🌀', buff:'alchemyExp',     mult:1.2, check:function(d){return (d.totalAlchemyDone||0)>=200;} },
+    { id:'alchemy_500',  name:'Luyện Đan Đại Thành', desc:'Luyện 500 đan dược', icon:'✨', buff:'alchemyExp',     mult:1.3, check:function(d){return (d.totalAlchemyDone||0)>=500;} },
+    { id:'med_streak_3', name:'Tâm Tĩnh',           desc:'Streak thiền 3 ngày', icon:'🧘', buff:'meditationBonus',mult:1.1, check:function(d){return (d.meditation&&d.meditation.streak||0)>=3;} },
+    { id:'med_streak_7', name:'Tâm Định',            desc:'Streak thiền 7 ngày', icon:'🌙', buff:'meditationBonus',mult:1.2, check:function(d){return (d.meditation&&d.meditation.streak||0)>=7;} },
+    { id:'med_streak_30',name:'Đại Định',            desc:'Streak thiền 30 ngày',icon:'⭐', buff:'meditationBonus',mult:1.5, check:function(d){return (d.meditation&&d.meditation.streak||0)>=30;} }
+];
 
-            toast.addEventListener('click', function() {
-                clearTimeout(timer);
-                toast.classList.add('dismissing');
-                setTimeout(function() { if (toast.parentNode) toast.remove(); }, 280);
-            });
+// ════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════
+let userData = {
+    points:0, exp:0, realmIndex:0,
+    lastLoginMidnight:0, lastCheckinMidnight:0, lastWeeklyReset:0,
+    checkinStreak:0, totalDailyTasksDone:0, totalWeeklyTasksDone:0,
+    currentDailyTasks:[],
+    weeklyTasks:{dailyDone:0,checkins:0,rw1:false,rw2:false,fullCompleted:false}
+};
+
+let plotSelecting = [false,false,false];
+let farmInterval  = null;
+let currentFarmTab = 'ruong';
+let selectedMedTime = 5;
+let isMeditating = false;
+let meditationRemaining = 300;
+let meditationTimer = null;
+let stbVisible = true;
+let activeDrawerTab = 'tab-checkin';
+
+// ════════════════════════════════════════════
+// BOOT
+// ════════════════════════════════════════════
+const logs = ["> Booting Pro System v0.4.0...", "> Loading Optimized Farm Engine...", "> Initializing Meditation Module...", "> Unlocking Achievement System...", "> System Ready"];
+let logIdx = 0;
+
+window.onload = function() {
+    document.getElementById("loader-img").src = loadingAvatars[Math.floor(Math.random()*loadingAvatars.length)];
+    var loader = document.getElementById("loader");
+    loader.style.backgroundImage = "url('"+waifuImages[Math.floor(Math.random()*waifuImages.length)]+"')";
+    function showLogs() {
+        if (logIdx < logs.length) {
+            var line = document.createElement('div'); line.className='log-line'; line.textContent = logs[logIdx];
+            document.getElementById("hacker-log").appendChild(line); logIdx++; setTimeout(showLogs, 350);
+        } else {
+            setTimeout(function(){ loader.style.opacity="0"; setTimeout(function(){ loader.style.display="none"; initApp(); },600); },600);
         }
+    }
+    showLogs();
+};
 
-        // ═══════════════════════════════════════════
-        // TOUCH ANTI-RESET HACK
-        // ═══════════════════════════════════════════
-        let touchStartY = 0;
-        document.addEventListener('touchstart', function(e) {
-            touchStartY = e.touches[0].clientY;
-        }, { passive: false });
+function initApp() {
+    document.getElementById("main-app").style.display="flex";
+    document.getElementById("main-app").style.backgroundImage="url('"+waifuImages[Math.floor(Math.random()*waifuImages.length)]+"')";
+    loadData(); initFarmData(); offlineFarmCatchup(); checkResets();
+    updateUI(); fetchUpdateLog(); startFarmTimer(); checkForUpdate();
+    renderMeditation(); renderNewUpgrades();
+}
 
-        document.addEventListener('touchmove', function(e) {
-            let touchEndY = e.touches[0].clientY;
-            let tabContainer = document.querySelector('.tab-container');
-            if (touchEndY > touchStartY && tabContainer.scrollTop === 0) {
-                e.preventDefault();
-            }
-        }, { passive: false });
-        
-        const loadingAvatars = ['img/image_4.png','img/image_5.png','img/image_6.png','img/image_7.png'];
-        const waifuImages    = ['img/image_0.png','img/image_1.png','img/image_2.png','img/image_3.png'];
-        const ICON_FIRE        = "img/image_fire1.png";
-        const ICON_BLUE_FIRE   = "img/image_fire2.png";
-        const ICON_PURPLE_FIRE = "img/image_fire3.png";
+// ════════════════════════════════════════════
+// VERSION CHECK
+// ════════════════════════════════════════════
+function checkForUpdate() {
+    fetch("https://raw.githubusercontent.com/KHACK54321/AX-Project/refs/heads/main/version.txt?v="+Date.now())
+        .then(function(r){return r.text();}).then(function(t){
+            var remote=t.trim();
+            if(isNewerVersion(remote,APP_VERSION)) showToast("🔄 Có bản cập nhật mới! Tải lại để nhận.",'info','Tải lại',function(){location.reload(true);});
+        }).catch(function(){});
+}
+function isNewerVersion(remote,local) {
+    var r=remote.split('.').map(Number),l=local.split('.').map(Number);
+    for(var i=0;i<Math.max(r.length,l.length);i++){var rv=r[i]||0,lv=l[i]||0;if(rv>lv)return true;if(rv<lv)return false;}
+    return false;
+}
 
-        const realms = [
-            { name: "Phàm Nhân", maxExp: 100 }, { name: "Ngưng Khí Tầng 1", maxExp: 200 }, { name: "Ngưng Khí Tầng 2", maxExp: 400 },
-            { name: "Ngưng Khí Tầng 3", maxExp: 600 }, { name: "Ngưng Khí Tầng 4", maxExp: 800 }, { name: "Ngưng Khí Tầng 5", maxExp: 1000 },
-            { name: "Ngưng Khí Tầng 6", maxExp: 1500 }, { name: "Ngưng Khí Tầng 7", maxExp: 2000 }, { name: "Ngưng Khí Tầng 8", maxExp: 2500 },
-            { name: "Ngưng Khí Tầng 9", maxExp: 3000 }, { name: "Ngưng Khí Tầng 10", maxExp: 4000 }, { name: "Ngưng Khí Tầng 11", maxExp: 5000 },
-            { name: "Ngưng Khí Tầng 12", maxExp: 6000 }, { name: "Ngưng Khí Tầng 13", maxExp: 8000 }, { name: "Ngưng Khí Tầng 14", maxExp: 10000 },
-            { name: "Ngưng Khí Tầng 15", maxExp: 15000 }, { name: "Trúc Cơ Sơ Kì", maxExp: 20000 }, { name: "Trúc Cơ Trung Kì", maxExp: 25000 },
-            { name: "Trúc Cơ Hậu Kì", maxExp: 30000 }, { name: "Trúc Cơ Viên Mãn", maxExp: 35000 }, { name: "Kết Đan Sơ Kì", maxExp: 40000 },
-            { name: "Kết Đan Trung Kì", maxExp: 50000 }, { name: "Kết Đan Hậu Kì", maxExp: 60000 }, { name: "Kết Đan Viên Mãn", maxExp: 70000 },
-            { name: "Nguyên Anh Sơ Kì", maxExp: 80000 }, { name: "Nguyên Anh Trung Kì", maxExp: 90000 }, { name: "Nguyên Anh Hậu Kì", maxExp: 100000 },
-            { name: "Nguyên Anh Viên Mãn", maxExp: 110000 }, { name: "Hóa Thần Sơ Kì", maxExp: 120000 }, { name: "Hóa Thần Trung Kì", maxExp: 130000 },
-            { name: "Hóa Thần Hậu Kì", maxExp: 140000 }, { name: "Hóa Thần Viên Mãn", maxExp: 150000 }, { name: "Anh Biến Sơ Kì", maxExp: 160000 },
-            { name: "Anh Biến Trung Kì", maxExp: 170000 }, { name: "Anh Biến Hậu Kì", maxExp: 180000 }, { name: "Anh Biến Viên Mãn", maxExp: 190000 },
-            { name: "Vấn Đỉnh Sơ Kỳ", maxExp: 200000 }, { name: "Vấn Đỉnh Trung Kỳ", maxExp: 220000 }, { name: "Vấn Đỉnh Hậu Kỳ", maxExp: 250000 },
-            { name: "Vấn Đỉnh Đại Viên Mãn", maxExp: 300000 }, { name: "Cảnh Giới Quá Độ Âm Hư", maxExp: 400000 }, { name: "Cảnh Giới Quá Độ Dương Thực", maxExp: 500000 }
-        ];
+// ════════════════════════════════════════════
+// DRAWER NAVIGATION
+// ════════════════════════════════════════════
+function toggleDrawer() {
+    var d=document.getElementById('side-drawer'), o=document.getElementById('drawer-overlay');
+    if(d.classList.contains('open')){d.classList.remove('open');o.classList.remove('open');}
+    else{d.classList.add('open');o.classList.add('open');}
+}
+function closeDrawer() {
+    document.getElementById('side-drawer').classList.remove('open');
+    document.getElementById('drawer-overlay').classList.remove('open');
+}
+function showTab(tabId, _unused) {
+    document.querySelectorAll('.tab-content').forEach(function(c){c.classList.remove('active');});
+    document.querySelectorAll('.drawer-item').forEach(function(b){b.classList.remove('active');});
+    document.getElementById(tabId).classList.add('active');
+    var dnav = document.getElementById('dnav-'+tabId);
+    if(dnav) dnav.classList.add('active');
+    activeDrawerTab = tabId;
+    if(tabId==='tab-farm') renderFarmAll();
+    if(tabId==='tab-achievements') renderAchievements();
+    if(tabId==='tab-meditation') renderMeditation();
+    var sc=document.getElementById('main-scroll');
+    if(sc) sc.scrollTop=0;
+    closeDrawer();
+}
 
-        let userData = {
-            points: 0, exp: 0, realmIndex: 0,
-            lastLoginMidnight: 0, lastCheckinMidnight: 0, lastWeeklyReset: 0,
-            checkinStreak: 0, totalDailyTasksDone: 0, totalWeeklyTasksDone: 0, currentDailyTasks: [],
-            weeklyTasks: { dailyDone: 0, checkins: 0, rw1: false, rw2: false, fullCompleted: false }
+// ════════════════════════════════════════════
+// SCROLL TOOLBAR
+// ════════════════════════════════════════════
+function scrollToTop() {
+    var sc=document.getElementById('main-scroll');
+    if(sc) sc.scrollTo({top:0,behavior:'smooth'});
+}
+function toggleScrollTb() {
+    stbVisible=!stbVisible;
+    var tb=document.getElementById('scroll-toolbar');
+    if(stbVisible){tb.classList.remove('hidden');}
+    else{tb.classList.add('hidden');}
+    if(!stbVisible) setTimeout(function(){tb.style.opacity='0.3';tb.style.pointerEvents='all';},100);
+}
+
+// ════════════════════════════════════════════
+// TOAST
+// ════════════════════════════════════════════
+function showToast(msg, type, btnLabel, btnAction) {
+    var container=document.getElementById('toast-container');
+    var existing=container.querySelectorAll('.toast');
+    if(existing.length>=3){existing[0].classList.add('dismissing');setTimeout(function(){if(existing[0].parentNode)existing[0].remove();},280);}
+    var toast=document.createElement('div');toast.className='toast '+(type||'info');
+    var msgSpan=document.createElement('span');msgSpan.className='toast-msg';msgSpan.textContent=msg;toast.appendChild(msgSpan);
+    if(btnLabel&&btnAction){var btn=document.createElement('button');btn.className='toast-btn';btn.textContent=btnLabel;btn.onclick=btnAction;toast.appendChild(btn);}
+    container.appendChild(toast);
+    var timer=setTimeout(function(){toast.classList.add('dismissing');setTimeout(function(){if(toast.parentNode)toast.remove();},280);},2500);
+    toast.addEventListener('click',function(){clearTimeout(timer);toast.classList.add('dismissing');setTimeout(function(){if(toast.parentNode)toast.remove();},280);});
+}
+
+// ════════════════════════════════════════════
+// MINECRAFT ACHIEVEMENT TOAST
+// ════════════════════════════════════════════
+function showMcAchievement(icon, title, desc) {
+    var el=document.getElementById('mc-achievement');
+    document.getElementById('mc-icon').textContent=icon;
+    document.getElementById('mc-title').textContent=title;
+    document.getElementById('mc-desc').textContent=desc;
+    el.classList.add('show');
+    clearTimeout(el._t);
+    el._t=setTimeout(function(){el.classList.remove('show');},3500);
+}
+
+// ════════════════════════════════════════════
+// DATA MIGRATION
+// ════════════════════════════════════════════
+function migrateData(data) {
+    var v=data.schemaVersion||0;
+    if(v<1) {
+        if(typeof data.checkinStreak==='undefined')data.checkinStreak=0;
+        if(typeof data.exp==='undefined')data.exp=0;
+        if(typeof data.realmIndex==='undefined')data.realmIndex=0;
+        if(typeof data.points==='undefined')data.points=0;
+        if(typeof data.totalDailyTasksDone==='undefined')data.totalDailyTasksDone=0;
+        if(typeof data.totalWeeklyTasksDone==='undefined')data.totalWeeklyTasksDone=0;
+        if(!data.farm) {
+            data.farm={lastSave:Date.now(),linhthao:0,plots:[{cropType:null},{cropType:null},{cropType:null}],
+                factory:{queue:[],selectedPill:0,completedPills:{0:0,1:0,2:0,3:0,4:0}},upgrades:{speedUp:false,furnaceUp:false}};
+        }
+    }
+    if(v<2) {
+        if(typeof data.linhThach==='undefined')data.linhThach=0;
+        if(typeof data.totalCropsHarvested==='undefined')data.totalCropsHarvested=0;
+        if(typeof data.totalAlchemyDone==='undefined')data.totalAlchemyDone=0;
+        if(!data.achievements)data.achievements={};
+        if(!data.meditation)data.meditation={today:0,date:'',streak:0,lastFullDate:''};
+        if(!data.farm.upgrades2)data.farm.upgrades2={plotSlot:0,queueSlot:0,craftAll:false,cropSpeed:0,sellBonus:0};
+        if(!data.farm.furnaces)data.farm.furnaces={owned:[],active:-1};
+        if(!data.farm.inventory)data.farm.inventory={0:0,1:0,2:0,3:0,4:0,5:0};
+    }
+    data.schemaVersion=SCHEMA_VERSION;
+    return data;
+}
+
+// ════════════════════════════════════════════
+// LOAD / SAVE
+// ════════════════════════════════════════════
+function loadData() {
+    var saved=localStorage.getItem(SAVE_KEY);
+    if(saved){try{var parsed=JSON.parse(saved);parsed=migrateData(parsed);
+        userData=Object.assign({},userData,parsed,{weeklyTasks:Object.assign({},userData.weeklyTasks,parsed.weeklyTasks)});}catch(e){}}
+}
+function saveData() {
+    localStorage.setItem(SAVE_KEY,JSON.stringify(userData));
+    updateUI();
+}
+function getMidnight(d){return new Date(d).setHours(0,0,0,0);}
+function getLastSundayMidnight(){var d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-d.getDay());return d.getTime();}
+
+// ════════════════════════════════════════════
+// CHECK RESETS
+// ════════════════════════════════════════════
+function checkResets() {
+    var tm=getMidnight(new Date()); var ls=getLastSundayMidnight();
+    if(userData.lastCheckinMidnight>0&&(tm-userData.lastCheckinMidnight>86400000))userData.checkinStreak=0;
+    if(userData.lastLoginMidnight!==tm){userData.currentDailyTasks=generateRandomTasks();userData.lastLoginMidnight=tm;}
+    if(userData.lastWeeklyReset!==ls){userData.weeklyTasks={dailyDone:0,checkins:0,rw1:false,rw2:false,fullCompleted:false};userData.lastWeeklyReset=ls;}
+    var todayStr=new Date().toDateString();
+    if(userData.meditation && userData.meditation.date!==todayStr) {
+        var yestStr=new Date(Date.now()-86400000).toDateString();
+        var medYest=userData.meditation.lastFullDate===yestStr;
+        if(!medYest && userData.meditation.today>=3 && userData.meditation.date===yestStr) {
+            userData.meditation.streak=(userData.meditation.streak||0)+1;
+        } else if(!medYest) {
+            var prevDate=new Date(Date.now()-86400000).toDateString();
+            if(userData.meditation.date!==prevDate) userData.meditation.streak=0;
+        }
+        userData.meditation.today=0;
+        userData.meditation.date=todayStr;
+    }
+    saveData();
+}
+
+// ════════════════════════════════════════════
+// RANDOM TASKS
+// ════════════════════════════════════════════
+function generateRandomTasks() {
+    var subjectsG11=['Toán','Ngữ Văn','Tiếng Anh','Vật lí','Hóa học','Lịch sử','Địa lí'];
+    var pool=[
+        function(){var hw=Math.floor(Math.random()*10)+1;return{desc:'Hoàn thành '+hw+' bài tập',max:hw,exp:100*hw};},
+        function(){var sub=Math.floor(Math.random()*3)+1;return{desc:'Học '+sub+' môn học',max:sub,exp:300*sub};},
+        function(){return{desc:'Không ăn đồ ngọt cả ngày',max:1,exp:1000};},
+        function(){var rs=subjectsG11[Math.floor(Math.random()*subjectsG11.length)];return{desc:'Học '+rs+' 11',max:1,exp:1000};},
+        function(){return{desc:'Dọn dẹp góc học tập',max:1,exp:700};},
+        function(){return{desc:'Đọc 10 trang sách',max:10,exp:800};},
+        function(){return{desc:'Giải 1 đề trắc nghiệm',max:1,exp:1500};},
+        function(){return{desc:'Uống đủ 2 lít nước',max:4,exp:600};}
+    ];
+    pool=pool.sort(function(){return 0.5-Math.random();}).slice(0,5);
+    return pool.map(function(gen){var t=gen();return{desc:t.desc,max:t.max,current:0,exp:t.exp,completed:false};});
+}
+
+// ════════════════════════════════════════════
+// MULTIPLIERS & BUFFS
+// ════════════════════════════════════════════
+function getMultipliers() {
+    var m={checkin:1.0,daily:1.0,weekly:1.0,total:1.0};
+    if(userData.checkinStreak>=356)m.checkin=1.3;else if(userData.checkinStreak>=100)m.checkin=1.2;else if(userData.checkinStreak>=30)m.checkin=1.1;
+    if(userData.totalDailyTasksDone>=250)m.daily=1.5;else if(userData.totalDailyTasksDone>=100)m.daily=1.3;else if(userData.totalDailyTasksDone>=50)m.daily=1.2;else if(userData.totalDailyTasksDone>=10)m.daily=1.1;
+    if(userData.totalWeeklyTasksDone>=50)m.weekly=1.5;else if(userData.totalWeeklyTasksDone>=10)m.weekly=1.2;else if(userData.totalWeeklyTasksDone>=5)m.weekly=1.1;
+    m.total=m.checkin*m.daily*m.weekly; return m;
+}
+function getAchievementBuff(buffType) {
+    var mult=1.0;
+    ACHIEVEMENTS.filter(function(a){return a.buff===buffType&&userData.achievements&&userData.achievements[a.id];})
+        .forEach(function(a){mult*=a.mult;});
+    return mult;
+}
+function getSellPrice(cropIdx) {
+    var base=CROPS[cropIdx].sellPrice;
+    var upgLevel=userData.farm.upgrades2?(userData.farm.upgrades2.sellBonus||0):0;
+    var upgMult=1+upgLevel*0.15;
+    var achMult=getAchievementBuff('sellBonus');
+    return Math.max(1,Math.floor(base*upgMult*achMult));
+}
+function getPillExp(pillIdx) {
+    var base=PILLS[pillIdx].exp;
+    var furnaceBonus=getFurnaceExpBonus();
+    var achMult=getAchievementBuff('alchemyExp');
+    return Math.floor(base*furnaceBonus*achMult);
+}
+function getFurnaceTimeReduction() {
+    if(!userData.farm.furnaces||userData.farm.furnaces.active<0)return 1.0;
+    return 1.0-FURNACES[userData.farm.furnaces.active].timeRed;
+}
+function getFurnaceExpBonus() {
+    if(!userData.farm.furnaces||userData.farm.furnaces.active<0)return 1.0;
+    return FURNACES[userData.farm.furnaces.active].expBonus;
+}
+function buffClass(val){if(val>=1.3)return'buff-13p';if(val>=1.2)return'buff-12';if(val>=1.1)return'buff-11';return'buff-10';}
+
+// ════════════════════════════════════════════
+// ADD EXP / CHECKIN
+// ════════════════════════════════════════════
+function addExp(amount) {
+    if(userData.realmIndex>=realms.length-1)return;
+    userData.exp+=Math.floor(amount*getMultipliers().total);
+    var cr=realms[userData.realmIndex];
+    while(userData.exp>=cr.maxExp && userData.realmIndex<realms.length-1) {
+        userData.exp-=cr.maxExp; userData.realmIndex++;
+        cr=realms[userData.realmIndex];
+        showToast("✦ Đột phá! → "+realms[userData.realmIndex].name,'success');
+    }
+}
+function dailyCheckIn() {
+    var tm=getMidnight(new Date()); userData.lastCheckinMidnight=tm;
+    userData.points+=1; userData.checkinStreak+=1; userData.weeklyTasks.checkins+=1;
+    addExp(500); checkWeeklyRewards(); saveData();
+    showToast("✦ Ký danh thành công! +1 Danh Vọng · Tu Vi nhận.",'success');
+}
+function doDynamicTask(idx) {
+    var t=userData.currentDailyTasks[idx]; if(t.completed)return;
+    t.current+=1;
+    if(t.current>=t.max){t.completed=true;userData.totalDailyTasksDone+=1;userData.weeklyTasks.dailyDone+=1;
+        addExp(t.exp);checkWeeklyRewards();showToast("✓ Hoàn thành: "+t.desc+"! Tu Vi nhận.",'success');}
+    saveData();
+}
+function checkWeeklyRewards() {
+    if(userData.weeklyTasks.dailyDone>=25&&!userData.weeklyTasks.rw1){userData.weeklyTasks.rw1=true;addExp(3500);showToast("✦ Mốc tuần: Chăm chỉ! +3500 Tu Vi",'success');}
+    if(userData.weeklyTasks.checkins>=7&&!userData.weeklyTasks.rw2){userData.weeklyTasks.rw2=true;addExp(2100);showToast("✦ Mốc tuần: Bền bỉ! +2100 Tu Vi",'success');}
+    if(userData.weeklyTasks.rw1&&userData.weeklyTasks.rw2&&!userData.weeklyTasks.fullCompleted){userData.weeklyTasks.fullCompleted=true;userData.totalWeeklyTasksDone+=1;}
+}
+
+// ════════════════════════════════════════════
+// CHECK ACHIEVEMENTS
+// ════════════════════════════════════════════
+function checkAchievements() {
+    if(!userData.achievements)userData.achievements={};
+    ACHIEVEMENTS.forEach(function(a){
+        if(!userData.achievements[a.id]&&a.check(userData)){
+            userData.achievements[a.id]=true;
+            showMcAchievement(a.icon,a.name,a.desc);
+            showToast("🏆 Thành tựu: "+a.name,'success');
+        }
+    });
+}
+
+// ════════════════════════════════════════════
+// UPDATE UI
+// ════════════════════════════════════════════
+function updateUI() {
+    var btnCi=document.getElementById("btn-checkin");
+    if(userData.lastCheckinMidnight===getMidnight(new Date())){btnCi.disabled=true;btnCi.innerText="Đã điểm danh";}else{btnCi.disabled=false;btnCi.innerText="Ký danh nhận thưởng";}
+    var st=document.getElementById("consecutive-days");st.innerText=userData.checkinStreak;
+    if(userData.checkinStreak>0)st.classList.add('streak-active');else st.classList.remove('streak-active');
+    document.getElementById("stat-total-daily").innerText=userData.totalDailyTasksDone;
+    document.getElementById("stat-total-weekly").innerText=userData.totalWeeklyTasksDone;
+    var ih="";
+    if(userData.checkinStreak>=356)ih='<img src="'+ICON_PURPLE_FIRE+'" class="achievement-icon" alt="">';
+    else if(userData.checkinStreak>=100)ih='<img src="'+ICON_BLUE_FIRE+'" class="achievement-icon" alt="">';
+    else if(userData.checkinStreak>=30)ih='<img src="'+ICON_FIRE+'" class="achievement-icon" alt="">';
+    document.getElementById("streak-icon").innerHTML=ih;
+    var tc=document.getElementById("daily-tasks-container");tc.innerHTML="";
+    userData.currentDailyTasks.forEach(function(t,i){
+        var txt=t.completed?"Đã xong":(t.max>1?"+1 ("+t.current+"/"+t.max+")":"Hoàn thành");
+        tc.innerHTML+='<div class="task-row"><div class="task-info"><span class="task-title">'+t.desc+'</span><span class="task-prog">Cơ bản: '+t.exp+' Tu Vi</span></div><button class="action-btn" onclick="doDynamicTask('+i+')" '+(t.completed?'disabled':'')+'>'+txt+'</button></div>';
+    });
+    document.getElementById("prog-wt1").innerText=userData.weeklyTasks.dailyDone;
+    document.getElementById("prog-wt2").innerText=userData.weeklyTasks.checkins;
+    document.getElementById("status-wt1").innerText=userData.weeklyTasks.rw1?"Đã nhận":(userData.weeklyTasks.dailyDone>=25?"Đã đạt":"Chưa đạt");
+    document.getElementById("status-wt2").innerText=userData.weeklyTasks.rw2?"Đã nhận":(userData.weeklyTasks.checkins>=7?"Đã đạt":"Chưa đạt");
+    var r=realms[userData.realmIndex];
+    document.getElementById("realm-name").innerText=r.name;
+    document.getElementById("points").innerText=userData.points;
+    if(userData.realmIndex>=realms.length-1){document.getElementById("exp").innerText="MAX";document.getElementById("max-exp").innerText="MAX";document.getElementById("exp-bar").style.width="100%";}
+    else{document.getElementById("exp").innerText=userData.exp;document.getElementById("max-exp").innerText=r.maxExp;document.getElementById("exp-bar").style.width=((userData.exp/r.maxExp)*100)+"%";}
+    var m=getMultipliers();
+    document.getElementById("buff-checkin").className="buff-text "+buffClass(m.checkin);document.getElementById("buff-checkin").innerText=m.checkin.toFixed(1)+"x";
+    document.getElementById("buff-daily").className="buff-text "+buffClass(m.daily);document.getElementById("buff-daily").innerText=m.daily.toFixed(1)+"x";
+    document.getElementById("buff-weekly").className="buff-text "+buffClass(m.weekly);document.getElementById("buff-weekly").innerText=m.weekly.toFixed(1)+"x";
+    document.getElementById("buff-total").innerText=m.total.toFixed(2)+"x";
+    document.getElementById("buff-checkin-display").innerText=m.checkin.toFixed(1)+"x";
+    var achSellBuff=getAchievementBuff('sellBonus');
+    var achAlcBuff=getAchievementBuff('alchemyExp');
+    document.getElementById("buff-alchemy-ach").className="buff-text "+buffClass(achAlcBuff);document.getElementById("buff-alchemy-ach").innerText="×"+achAlcBuff.toFixed(2);
+    document.getElementById("buff-sell-ach").className="buff-text "+buffClass(achSellBuff);document.getElementById("buff-sell-ach").innerText="×"+achSellBuff.toFixed(2);
+    document.getElementById("global-lt").innerText=userData.linhThach||0;
+    document.getElementById("global-dv").innerText=userData.points||0;
+    document.getElementById("global-exp").innerText=userData.exp||0;
+    updateFarmResourceDisplay(); renderFarmUpgrades();
+}
+
+// ════════════════════════════════════════════
+// BACKUP / RESTORE
+// ════════════════════════════════════════════
+function exportData() {
+    try{var code=btoa(encodeURIComponent(JSON.stringify(userData)));document.getElementById("backup-code").value=code;
+        if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(code).then(function(){showToast("✓ Đã copy mã sao lưu!",'success');}).catch(function(){try{document.getElementById("backup-code").select();document.execCommand('copy');showToast("✓ Đã copy!",'success');}catch(e2){showToast("Mã đã tạo! Copy thủ công.",'info');}});}
+        else{try{document.getElementById("backup-code").select();document.execCommand('copy');showToast("✓ Đã copy!",'success');}catch(e){showToast("Mã đã tạo! Copy thủ công.",'info');}}}
+    catch(e){showToast("❌ Lỗi tạo sao lưu",'error');}
+}
+function importData() {
+    var code=document.getElementById("backup-code").value.trim();if(!code)return;
+    if(!confirm("Phục hồi sẽ ghi đè dữ liệu hiện tại. Xác nhận?"))return;
+    try{var decoded=JSON.parse(decodeURIComponent(atob(code)));
+        if(typeof decoded.exp==='undefined'||typeof decoded.realmIndex==='undefined'){showToast("❌ Mã không hợp lệ",'error');return;}
+        decoded=migrateData(decoded);userData=Object.assign({},userData,decoded,{weeklyTasks:Object.assign({},userData.weeklyTasks,decoded.weeklyTasks)});
+        initFarmData();saveData();updateUI();showToast("✓ Phục hồi thành công!",'success');document.getElementById("backup-code").value="";}
+    catch(e){showToast("❌ Mã không hợp lệ",'error');}
+}
+function fetchUpdateLog() {
+    fetch("https://raw.githubusercontent.com/KHACK54321/AX-Project/refs/heads/main/updatelog.txt?v="+new Date().getTime())
+        .then(function(r){return r.text();}).then(function(t){document.getElementById("update-log-box").innerText=t;}).catch(function(){});
+}
+
+// ════════════════════════════════════════════
+// FARM INIT
+// ════════════════════════════════════════════
+function initFarmData() {
+    if(!userData.farm){
+        userData.farm={lastSave:Date.now(),linhthao:0,
+            plots:[{cropType:null},{cropType:null},{cropType:null}],
+            factory:{queue:[],selectedPill:0,completedPills:{0:0,1:0,2:0,3:0,4:0}},
+            upgrades:{speedUp:false,furnaceUp:false},
+            upgrades2:{plotSlot:0,queueSlot:0,craftAll:false,cropSpeed:0,sellBonus:0},
+            furnaces:{owned:[],active:-1},
+            inventory:{0:0,1:0,2:0,3:0,4:0,5:0}
         };
+    } else {
+        if(!userData.farm.plots)userData.farm.plots=[{cropType:null},{cropType:null},{cropType:null}];
+        if(!userData.farm.factory)userData.farm.factory={queue:[],selectedPill:0,completedPills:{0:0,1:0,2:0,3:0,4:0}};
+        if(!userData.farm.upgrades)userData.farm.upgrades={speedUp:false,furnaceUp:false};
+        if(typeof userData.farm.linhthao==='undefined')userData.farm.linhthao=0;
+        if(!userData.farm.upgrades2)userData.farm.upgrades2={plotSlot:0,queueSlot:0,craftAll:false,cropSpeed:0,sellBonus:0};
+        if(!userData.farm.furnaces)userData.farm.furnaces={owned:[],active:-1};
+        if(!userData.farm.inventory)userData.farm.inventory={0:0,1:0,2:0,3:0,4:0,5:0};
+    }
+    var maxPlots=getMaxPlots();
+    while(userData.farm.plots.length<maxPlots) userData.farm.plots.push({cropType:null,plantedAt:null,done:false});
+    
+    // Đồng bộ mảng plotSelecting cho bằng số ô đất hiện tại
+    plotSelecting=new Array(userData.farm.plots.length).fill(false);
+    
+    if(!userData.linhThach)userData.linhThach=0;
+    if(!userData.achievements)userData.achievements={};
+    if(!userData.meditation)userData.meditation={today:0,date:'',streak:0,lastFullDate:''};
+    if(!userData.totalCropsHarvested)userData.totalCropsHarvested=0;
+    if(!userData.totalAlchemyDone)userData.totalAlchemyDone=0;
+}
 
-        const CROPS = [
-            { name: "Tụ Linh Thảo",   emoji: "🌿", duration: 3600,   yield: 20,   desc: "1h · +20🌿" },
-            { name: "Thanh Tâm Thảo", emoji: "🍃", duration: 14400,  yield: 80,   desc: "4h · +80🌿" },
-            { name: "Luyện Khí Thảo", emoji: "🌀", duration: 57600,  yield: 350,  desc: "16h · +350🌿" },
-            { name: "Hồi Linh Thảo",  emoji: "💧", duration: 86400,  yield: 800,  desc: "24h · +800🌿" },
-            { name: "Ngũ Sắc Thảo",   emoji: "🌈", duration: 604800, yield: 5000, desc: "7 ngày · +5000🌿" }
-        ];
+// ════════════════════════════════════════════
+// FARM COMPUTED VALUES
+// ════════════════════════════════════════════
+function getMaxPlots(){return 3+(userData.farm.upgrades2?(userData.farm.upgrades2.plotSlot||0):0);}
+function getMaxQueue(){return 5+(userData.farm.upgrades2?(userData.farm.upgrades2.queueSlot||0):0);}
+function getCropSpeedMult(){var lvl=userData.farm.upgrades2?(userData.farm.upgrades2.cropSpeed||0):0;return Math.max(0.1,1-lvl*0.1);}
+function getCropDuration(ci){
+    var b=CROPS[ci].duration;
+    var oldRed=userData.farm.upgrades.speedUp?0.8:1.0;
+    var newSpd=getCropSpeedMult();
+    return Math.max(60,Math.floor(b*oldRed*newSpd));
+}
+function getFactoryDuration(pillIdx){
+    var idx=(pillIdx!==undefined&&pillIdx!==null)?pillIdx:0;
+    var base=PILLS[idx].craftDuration;
+    var oldRed=userData.farm.upgrades.furnaceUp?0.7:1.0;
+    var furnaceRed=getFurnaceTimeReduction();
+    return Math.max(60,Math.floor(base*oldRed*furnaceRed));
+}
 
-        const PILLS = [
-            { name: "Tụ Linh Đan",   emoji: "💊", cost: 30,   craftDuration: 7200,   exp: 100 },
-            { name: "Hồi Linh Đan",  emoji: "💊", cost: 100,  craftDuration: 21600,  exp: 400 },
-            { name: "Thanh Tâm Đan", emoji: "🌀", cost: 300,  craftDuration: 64800,  exp: 1500 },
-            { name: "Luyện Khí Đan", emoji: "🌟", cost: 800,  craftDuration: 172800, exp: 5000 },
-            { name: "Sinh Cơ Đan",   emoji: "✨", cost: 2000, craftDuration: 604800, exp: 15000 }
-        ];
+// ════════════════════════════════════════════
+// FORMAT TIME
+// ════════════════════════════════════════════
+function fmt(s){
+    if(s<=0)return"00:00"; s=Math.floor(s);
+    if(s>=86400){var d=Math.floor(s/86400),h=Math.floor((s%86400)/3600),m=Math.floor((s%3600)/60);return d+"ngày "+h+"h "+m+"ph";}
+    var h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;
+    if(h>0)return String(h).padStart(2,'0')+":"+String(m).padStart(2,'0')+":"+String(sec).padStart(2,'0');
+    return String(m).padStart(2,'0')+":"+String(sec).padStart(2,'0');
+}
+function fmtHuman(s){
+    s=Math.floor(s);if(s>=86400){var d=Math.floor(s/86400),h=Math.floor((s%86400)/3600);return"~"+d+"d "+h+"h";}
+    var h=Math.floor(s/3600),m=Math.floor((s%3600)/60);if(h>0)return"~"+h+"h "+m+"m";return"~"+m+"m";
+}
+function fmtDuration(s){if(s>=86400)return Math.floor(s/86400)+" ngày";if(s>=3600)return Math.floor(s/3600)+"h";return Math.floor(s/60)+"ph";}
 
-        const MAX_QUEUE = 5;
-
-        let plotSelecting = [false, false, false];
-        let farmInterval  = null;
-
-        const logs = ["> Booting Pro System...", "> Optimizing User Interface...", "> Securing Data Standard...", "> Loading Cloud Assets...", "> System Initialization Complete."];
-        let logIdx = 0;
-
-        window.onload = function() {
-            document.getElementById("loader-img").src = loadingAvatars[Math.floor(Math.random() * loadingAvatars.length)];
-            var loader = document.getElementById("loader");
-            loader.style.backgroundImage = "url('" + waifuImages[Math.floor(Math.random() * waifuImages.length)] + "')";
-            function showLogs() {
-                if (logIdx < logs.length) {
-                    var line = document.createElement('div'); line.className = 'log-line'; line.textContent = logs[logIdx];
-                    document.getElementById("hacker-log").appendChild(line); logIdx++; setTimeout(showLogs, 350);
-                } else {
-                    setTimeout(function() { loader.style.opacity = "0"; setTimeout(function() { loader.style.display = "none"; initApp(); }, 600); }, 600);
-                }
-            }
-            showLogs();
-        };
-
-        // ═══════════════════════════════════════════
-        // VERSION CHECK (non-blocking)
-        // ═══════════════════════════════════════════
-        function checkForUpdate() {
-            fetch("https://raw.githubusercontent.com/KHACK54321/AX-Project/refs/heads/main/version.txt?v=" + Date.now())
-                .then(function(r) { return r.text(); })
-                .then(function(t) {
-                    var remote = t.trim();
-                    if (isNewerVersion(remote, APP_VERSION)) {
-                        showToast("🔄 Có bản cập nhật mới! Tải lại để nhận.", 'info', 'Tải lại', function() { location.reload(true); });
-                    }
-                })
-                .catch(function() { /* offline or fetch failed — silent */ });
+// ════════════════════════════════════════════
+// OFFLINE CATCHUP
+// ════════════════════════════════════════════
+function offlineFarmCatchup() {
+    if(!userData.farm||!userData.farm.lastSave)return;
+    var now=Date.now(),changed=false;
+    userData.farm.plots.forEach(function(plot){
+        if(plot.cropType!==null&&!plot.done&&plot.plantedAt){
+            if(now-plot.plantedAt>=getCropDuration(plot.cropType)*1000){plot.done=true;changed=true;}
         }
+    });
+    var keepGoing=true;
+    while(keepGoing&&userData.farm.factory.queue.length>0){
+        var craft=userData.farm.factory.queue[0];
+        var pillIdx=(craft.pillType!==undefined)?craft.pillType:0;
+        var factDurMs=getFactoryDuration(pillIdx)*1000;
+        if(craft.startedAt&&now>=craft.startedAt+factDurMs){
+            userData.farm.factory.completedPills[pillIdx]=(userData.farm.factory.completedPills[pillIdx]||0)+1;
+            var nextStart=craft.startedAt+factDurMs;
+            userData.farm.factory.queue.shift();
+            if(userData.farm.factory.queue.length>0&&!userData.farm.factory.queue[0].startedAt)userData.farm.factory.queue[0].startedAt=nextStart;
+            changed=true;
+        }else{keepGoing=false;}
+    }
 
-        function isNewerVersion(remote, local) {
-            var r = remote.split('.').map(Number);
-            var l = local.split('.').map(Number);
-            for (var i = 0; i < Math.max(r.length, l.length); i++) {
-                var rv = r[i] || 0, lv = l[i] || 0;
-                if (rv > lv) return true;
-                if (rv < lv) return false;
-            }
-            return false;
+    // ==== THÊM ĐOẠN CHECK OFFLINE AFK NÀY VÀO ĐÂY ====
+    if (userData.meditation && userData.meditation.active && userData.meditation.startedAt) {
+        var durMs = userData.meditation.durationMins * 60 * 1000;
+        if (now >= userData.meditation.startedAt + durMs) {
+            completeMeditation(); 
+            changed = false; // completeMeditation đã tự gọi saveData() rồi
         }
+    }
+    // ===================================================
 
-        // ═══════════════════════════════════════════
-        // DATA MIGRATION
-        // ═══════════════════════════════════════════
-        function migrateData(data) {
-            var v = data.schemaVersion || 0;
+    userData.farm.lastSave=now;
+    if(changed)localStorage.setItem(SAVE_KEY,JSON.stringify(userData));
+}
 
-            // Migration 0 → 1: ensure all base fields exist
-            if (v < 1) {
-                if (typeof data.checkinStreak === 'undefined')       data.checkinStreak = 0;
-                if (typeof data.exp === 'undefined')                 data.exp = 0;
-                if (typeof data.realmIndex === 'undefined')          data.realmIndex = 0;
-                if (typeof data.points === 'undefined')              data.points = 0;
-                if (typeof data.totalDailyTasksDone === 'undefined') data.totalDailyTasksDone = 0;
-                if (typeof data.totalWeeklyTasksDone === 'undefined') data.totalWeeklyTasksDone = 0;
+// ════════════════════════════════════════════
+// FARM ACTIONS — PLANTING
+// ════════════════════════════════════════════
+function plantCrop(pIdx,cIdx) {
+    var plot=userData.farm.plots[pIdx];if(plot.cropType!==null)return;
+    plot.cropType=cIdx;plot.plantedAt=Date.now();plot.done=false;
+    plotSelecting[pIdx]=false;
+    userData.farm.lastSave=Date.now();
+    saveData();renderFarmPlots();
+    showFarmStatus("🌱 Đã trồng "+CROPS[cIdx].name+"!");
+}
+function harvestPlot(pIdx) {
+    var plot=userData.farm.plots[pIdx];if(!plot.done)return;
+    var cIdx=plot.cropType;
+    userData.farm.inventory[cIdx]=(userData.farm.inventory[cIdx]||0)+1;
+    userData.totalCropsHarvested=(userData.totalCropsHarvested||0)+1;
+    plot.cropType=null;plot.plantedAt=null;plot.done=false;
+    userData.farm.lastSave=Date.now();
+    checkAchievements();
+    saveData();renderFarmPlots();updateFarmResourceDisplay();
+    showFarmStatus("🌾 Thu hoạch "+CROPS[cIdx].name+"! Xem Kho để bán/dùng.");
+}
+function togglePlotSelect(idx){plotSelecting[idx]=!plotSelecting[idx];renderFarmPlots();}
 
-                // Add farm if a backup predates the farm feature
-                if (!data.farm) {
-                    data.farm = {
-                        lastSave: Date.now(), linhthao: 0,
-                        plots: [{cropType:null},{cropType:null},{cropType:null}],
-                        factory: { queue: [], selectedPill: 0, completedPills: {0:0,1:0,2:0,3:0,4:0} },
-                        upgrades: { speedUp: false, furnaceUp: false }
-                    };
-                } else {
-                    // Patch sub-fields that may be missing in intermediate backups
-                    if (!data.farm.factory) {
-                        data.farm.factory = { queue: [], selectedPill: 0, completedPills: {0:0,1:0,2:0,3:0,4:0} };
-                    } else {
-                        if (!data.farm.factory.completedPills)
-                            data.farm.factory.completedPills = {0:0,1:0,2:0,3:0,4:0};
-                        if (typeof data.farm.factory.selectedPill === 'undefined')
-                            data.farm.factory.selectedPill = 0;
-                    }
-                    if (!data.farm.upgrades)
-                        data.farm.upgrades = { speedUp: false, furnaceUp: false };
-                    if (typeof data.farm.linhthao === 'undefined')
-                        data.farm.linhthao = 0;
-                }
-            }
-
-            // Future migrations go here as: if (v < 2) { ... }
-
-            data.schemaVersion = SCHEMA_VERSION;
-            return data;
+// ════════════════════════════════════════════
+// FARM ACTIONS — INVENTORY
+// ════════════════════════════════════════════
+function sellCrop(cropIdx, amount) {
+    if(!amount||amount<1)return;
+    var inv=userData.farm.inventory[cropIdx]||0;
+    if(inv<amount){showFarmStatus("❌ Không đủ trong kho!");return;}
+    var priceEach=getSellPrice(cropIdx);
+    var total=priceEach*amount;
+    userData.farm.inventory[cropIdx]=inv-amount;
+    userData.linhThach=(userData.linhThach||0)+total;
+    userData.farm.lastSave=Date.now();
+    saveData();renderInventory();updateFarmResourceDisplay();
+    showFarmStatus("💎 Bán "+amount+" "+CROPS[cropIdx].name+" → +"+total+" 💎!");
+    updateGlobalLT();
+}
+function useCrop(cropIdx, amount) {
+    if(!amount||amount<1)return;
+    var inv=userData.farm.inventory[cropIdx]||0;
+    if(inv<amount){showFarmStatus("❌ Không đủ trong kho!");return;}
+    var yld=CROPS[cropIdx].yield*amount;
+    userData.farm.inventory[cropIdx]=inv-amount;
+    userData.farm.linhthao=(userData.farm.linhthao||0)+yld;
+    userData.farm.lastSave=Date.now();
+    saveData();renderInventory();updateFarmResourceDisplay();
+    showFarmStatus("🌿 Chuyển "+amount+" "+CROPS[cropIdx].name+" → +"+yld+" 🌿!");
+}
+function renderInventory() {
+    var el=document.getElementById('inventory-container');if(!el)return;
+    var inv=userData.farm.inventory||{};
+    var hasItems=false;
+    var html='';
+    for(var i=0;i<CROPS.length;i++){
+        var count=inv[i]||0;
+        if(count>0){hasItems=true;
+            var sp=getSellPrice(i);
+            html+='<div class="inv-row">'+
+                '<img src="'+CROPS[i].img+'" class="inv-img" alt="'+CROPS[i].emoji+'" onerror="this.outerHTML=\'<span style=\\\'font-size:32px;flex-shrink:0;\\\'>'+CROPS[i].emoji+'</span>\'">'+
+                '<div class="inv-info"><div class="inv-name">'+CROPS[i].name+'</div>'+
+                '<div class="inv-count">×'+count+' · Giá bán: '+sp+'💎/cái · Yield: '+CROPS[i].yield+'🌿/cái</div></div>'+
+                '<div class="inv-btns">'+
+                '<button class="inv-btn sell-btn" onclick="sellCrop('+i+','+count+')">Bán Tất<br><small>+'+sp*count+'💎</small></button>'+
+                '<button class="inv-btn use-btn" onclick="useCrop('+i+','+count+')">Dùng Tất<br><small>+'+CROPS[i].yield*count+'🌿</small></button>'+
+                '</div></div>';
         }
+    }
+    if(!hasItems)html='<div style="text-align:center;color:var(--text-muted);padding:30px 0;font-size:13px;">Kho trống. Hãy trồng và thu hoạch cây!</div>';
+    el.innerHTML=html;
+}
 
-        function initApp() {
-            document.getElementById("main-app").style.display = "flex";
-            document.getElementById("main-app").style.backgroundImage = "url('" + waifuImages[Math.floor(Math.random() * waifuImages.length)] + "')";
-            loadData(); initFarmData(); offlineFarmCatchup(); checkResets(); updateUI(); fetchUpdateLog(); startFarmTimer();
-            checkForUpdate(); // non-blocking update check
-        }
+// ════════════════════════════════════════════
+// FARM ACTIONS — ALCHEMY
+// ════════════════════════════════════════════
+function selectPill(idx){
+    userData.farm.factory.selectedPill=idx;
+    userData.farm.lastSave=Date.now();
+    localStorage.setItem(SAVE_KEY,JSON.stringify(userData));
+    renderPillSelector();updateFarmResourceDisplay();
+}
+function startCraft(){
+    var selectedPill=userData.farm.factory.selectedPill||0;
+    var pill=PILLS[selectedPill];
+    var maxQ=getMaxQueue();
+    if(userData.farm.factory.queue.length>=maxQ){showFarmStatus("❌ Hàng chờ đã đầy!");return;}
+    if((userData.farm.linhthao||0)<pill.cost){showFarmStatus("❌ Thiếu "+pill.cost+" 🌿!");return;}
+    userData.farm.linhthao-=pill.cost;
+    userData.farm.factory.queue.push({pillType:selectedPill,startedAt:userData.farm.factory.queue.length===0?Date.now():null});
+    userData.farm.lastSave=Date.now();
+    saveData();updateFarmResourceDisplay();renderFactoryQueue();renderPillSelector();
+    showFarmStatus("⚗️ Bắt đầu luyện đan!");
+}
+function startCraftAll(){
+    var selectedPill=userData.farm.factory.selectedPill||0;
+    var pill=PILLS[selectedPill];
+    var maxQ=getMaxQueue();
+    var added=0;
+    while(userData.farm.factory.queue.length<maxQ&&(userData.farm.linhthao||0)>=pill.cost){
+        userData.farm.linhthao-=pill.cost;
+        userData.farm.factory.queue.push({pillType:selectedPill,startedAt:userData.farm.factory.queue.length===1?Date.now():null});
+        added++;
+    }
+    if(added===0){showFarmStatus("❌ Hàng đầy hoặc thiếu 🌿!");return;}
+    userData.farm.lastSave=Date.now();
+    saveData();updateFarmResourceDisplay();renderFactoryQueue();renderPillSelector();
+    showFarmStatus("🔄 Đã nạp "+added+" Đan!");
+}
+function claimPills(){
+    var cp=userData.farm.factory.completedPills;var total=0;
+    PILLS.forEach(function(pill,idx){
+        var count=cp[idx]||0;
+        if(count>0){var expEach=getPillExp(idx);addExp(expEach*count);total+=count;cp[idx]=0;}
+    });
+    if(total===0){showFarmStatus("❌ Chưa có Đan Dược!");return;}
+    userData.totalAlchemyDone=(userData.totalAlchemyDone||0)+total;
+    checkAchievements();
+    saveData();updateFarmResourceDisplay();updateUI();
+    showFarmStatus("💊 Dùng "+total+" Đan Dược! Tu Vi nhận.");
+    var tlEl=document.getElementById('total-alchemy-lbl');
+    if(tlEl)tlEl.textContent="Tổng đan đã luyện: "+(userData.totalAlchemyDone||0);
+}
 
-        function showTab(tabId, btn) {
-            document.querySelectorAll('.tab-content').forEach(function(c) { c.classList.remove('active'); });
-            document.querySelectorAll('.nav-item').forEach(function(b) { b.classList.remove('active'); });
-            document.getElementById(tabId).classList.add('active'); btn.classList.add('active');
-            if (tabId === 'tab-farm') renderFarmAll();
-        }
+// ════════════════════════════════════════════
+// FARM ACTIONS — UPGRADES
+// ════════════════════════════════════════════
+function buyUpgrade(key,cost){
+    if(userData.farm.upgrades[key]){showFarmStatus("❌ Đã sở hữu!");return;}
+    if(userData.points<cost){showFarmStatus("❌ Cần "+cost+" Danh Vọng!");return;}
+    userData.points-=cost;userData.farm.upgrades[key]=true;
+    saveData();renderFarmUpgrades();renderPillSelector();updateUI();
+    showFarmStatus("✅ Nâng cấp thành công!");
+}
+function buyNewUpgrade(id){
+    var upg=FARM_UPGRADES2.find(function(u){return u.id===id;});if(!upg)return;
+    var currentLevel=userData.farm.upgrades2[id]||0;
+    if(currentLevel>=upg.maxLevel){showFarmStatus("❌ Đã tối đa!");return;}
+    var boolUpg=upg.maxLevel===1;
+    if(boolUpg&&userData.farm.upgrades2[id]===true){showFarmStatus("❌ Đã sở hữu!");return;}
+    var cost=Math.round(upg.baseCost*Math.pow(upg.costMult,boolUpg?0:currentLevel));
+    if((userData.linhThach||0)<cost){showFarmStatus("❌ Cần "+cost+" 💎 Linh Thạch!");return;}
+    userData.linhThach-=cost;
+    if(boolUpg){userData.farm.upgrades2[id]=true;}else{userData.farm.upgrades2[id]=currentLevel+1;}
+    if(id==='plotSlot'){
+        userData.farm.plots.push({cropType:null,plantedAt:null,done:false});
+        plotSelecting.push(false); // Fix: Mở rộng mảng plotSelecting cho ô đất mới
+    }
+    userData.farm.lastSave=Date.now();
+    saveData();renderNewUpgrades();renderFarmAll();updateGlobalLT();
+    showFarmStatus("✅ Nâng cấp "+upg.name+" thành công!");
+}
 
-        function generateRandomTasks() {
-            var subjectsG11 = ['Toán','Ngữ Văn','Tiếng Anh','Vật lí','Hóa học','Lịch sử','Địa lí'];
-            var pool = [
-                function() { var hw = Math.floor(Math.random()*10)+1; return { desc: 'Hoàn thành ' + hw + ' bài tập', max: hw, exp: 100*hw }; },
-                function() { var sub = Math.floor(Math.random()*3)+1; return { desc: 'Học ' + sub + ' môn học', max: sub, exp: 300*sub }; },
-                function() { return { desc: 'Không ăn đồ ngọt cả ngày', max: 1, exp: 1000 }; },
-                function() { var rs = subjectsG11[Math.floor(Math.random()*subjectsG11.length)]; return { desc: 'Học ' + rs + ' 11', max: 1, exp: 1000 }; },
-                function() { return { desc: 'Dọn dẹp góc học tập', max: 1, exp: 700 }; },
-                function() { return { desc: 'Đọc 10 trang sách', max: 10, exp: 800 }; },
-                function() { return { desc: 'Giải 1 đề trắc nghiệm', max: 1, exp: 1500 }; },
-                function() { return { desc: 'Uống đủ 2 lít nước', max: 4, exp: 600 }; }
-            ];
-            pool = pool.sort(function() { return 0.5 - Math.random(); }).slice(0, 5);
-            return pool.map(function(gen) { var t = gen(); return { desc: t.desc, max: t.max, current: 0, exp: t.exp, completed: false }; });
-        }
+// ════════════════════════════════════════════
+// FARM ACTIONS — SHOP (FURNACES)
+// ════════════════════════════════════════════
+function buyFurnace(idx){
+    var f=FURNACES[idx];
+    if(userData.farm.furnaces.owned.indexOf(idx)!==-1){showFarmStatus("❌ Đã sở hữu lò này!");return;}
+    if((userData.linhThach||0)<f.price){showFarmStatus("❌ Cần "+f.price+" 💎!");return;}
+    userData.linhThach-=f.price;
+    userData.farm.furnaces.owned.push(idx);
+    userData.farm.lastSave=Date.now();
+    saveData();renderShop();updateGlobalLT();
+    showFarmStatus("✅ Mua "+f.name+" thành công!");
+}
+function activateFurnace(idx){
+    if(userData.farm.furnaces.owned.indexOf(idx)===-1){showFarmStatus("❌ Chưa sở hữu!");return;}
+    userData.farm.furnaces.active=idx;
+    userData.farm.lastSave=Date.now();
+    saveData();renderShop();renderActiveFurnace();renderPillSelector();
+    showFarmStatus("🔥 Kích hoạt "+FURNACES[idx].name+"!");
+}
+function renderShop(){
+    var el=document.getElementById('shop-furnace-container');if(!el)return;
+    var lt=userData.linhThach||0;
+    var html='';
+    FURNACES.forEach(function(f,i){
+        var owned=userData.farm.furnaces.owned.indexOf(i)!==-1;
+        var active=userData.farm.furnaces.active===i;
+        var cls='furnace-card'+(active?' active-card':owned?' owned-card':'');
+        html+='<div class="'+cls+'">'+
+            '<img src="'+f.img+'" class="furnace-img" alt="'+f.name+'" onerror="this.style.opacity=\'0.4\'">'+
+            '<div class="furnace-info"><div class="furnace-name">'+f.name+'</div>'+
+            '<div class="furnace-stats">'+f.desc+'</div>'+
+            '<div class="furnace-stats" style="color:var(--gold);margin-top:4px;">Giá: '+f.price+' 💎'+(owned?' (Đã mua)':'')+'</div></div>'+
+            '<div class="furnace-btns">'+
+            (owned?'':('<button class="furnace-btn buy-furnace-btn" onclick="buyFurnace('+i+')" '+(lt<f.price?'title="Cần '+f.price+' 💎"':'')+'>'+
+                (lt<f.price?'🔒 Mua':'Mua<br>'+f.price+'💎')+'</button>'))+
+            (owned?('<button class="furnace-btn use-furnace-btn'+(active?' active-furnace':'')+'" onclick="activateFurnace('+i+')">'+
+                (active?'✓ Đang dùng':'Kích hoạt')+'</button>'):'')+'</div></div>';
+    });
+    var ltEl=document.getElementById('shop-lt-display');if(ltEl)ltEl.textContent=lt;
+    el.innerHTML=html;
+}
+function renderActiveFurnace(){
+    var el=document.getElementById('active-furnace-display');if(!el)return;
+    var active=userData.farm.furnaces?userData.farm.furnaces.active:-1;
+    if(active<0){el.innerHTML='<div style="font-size:11px;color:var(--text-muted);text-align:center;padding:8px 0;margin-bottom:8px;">Không có lò (đi Shop để mua)</div>';return;}
+    var f=FURNACES[active];
+    el.innerHTML='<div class="active-furnace-bar"><img src="'+f.img+'" onerror="this.style.display=\'none\'"><div><div class="fname">'+f.name+'</div><div class="fstats">'+f.desc+'</div></div></div>';
+}
 
-        // ═══════════════════════════════════════════
-        // DATA LOAD / SAVE
-        // ═══════════════════════════════════════════
-        function loadData() {
-            var saved = localStorage.getItem("OppoWaifuDataCloudPro");
-            if (saved) {
-                try {
-                    var parsed = JSON.parse(saved);
-                    parsed = migrateData(parsed);
-                    userData = Object.assign({}, userData, parsed, { weeklyTasks: Object.assign({}, userData.weeklyTasks, parsed.weeklyTasks) });
-                } catch(e) { /* corrupt data — keep defaults */ }
-            }
-        }
+// ════════════════════════════════════════════
+// FARM SHOW STATUS
+// ════════════════════════════════════════════
+function showFarmStatus(msg){
+    var el=document.getElementById('farm-status');if(!el)return;
+    el.textContent=msg;el.style.opacity='1';
+    clearTimeout(el._t);el._t=setTimeout(function(){el.style.opacity='0';},2500);
+}
 
-        function saveData() { localStorage.setItem("OppoWaifuDataCloudPro", JSON.stringify(userData)); updateUI(); }
+// ════════════════════════════════════════════
+// FARM SUB-TABS
+// ════════════════════════════════════════════
+function showFarmTab(id, el) {
+    document.querySelectorAll('.farm-sub-tab-content').forEach(function(c){c.classList.remove('active');});
+    document.querySelectorAll('.farm-sub-btn').forEach(function(b){b.classList.remove('active');});
+    document.getElementById('farm-sub-'+id).classList.add('active');
+    if(el)el.classList.add('active');
+    currentFarmTab=id;
+    if(id==='ruong'){renderFarmPlots();updatePlotCountLabel();}
+    if(id==='lo'){renderFactoryQueue();renderPillSelector();renderActiveFurnace();updateMaxQueueLabel();}
+    if(id==='kho')renderInventory();
+    if(id==='shop')renderShop();
+    if(id==='nangcap'){renderFarmUpgrades();renderNewUpgrades();}
+}
+function updatePlotCountLabel(){
+    var el=document.getElementById('plot-count-lbl');
+    if(el)el.textContent=userData.farm.plots.length+"/"+getMaxPlots()+" ô";
+}
+function updateMaxQueueLabel(){
+    var el=document.getElementById('max-queue-lbl');
+    if(el)el.textContent=getMaxQueue();
+}
+function updateGlobalLT(){
+    document.getElementById('global-lt').textContent=userData.linhThach||0;
+    var flt=document.getElementById('farm-linhthach');if(flt)flt.textContent=userData.linhThach||0;
+    var mlt=document.getElementById('med-lt-display');if(mlt)mlt.textContent=(userData.linhThach||0)+' 💎';
+    var slt=document.getElementById('shop-lt-display');if(slt)slt.textContent=userData.linhThach||0;
+}
 
-        function getMidnight(d) { return new Date(d).setHours(0,0,0,0); }
-        function getLastSundayMidnight() { var d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate()-d.getDay()); return d.getTime(); }
+// ════════════════════════════════════════════
+// RENDER FARM ALL
+// ════════════════════════════════════════════
+function renderFarmAll(){
+    renderFarmPlots();renderFactoryQueue();renderFarmUpgrades();
+    updateFarmResourceDisplay();renderPillSelector();renderActiveFurnace();
+    renderNewUpgrades();updatePlotCountLabel();updateMaxQueueLabel();
+    if(currentFarmTab==='kho')renderInventory();
+    if(currentFarmTab==='shop')renderShop();
+}
 
-        function checkResets() {
-            var tm = getMidnight(new Date()); var ls = getLastSundayMidnight();
-            if (userData.lastCheckinMidnight > 0 && (tm - userData.lastCheckinMidnight > 86400000)) userData.checkinStreak = 0;
-            if (userData.lastLoginMidnight !== tm) { userData.currentDailyTasks = generateRandomTasks(); userData.lastLoginMidnight = tm; }
-            if (userData.lastWeeklyReset !== ls) { userData.weeklyTasks = { dailyDone:0, checkins:0, rw1:false, rw2:false, fullCompleted:false }; userData.lastWeeklyReset = ls; }
-            saveData();
-        }
-
-        function getMultipliers() {
-            var m = { checkin:1.0, daily:1.0, weekly:1.0, total:1.0 };
-            if (userData.checkinStreak >= 356) m.checkin = 1.3; else if (userData.checkinStreak >= 100) m.checkin = 1.2; else if (userData.checkinStreak >= 30) m.checkin = 1.1;
-            if (userData.totalDailyTasksDone >= 250) m.daily = 1.5; else if (userData.totalDailyTasksDone >= 100) m.daily = 1.3; else if (userData.totalDailyTasksDone >= 50) m.daily = 1.2; else if (userData.totalDailyTasksDone >= 10) m.daily = 1.1;
-            if (userData.totalWeeklyTasksDone >= 50) m.weekly = 1.5; else if (userData.totalWeeklyTasksDone >= 10) m.weekly = 1.2; else if (userData.totalWeeklyTasksDone >= 5) m.weekly = 1.1;
-            m.total = m.checkin * m.daily * m.weekly; return m;
-        }
-
-        function addExp(amount) {
-            if (userData.realmIndex >= realms.length - 1) return;
-            userData.exp += Math.floor(amount * getMultipliers().total);
-            var cr = realms[userData.realmIndex];
-            if (userData.exp >= cr.maxExp) {
-                userData.exp -= cr.maxExp; userData.realmIndex++;
-                showToast("✦ Đột phá! → " + realms[userData.realmIndex].name, 'success');
-            }
-        }
-
-        function dailyCheckIn() {
-            var tm = getMidnight(new Date()); userData.lastCheckinMidnight = tm;
-            userData.points += 1; userData.checkinStreak += 1; userData.weeklyTasks.checkins += 1;
-            addExp(500); checkWeeklyRewards(); saveData();
-            showToast("✦ Ký danh thành công! +1 Danh Vọng · Tu Vi nhận.", 'success');
-        }
-
-        function doDynamicTask(idx) {
-            var t = userData.currentDailyTasks[idx]; if (t.completed) return;
-            t.current += 1;
-            if (t.current >= t.max) {
-                t.completed = true; userData.totalDailyTasksDone += 1; userData.weeklyTasks.dailyDone += 1;
-                addExp(t.exp); checkWeeklyRewards();
-                showToast("✓ Hoàn thành: " + t.desc + "! Tu Vi nhận.", 'success');
-            }
-            saveData();
-        }
-
-        function checkWeeklyRewards() {
-            if (userData.weeklyTasks.dailyDone >= 25 && !userData.weeklyTasks.rw1) {
-                userData.weeklyTasks.rw1 = true; addExp(3500);
-                showToast("✦ Mốc tuần: Chăm chỉ đã hoàn thành! +3500 Tu Vi", 'success');
-            }
-            if (userData.weeklyTasks.checkins >= 7 && !userData.weeklyTasks.rw2) {
-                userData.weeklyTasks.rw2 = true; addExp(2100);
-                showToast("✦ Mốc tuần: Bền bỉ đã hoàn thành! +2100 Tu Vi", 'success');
-            }
-            if (userData.weeklyTasks.rw1 && userData.weeklyTasks.rw2 && !userData.weeklyTasks.fullCompleted) {
-                userData.weeklyTasks.fullCompleted = true; userData.totalWeeklyTasksDone += 1;
-            }
-        }
-
-        function buffClass(val) { if (val >= 1.3) return 'buff-13p'; if (val >= 1.2) return 'buff-12'; if (val >= 1.1) return 'buff-11'; return 'buff-10'; }
-
-        function updateUI() {
-            var btnCi = document.getElementById("btn-checkin");
-            if (userData.lastCheckinMidnight === getMidnight(new Date())) { btnCi.disabled = true; btnCi.innerText = "Đã điểm danh"; } else { btnCi.disabled = false; btnCi.innerText = "Ký danh nhận thưởng"; }
-
-            var st = document.getElementById("consecutive-days"); st.innerText = userData.checkinStreak;
-            if (userData.checkinStreak > 0) st.classList.add('streak-active'); else st.classList.remove('streak-active');
-
-            document.getElementById("stat-total-daily").innerText  = userData.totalDailyTasksDone;
-            document.getElementById("stat-total-weekly").innerText = userData.totalWeeklyTasksDone;
-
-            var ih = "";
-            if (userData.checkinStreak >= 356) ih = '<img src="' + ICON_PURPLE_FIRE + '" class="achievement-icon" alt="Fire">';
-            else if (userData.checkinStreak >= 100) ih = '<img src="' + ICON_BLUE_FIRE + '" class="achievement-icon" alt="Fire">';
-            else if (userData.checkinStreak >= 30)  ih = '<img src="' + ICON_FIRE + '" class="achievement-icon" alt="Fire">';
-            document.getElementById("streak-icon").innerHTML = ih;
-
-            var tc = document.getElementById("daily-tasks-container"); tc.innerHTML = "";
-            userData.currentDailyTasks.forEach(function(t, i) {
-                var txt = t.completed ? "Đã xong" : (t.max > 1 ? "+1 (" + t.current + "/" + t.max + ")" : "Hoàn thành");
-                tc.innerHTML += '<div class="task-row"><div class="task-info"><span class="task-title">' + t.desc + '</span><span class="task-prog">Cơ bản: ' + t.exp + ' Tu Vi</span></div><button class="action-btn" onclick="doDynamicTask(' + i + ')" ' + (t.completed ? 'disabled' : '') + '>' + txt + '</button></div>';
-            });
-
-            document.getElementById("prog-wt1").innerText = userData.weeklyTasks.dailyDone;
-            document.getElementById("prog-wt2").innerText = userData.weeklyTasks.checkins;
-            document.getElementById("status-wt1").innerText = userData.weeklyTasks.rw1 ? "Đã nhận" : (userData.weeklyTasks.dailyDone >= 25 ? "Đã đạt" : "Chưa đạt");
-            document.getElementById("status-wt2").innerText = userData.weeklyTasks.rw2 ? "Đã nhận" : (userData.weeklyTasks.checkins >= 7 ? "Đã đạt" : "Chưa đạt");
-
-            var r = realms[userData.realmIndex];
-            document.getElementById("realm-name").innerText = r.name; document.getElementById("points").innerText = userData.points;
-            if (userData.realmIndex >= realms.length - 1) {
-                document.getElementById("exp").innerText = "MAX"; document.getElementById("max-exp").innerText = "MAX"; document.getElementById("exp-bar").style.width = "100%";
-            } else {
-                document.getElementById("exp").innerText = userData.exp; document.getElementById("max-exp").innerText = r.maxExp; document.getElementById("exp-bar").style.width = ((userData.exp / r.maxExp) * 100) + "%";
-            }
-
-            var m = getMultipliers();
-            document.getElementById("buff-checkin").className = "buff-text " + buffClass(m.checkin); document.getElementById("buff-checkin").innerText = m.checkin.toFixed(1) + "x";
-            document.getElementById("buff-daily").className = "buff-text " + buffClass(m.daily); document.getElementById("buff-daily").innerText = m.daily.toFixed(1) + "x";
-            document.getElementById("buff-weekly").className = "buff-text " + buffClass(m.weekly); document.getElementById("buff-weekly").innerText = m.weekly.toFixed(1) + "x";
-            document.getElementById("buff-total").innerText = m.total.toFixed(2) + "x"; document.getElementById("buff-checkin-display").innerText = m.checkin.toFixed(1) + "x";
-
-            updateFarmResourceDisplay(); renderFarmUpgrades();
-        }
-
-        // ═══════════════════════════════════════════
-        // IMPROVED BACKUP / RESTORE
-        // ═══════════════════════════════════════════
-        function exportData() {
-            try {
-                var code = btoa(encodeURIComponent(JSON.stringify(userData)));
-                document.getElementById("backup-code").value = code;
-                if (navigator.clipboard && navigator.clipboard.writeText) {
-                    navigator.clipboard.writeText(code)
-                        .then(function() { showToast("✓ Đã copy mã sao lưu!", 'success'); })
-                        .catch(function() {
-                            try { document.getElementById("backup-code").select(); document.execCommand('copy'); showToast("✓ Đã copy mã sao lưu!", 'success'); }
-                            catch(e2) { showToast("Mã đã tạo! Copy thủ công từ ô bên dưới.", 'info'); }
-                        });
-                } else {
-                    try { document.getElementById("backup-code").select(); document.execCommand('copy'); showToast("✓ Đã copy mã sao lưu!", 'success'); }
-                    catch(e) { showToast("Mã đã tạo! Copy thủ công từ ô bên dưới.", 'info'); }
-                }
-            } catch(e) {
-                showToast("❌ Lỗi tạo sao lưu", 'error');
-            }
-        }
-
-        function importData() {
-            var code = document.getElementById("backup-code").value.trim();
-            if (!code) return;
-            if (!confirm("Phục hồi sẽ ghi đè dữ liệu hiện tại. Xác nhận?")) return;
-            try {
-                var decoded = JSON.parse(decodeURIComponent(atob(code)));
-                // Validate required keys
-                if (typeof decoded.exp === 'undefined' || typeof decoded.realmIndex === 'undefined' || typeof decoded.checkinStreak === 'undefined') {
-                    showToast("❌ Mã không hợp lệ hoặc đã bị hỏng", 'error');
-                    return;
-                }
-                decoded = migrateData(decoded);
-                userData = Object.assign({}, userData, decoded, { weeklyTasks: Object.assign({}, userData.weeklyTasks, decoded.weeklyTasks) });
-                initFarmData();
-                saveData(); updateUI();
-                showToast("✓ Phục hồi thành công!", 'success');
-                document.getElementById("backup-code").value = "";
-            } catch(e) {
-                showToast("❌ Mã không hợp lệ hoặc đã bị hỏng", 'error');
-            }
-        }
-
-        function fetchUpdateLog() {
-            fetch("https://raw.githubusercontent.com/KHACK54321/AX-Project/refs/heads/main/updatelog.txt?v=" + new Date().getTime())
-                .then(function(r) { return r.text(); }).then(function(t) { document.getElementById("update-log-box").innerText = t; }).catch(function() {});
-        }
-
-        // ═══════════════════════════════════════════
-        // FARM LOGIC (unchanged)
-        // ═══════════════════════════════════════════
-        function initFarmData() {
-            if (!userData.farm) {
-                userData.farm = {
-                    lastSave: Date.now(), linhthao: 0,
-                    plots: [{cropType:null},{cropType:null},{cropType:null}],
-                    factory: { queue: [], selectedPill: 0, completedPills: {0:0,1:0,2:0,3:0,4:0} },
-                    upgrades: { speedUp: false, furnaceUp: false }
-                };
-            } else {
-                if (!userData.farm.plots) userData.farm.plots = [{cropType:null},{cropType:null},{cropType:null}];
-                if (!userData.farm.factory) {
-                    userData.farm.factory = { queue: [], selectedPill: 0, completedPills: {0:0,1:0,2:0,3:0,4:0} };
-                } else {
-                    if (!userData.farm.factory.completedPills) userData.farm.factory.completedPills = {0:0,1:0,2:0,3:0,4:0};
-                    if (typeof userData.farm.factory.selectedPill === 'undefined') userData.farm.factory.selectedPill = 0;
-                }
-                if (!userData.farm.upgrades) userData.farm.upgrades = { speedUp: false, furnaceUp: false };
-                if (typeof userData.farm.linhthao === 'undefined') userData.farm.linhthao = 0;
-                if (userData.farm.danduo && userData.farm.danduo > 0) {
-                    userData.farm.factory.completedPills[0] = (userData.farm.factory.completedPills[0] || 0) + userData.farm.danduo;
-                    userData.farm.danduo = 0;
-                }
-            }
-        }
-
-        function getCropDuration(ci) {
-            var b = CROPS[ci].duration;
-            return userData.farm.upgrades.speedUp ? Math.floor(b * 0.8) : b;
-        }
-
-        function getFactoryDuration(pillIdx) {
-            var idx = (pillIdx !== undefined && pillIdx !== null) ? pillIdx : 0;
-            var base = PILLS[idx].craftDuration;
-            return userData.farm.upgrades.furnaceUp ? Math.floor(base * 0.7) : base;
-        }
-
-        function fmt(s) {
-            if (s <= 0) return "00:00";
-            s = Math.floor(s);
-            if (s >= 86400) {
-                var d = Math.floor(s / 86400);
-                var h = Math.floor((s % 86400) / 3600);
-                var m = Math.floor((s % 3600) / 60);
-                return d + "ngày " + h + "h " + m + "ph";
-            }
-            var h = Math.floor(s / 3600);
-            var m = Math.floor((s % 3600) / 60);
-            var sec = s % 60;
-            if (h > 0) return String(h).padStart(2,'0') + ":" + String(m).padStart(2,'0') + ":" + String(sec).padStart(2,'0');
-            return String(m).padStart(2,'0') + ":" + String(sec).padStart(2,'0');
-        }
-
-        function fmtHuman(s) {
-            s = Math.floor(s);
-            if (s >= 86400) {
-                var d = Math.floor(s / 86400);
-                var h = Math.floor((s % 86400) / 3600);
-                return "~" + d + "d " + h + "h";
-            }
-            var h = Math.floor(s / 3600);
-            var m = Math.floor((s % 3600) / 60);
-            if (h > 0) return "~" + h + "h " + m + "m";
-            return "~" + m + "m";
-        }
-
-        function fmtDuration(s) {
-            if (s >= 86400) return Math.floor(s / 86400) + " ngày";
-            if (s >= 3600) return Math.floor(s / 3600) + "h";
-            return Math.floor(s / 60) + "ph";
-        }
-
-        function offlineFarmCatchup() {
-            if (!userData.farm || !userData.farm.lastSave) return;
-            var now = Date.now();
-            var changed = false;
-
-            userData.farm.plots.forEach(function(plot) {
-                if (plot.cropType !== null && !plot.done && plot.plantedAt) {
-                    var dur = getCropDuration(plot.cropType) * 1000;
-                    if (now - plot.plantedAt >= dur) { plot.done = true; changed = true; }
-                }
-            });
-
-            var keepGoing = true;
-            while (keepGoing && userData.farm.factory.queue.length > 0) {
-                var craft = userData.farm.factory.queue[0];
-                var pillIdx = (craft.pillType !== undefined) ? craft.pillType : 0;
-                var factDurMs = getFactoryDuration(pillIdx) * 1000;
-                if (craft.startedAt && now >= craft.startedAt + factDurMs) {
-                    userData.farm.factory.completedPills[pillIdx] = (userData.farm.factory.completedPills[pillIdx] || 0) + 1;
-                    var nextStart = craft.startedAt + factDurMs;
-                    userData.farm.factory.queue.shift();
-                    if (userData.farm.factory.queue.length > 0 && !userData.farm.factory.queue[0].startedAt) {
-                        userData.farm.factory.queue[0].startedAt = nextStart;
-                    }
-                    changed = true;
-                } else {
-                    keepGoing = false;
-                }
-            }
-
-            userData.farm.lastSave = now;
-            if (changed) localStorage.setItem("OppoWaifuDataCloudPro", JSON.stringify(userData));
-        }
-
-        function plantCrop(pIdx, cIdx) {
-            var plot = userData.farm.plots[pIdx]; if (plot.cropType !== null) return;
-            plot.cropType = cIdx; plot.plantedAt = Date.now(); plot.done = false;
-            plotSelecting[pIdx] = false;
-            userData.farm.lastSave = Date.now();
-            saveData(); renderFarmPlots();
-            showFarmStatus("🌱 Đã trồng " + CROPS[cIdx].name + "!");
-        }
-
-        function harvestPlot(pIdx) {
-            var plot = userData.farm.plots[pIdx]; if (!plot.done) return;
-            var yld = CROPS[plot.cropType].yield;
-            userData.farm.linhthao = (userData.farm.linhthao || 0) + yld;
-            plot.cropType = null; plot.plantedAt = null; plot.done = false;
-            userData.farm.lastSave = Date.now();
-            saveData(); renderFarmPlots(); updateFarmResourceDisplay();
-            showFarmStatus("🌾 Thu hoạch +" + yld + " 🌿!");
-        }
-
-        function startCraft() {
-            var selectedPill = userData.farm.factory.selectedPill || 0;
-            var pill = PILLS[selectedPill];
-            if (userData.farm.factory.queue.length >= MAX_QUEUE) { showFarmStatus("❌ Hàng chờ đã đầy!"); return; }
-            if ((userData.farm.linhthao || 0) < pill.cost) { showFarmStatus("❌ Thiếu " + pill.cost + " 🌿!"); return; }
-            userData.farm.linhthao -= pill.cost;
-            userData.farm.factory.queue.push({
-                pillType: selectedPill,
-                startedAt: userData.farm.factory.queue.length === 0 ? Date.now() : null
-            });
-            userData.farm.lastSave = Date.now();
-            saveData(); updateFarmResourceDisplay(); renderFactoryQueue(); renderPillSelector();
-            showFarmStatus("⚗️ Bắt đầu luyện đan!");
-        }
-
-        function claimPills() {
-            var cp = userData.farm.factory.completedPills;
-            var total = 0;
-            PILLS.forEach(function(pill, idx) {
-                var count = cp[idx] || 0;
-                if (count > 0) { addExp(pill.exp * count); total += count; cp[idx] = 0; }
-            });
-            if (total === 0) { showFarmStatus("❌ Chưa có Đan Dược!"); return; }
-            userData.farm.lastSave = Date.now();
-            saveData(); updateFarmResourceDisplay(); updateUI();
-            showFarmStatus("💊 Dùng " + total + " Đan Dược! Nhận Tu Vi");
-        }
-
-        function buyUpgrade(key, cost) {
-            if (userData.farm.upgrades[key]) { showFarmStatus("❌ Đã sở hữu!"); return; }
-            if (userData.points < cost) { showFarmStatus("❌ Cần " + cost + " Danh Vọng!"); return; }
-            userData.points -= cost; userData.farm.upgrades[key] = true;
-            saveData(); renderFarmUpgrades(); renderPillSelector(); updateUI();
-            showFarmStatus("✅ Nâng cấp thành công!");
-        }
-
-        function showFarmStatus(msg) {
-            var el = document.getElementById('farm-status');
-            el.textContent = msg; el.style.opacity = '1';
-            clearTimeout(el._t);
-            el._t = setTimeout(function() { el.style.opacity = '0'; }, 2500);
-        }
-
-        function togglePlotSelect(idx) { plotSelecting[idx] = !plotSelecting[idx]; renderFarmPlots(); }
-
-        function selectPill(idx) {
-            userData.farm.factory.selectedPill = idx;
-            userData.farm.lastSave = Date.now();
-            localStorage.setItem("OppoWaifuDataCloudPro", JSON.stringify(userData));
-            renderPillSelector(); updateFarmResourceDisplay();
-        }
-
-        function renderFarmAll() {
-            renderFarmPlots(); renderFactoryQueue(); renderFarmUpgrades(); updateFarmResourceDisplay(); renderPillSelector();
-        }
-
-        function renderFarmPlots() {
-            var container = document.getElementById('plots-container'); if (!container) return;
-            var now = Date.now(); container.innerHTML = '';
-            userData.farm.plots.forEach(function(plot, i) {
-                var card = document.createElement('div');
-                if (plot.cropType === null) {
-                    card.className = 'plot-card';
-                    var cropOpts = CROPS.map(function(c, ci) {
-                        return '<button class="crop-opt" onclick="plantCrop(' + i + ',' + ci + ')">' +
-                            c.emoji + ' ' + c.name + '<small>+' + c.yield + '🌿 · ' + fmtDuration(c.duration) + '</small></button>';
-                    }).join('');
-                    card.innerHTML = '<div class="plot-emoji">🟫</div>' +
-                        '<div class="plot-lbl">Ruộng trống</div>' +
-                        '<button class="plot-btn" onclick="togglePlotSelect(' + i + ')">🌱 Trồng</button>' +
-                        '<div class="crop-select' + (plotSelecting[i] ? ' visible' : '') + '">' + cropOpts + '</div>';
-                } else {
-                    var cr = CROPS[plot.cropType];
-                    var dur = getCropDuration(plot.cropType) * 1000;
-                    var elp = now - plot.plantedAt;
-                    var done = plot.done || elp >= dur;
-                    if (!plot.done && done) plot.done = true;
-                    if (done) {
-                        card.className = 'plot-card ready';
-                        card.innerHTML = '<div class="plot-emoji">' + cr.emoji + '</div>' +
-                            '<div class="plot-lbl">' + cr.name + '</div>' +
-                            '<div class="plot-timer" style="color:var(--gold)">✓ Xong!</div>' +
-                            '<button class="plot-btn harvest" onclick="harvestPlot(' + i + ')">🌾 Thu</button>';
-                    } else {
-                        var remaining = Math.ceil((dur - elp) / 1000);
-                        var secLabel = '';
-                        if (cr.duration >= 3600) {
-                            secLabel = '<div id="pt-lbl-' + i + '" style="font-size:10px;color:var(--text-muted);margin-top:2px;">' + fmtHuman(remaining) + '</div>';
-                        }
-                        card.className = 'plot-card growing';
-                        card.innerHTML = '<div class="plot-emoji">' + cr.emoji + '</div>' +
-                            '<div class="plot-lbl">' + cr.name + '</div>' +
-                            '<div class="plot-timer" id="pt-' + i + '">' + fmt(remaining) + '</div>' +
-                            secLabel +
-                            '<button class="plot-btn" disabled>Đang trồng</button>';
-                    }
-                }
-                container.appendChild(card);
-            });
-        }
-
-        function renderPillSelector() {
-            var el = document.getElementById('pill-selector-row'); if (!el || !userData.farm || !userData.farm.factory) return;
-            var selectedPill = userData.farm.factory.selectedPill || 0;
-            el.innerHTML = PILLS.map(function(pill, idx) {
-                return '<button class="pill-opt' + (idx === selectedPill ? ' active' : '') + '" onclick="selectPill(' + idx + ')">' +
-                    pill.emoji + ' ' + pill.name + '<small>' + pill.cost + '🌿 · +' + pill.exp + 'EXP</small></button>';
+// ════════════════════════════════════════════
+// RENDER FARM PLOTS
+// ════════════════════════════════════════════
+function renderFarmPlots(){
+    var container=document.getElementById('plots-container');if(!container)return;
+    var now=Date.now();container.innerHTML='';
+    userData.farm.plots.forEach(function(plot,i){
+        var card=document.createElement('div');
+        if(plot.cropType===null){
+            card.className='plot-card';
+            var cropOpts=CROPS.map(function(c,ci){
+                return '<button class="crop-opt" onclick="plantCrop('+i+','+ci+')">'+
+                    '<img src="'+c.img+'" class="crop-opt-img" alt="'+c.emoji+'" onerror="this.outerHTML=\'<span>'+c.emoji+'</span>\'">'+
+                    '<div><span>'+c.name+'</span><small>'+c.desc+'</small></div></button>';
             }).join('');
-            
-            var infoEl = document.getElementById('pill-info-display');
-            if (infoEl) {
-                var pill = PILLS[selectedPill];
-                var dur = getFactoryDuration(selectedPill);
-                infoEl.textContent = "Cần: " + pill.cost + "🌿 | Luyện: " + fmt(dur) + " | Thưởng: +" + pill.exp + " Tu Vi";
+            card.innerHTML='<div class="plot-emoji">🟫</div><div class="plot-lbl">Ruộng trống</div>'+
+                '<button class="plot-btn" onclick="togglePlotSelect('+i+')">🌱 Trồng</button>'+
+                '<div class="crop-select'+(plotSelecting[i]?' visible':'')+'" id="cs-'+i+'">'+cropOpts+'</div>';
+        }else{
+            var cr=CROPS[plot.cropType];
+            var dur=getCropDuration(plot.cropType)*1000;
+            var elp=now-plot.plantedAt;
+            var done=plot.done||elp>=dur;
+            if(!plot.done&&done)plot.done=true;
+            if(done){
+                card.className='plot-card ready';
+                card.innerHTML='<img src="'+cr.img+'" class="plot-img" alt="'+cr.emoji+'" onerror="this.outerHTML=\'<div class=\\\'plot-emoji\\\'>'+cr.emoji+'</div>\'">'+
+                    '<div class="plot-lbl">'+cr.name+'</div>'+
+                    '<div class="plot-timer" style="color:var(--gold)">✓ Xong!</div>'+
+                    '<button class="plot-btn harvest" onclick="harvestPlot('+i+')">🌾 Thu</button>';
+            }else{
+                var remaining=Math.ceil((dur-elp)/1000);
+                var secLabel='';
+                if(cr.duration>=3600)secLabel='<div id="pt-lbl-'+i+'" style="font-size:9px;color:var(--text-muted);margin-top:1px;">'+fmtHuman(remaining)+'</div>';
+                card.className='plot-card growing';
+                card.innerHTML='<img src="'+cr.img+'" class="plot-img" alt="'+cr.emoji+'" onerror="this.outerHTML=\'<div class=\\\'plot-emoji\\\'>'+cr.emoji+'</div>\'">'+
+                    '<div class="plot-lbl">'+cr.name+'</div>'+
+                    '<div class="plot-timer" id="pt-'+i+'">'+fmt(remaining)+'</div>'+secLabel+
+                    '<button class="plot-btn" disabled>Đang trồng</button>';
             }
-            
-            var btn = document.getElementById('btn-craft');
-            if (btn) btn.textContent = "⚗️ Luyện (" + PILLS[selectedPill].cost + "🌿)";
         }
+        container.appendChild(card);
+    });
+}
 
-        function renderFactoryQueue() {
-            var el = document.getElementById('factory-queue-display'); if (!el) return; el.innerHTML = '';
-            for (var i = 0; i < MAX_QUEUE; i++) {
-                var slot = document.createElement('div');
-                var craft = userData.farm.factory.queue[i];
-                slot.className = craft ? (i === 0 ? 'q-slot active-q' : 'q-slot') : 'q-slot';
-                if (craft) {
-                    var pillIdx = (craft.pillType !== undefined) ? craft.pillType : 0;
-                    slot.textContent = PILLS[pillIdx].emoji;
-                }
-                el.appendChild(slot);
+// ════════════════════════════════════════════
+// RENDER PILL SELECTOR
+// ════════════════════════════════════════════
+function renderPillSelector(){
+    var el=document.getElementById('pill-selector-row');if(!el||!userData.farm||!userData.farm.factory)return;
+    var selectedPill=userData.farm.factory.selectedPill||0;
+    el.innerHTML=PILLS.map(function(pill,idx){
+        var dur=getFactoryDuration(idx);
+        var expVal=getPillExp(idx);
+        return '<button class="pill-opt'+(idx===selectedPill?' active':'')+'" onclick="selectPill('+idx+')">'+
+            '<img src="'+pill.img+'" class="pill-opt-img" alt="'+pill.emoji+'" onerror="this.outerHTML=\'<span>'+pill.emoji+'</span>\'">'+
+            '<span>'+pill.name+'</span>'+
+            '<small>'+pill.cost+'🌿·+'+expVal+'EXP</small></button>';
+    }).join('');
+    var infoEl=document.getElementById('pill-info-display');
+    if(infoEl){var pill=PILLS[selectedPill];var dur=getFactoryDuration(selectedPill);var expV=getPillExp(selectedPill);
+        infoEl.textContent="Cần: "+pill.cost+"🌿 | Luyện: "+fmt(dur)+" | Thưởng: +"+expV+" Tu Vi";}
+    var btn=document.getElementById('btn-craft');
+    if(btn)btn.textContent="⚗️ Luyện ("+PILLS[selectedPill].cost+"🌿)";
+    var caBtn=document.getElementById('btn-craft-all');
+    if(caBtn)caBtn.style.display=userData.farm.upgrades2&&userData.farm.upgrades2.craftAll?'flex':'none';
+}
+
+// ════════════════════════════════════════════
+// RENDER FACTORY QUEUE
+// ════════════════════════════════════════════
+function renderFactoryQueue(){
+    var el=document.getElementById('factory-queue-display');if(!el)return;el.innerHTML='';
+    var maxQ=getMaxQueue();
+    for(var i=0;i<maxQ;i++){
+        var slot=document.createElement('div');
+        var craft=userData.farm.factory.queue[i];
+        slot.className=craft?(i===0?'q-slot active-q':'q-slot'):'q-slot';
+        if(craft){var pillIdx=(craft.pillType!==undefined)?craft.pillType:0;
+            var img=document.createElement('img');img.src=PILLS[pillIdx].img;img.style='width:18px;height:18px;object-fit:contain;';
+            img.onerror=function(){this.outerHTML='<span>'+PILLS[pillIdx].emoji+'</span>';};slot.appendChild(img);}
+        el.appendChild(slot);
+    }
+    var tlEl=document.getElementById('total-alchemy-lbl');
+    if(tlEl)tlEl.textContent="Tổng đan đã luyện: "+(userData.totalAlchemyDone||0);
+}
+
+// ════════════════════════════════════════════
+// RENDER FARM UPGRADES
+// ════════════════════════════════════════════
+function renderFarmUpgrades(){
+    var bs=document.getElementById('btn-upg-speed');var bf=document.getElementById('btn-upg-furnace');
+    if(!bs||!bf||!userData.farm)return;
+    if(userData.farm.upgrades.speedUp){bs.textContent='✓ Mở khóa';bs.classList.add('owned');bs.disabled=true;}else{bs.textContent='5 🏆';bs.classList.remove('owned');bs.disabled=false;}
+    if(userData.farm.upgrades.furnaceUp){bf.textContent='✓ Mở khóa';bf.classList.add('owned');bf.disabled=true;}else{bf.textContent='10 🏆';bf.classList.remove('owned');bf.disabled=false;}
+}
+function renderNewUpgrades(){
+    var el=document.getElementById('new-upgrades-container');if(!el)return;
+    var lt=userData.linhThach||0;
+    var html='';
+    FARM_UPGRADES2.forEach(function(upg){
+        var isBool=upg.maxLevel===1;
+        var currentLevel=userData.farm.upgrades2?(userData.farm.upgrades2[upg.id]||0):0;
+        var isMaxed=(isBool&&currentLevel===true)||((!isBool)&&currentLevel>=upg.maxLevel);
+        var cost=isMaxed?0:Math.round(upg.baseCost*Math.pow(upg.costMult,isBool?0:currentLevel));
+        var levelText=isBool?(currentLevel===true?'✓ Đã mua':'Chưa mua'):('Cấp '+currentLevel+'/'+upg.maxLevel);
+        var btnText=isMaxed?'✓ Tối đa':(lt<cost?'🔒 '+cost+'💎':cost+'💎');
+        html+='<div class="upgrade-row">'+
+            '<div class="upgrade-info"><div class="upgrade-name">'+upg.name+'</div>'+
+            '<div class="upgrade-desc">'+upg.desc+'</div>'+
+            '<div style="font-size:10px;color:var(--cyan);margin-top:3px;">'+levelText+'</div></div>'+
+            '<button class="upg-btn lt-upg-btn" onclick="buyNewUpgrade(\''+upg.id+'\')" '+(isMaxed?'disabled':'')+' '+(lt<cost&&!isMaxed?'title="Cần '+cost+' 💎 Linh Thạch"':'')+'>'+btnText+'</button></div>';
+    });
+    el.innerHTML=html;
+}
+
+// ════════════════════════════════════════════
+// UPDATE FARM RESOURCE DISPLAY
+// ════════════════════════════════════════════
+function updateFarmResourceDisplay(){
+    var ltEl=document.getElementById('farm-linhthao');
+    var ltEl2=document.getElementById('farm-linhthach');
+    var ddEl=document.getElementById('farm-danduo');
+    if(!userData.farm)return;
+    if(ltEl)ltEl.textContent=userData.farm.linhthao||0;
+    if(ltEl2)ltEl2.textContent=userData.linhThach||0;
+    var total=0;
+    if(userData.farm.factory&&userData.farm.factory.completedPills){
+        for(var k=0;k<5;k++)total+=(userData.farm.factory.completedPills[k]||0);
+    }
+    if(ddEl)ddEl.textContent=total;
+    updateGlobalLT();
+}
+
+// ════════════════════════════════════════════
+// ACHIEVEMENTS RENDER
+// ════════════════════════════════════════════
+function renderAchievements(){
+    var farmAchs=ACHIEVEMENTS.filter(function(a){return a.buff==='sellBonus';});
+    var alcAchs=ACHIEVEMENTS.filter(function(a){return a.buff==='alchemyExp';});
+    var medAchs=ACHIEVEMENTS.filter(function(a){return a.buff==='meditationBonus';});
+    function renderGrid(achs, elId){
+        var el=document.getElementById(elId);if(!el)return;
+        el.innerHTML=achs.map(function(a){
+            var unlocked=userData.achievements&&userData.achievements[a.id];
+            return '<div class="ach-card'+(unlocked?' unlocked':(a.check(userData)?'':' ach-locked'))+'"'+(!unlocked&&a.check(userData)?'':'')+'>'+
+                '<span class="ach-icon">'+a.icon+'</span>'+
+                '<div class="ach-name">'+a.name+'</div>'+
+                '<div class="ach-desc">'+a.desc+'</div>'+
+                '<div class="ach-buff">Buff: ×'+a.mult+' '+a.buff+'</div>'+
+                (unlocked?'<div style="font-size:10px;color:var(--success);margin-top:4px;">✓ Đã mở khoá</div>':'')+'</div>';
+        }).join('');
+    }
+    renderGrid(farmAchs,'ach-farm-grid');
+    renderGrid(alcAchs,'ach-alchemy-grid');
+    renderGrid(medAchs,'ach-med-grid');
+    var total=ACHIEVEMENTS.filter(function(a){return userData.achievements&&userData.achievements[a.id];}).length;
+    var el=document.getElementById('ach-count');if(el)el.textContent=total+'/'+ACHIEVEMENTS.length;
+}
+
+// ════════════════════════════════════════════
+// AFK SYSTEM (OFFLINE PROGRESS)
+// ════════════════════════════════════════════
+function selectMedTime(mins, btnEl) {
+    if(userData.meditation && userData.meditation.active) return;
+    selectedMedTime=mins;
+    document.querySelectorAll('.med-time-btn').forEach(function(b){b.classList.remove('active');});
+    if(btnEl)btnEl.classList.add('active');
+    
+    var rewards={5:5,10:12,15:20};
+    var streakMult=(userData.meditation&&userData.meditation.streak>=3)?1.5:1.0;
+    var achMult=getAchievementBuff('meditationBonus');
+    var total=Math.floor((rewards[mins]||5)*streakMult*achMult);
+    var infoEl=document.getElementById('med-bonus-info');
+    if(infoEl)infoEl.textContent='Nhận ~'+total+' 💎 sau khi hoàn thành'+(streakMult>1?' (×'+streakMult+' streak)':'');
+    
+    var el=document.getElementById('med-timer');
+    if(el) el.textContent=fmt(mins*60);
+}
+
+function toggleMeditation(){
+    var today=(userData.meditation&&userData.meditation.today)||0;
+    var todayStr=new Date().toDateString();
+    if(userData.meditation&&userData.meditation.date!==todayStr){today=0;}
+    if(today>=3){showToast("❌ Đã AFK đủ 3 lần hôm nay!",'error');return;}
+    
+    // Ghi lại thời gian bắt đầu
+    userData.meditation.active = true;
+    userData.meditation.startedAt = Date.now();
+    userData.meditation.durationMins = selectedMedTime;
+    saveData();
+    
+    document.getElementById('med-start-btn').style.display='none';
+    document.getElementById('med-cancel-btn').style.display='block';
+    document.querySelectorAll('.med-time-btn').forEach(function(b){b.disabled=true;});
+    showToast("💤 Bắt đầu treo máy AFK "+selectedMedTime+" phút...",'info');
+    updateMedTimerDisplay();
+}
+
+function cancelMeditation(){
+    if(!userData.meditation || !userData.meditation.active)return;
+    userData.meditation.active = false;
+    userData.meditation.startedAt = null;
+    saveData();
+    
+    document.getElementById('med-start-btn').style.display='block';
+    document.getElementById('med-cancel-btn').style.display='none';
+    document.querySelectorAll('.med-time-btn').forEach(function(b){b.disabled=false;});
+    var el=document.getElementById('med-timer');
+    if(el) el.textContent=fmt(selectedMedTime*60);
+    showToast("Đã hủy AFK.",'error');
+}
+
+function completeMeditation(){
+    userData.meditation.active = false;
+    userData.meditation.startedAt = null;
+    
+    var rewards={5:5,10:12,15:20};
+    var base=rewards[userData.meditation.durationMins]||5;
+    var todayStr=new Date().toDateString();
+    if(!userData.meditation.date) userData.meditation.date = todayStr;
+    if(userData.meditation.date!==todayStr){userData.meditation.today=0;userData.meditation.date=todayStr;}
+    
+    var streakMult=(userData.meditation.streak>=3)?1.5:1.0;
+    var achMult=getAchievementBuff('meditationBonus');
+    var total=Math.floor(base*streakMult*achMult);
+    
+    userData.linhThach=(userData.linhThach||0)+total;
+    userData.meditation.today=(userData.meditation.today||0)+1;
+    if(userData.meditation.today>=3)userData.meditation.lastFullDate=todayStr;
+    
+    var yestStr=new Date(Date.now()-86400000).toDateString();
+    if(userData.meditation.streak===0&&userData.meditation.lastFullDate===yestStr){userData.meditation.streak=1;}
+    else if(userData.meditation.lastFullDate===yestStr&&userData.meditation.date!==yestStr){userData.meditation.streak=(userData.meditation.streak||0)+1;}
+    
+    checkAchievements();
+    saveData();
+    updateGlobalLT();
+    renderMeditation();
+    
+    document.getElementById('med-start-btn').style.display='block';
+    document.getElementById('med-cancel-btn').style.display='none';
+    document.querySelectorAll('.med-time-btn').forEach(function(b){b.disabled=false;});
+    var el=document.getElementById('med-timer');
+    if(el) el.textContent=fmt(selectedMedTime*60);
+    
+    showMcAchievement("💤","Treo AFK Hoàn Thành","+"+total+" 💎 Linh Thạch nhận được");
+    showToast("✦ Treo máy xong! +"+total+" 💎 Linh Thạch",'success');
+}
+
+function updateMedTimerDisplay(){
+    var el=document.getElementById('med-timer');if(!el)return;
+    if (userData.meditation && userData.meditation.active && userData.meditation.startedAt) {
+        var durMs = userData.meditation.durationMins * 60 * 1000;
+        var elp = Date.now() - userData.meditation.startedAt;
+        var rem = Math.ceil((durMs - elp) / 1000);
+        el.textContent = rem > 0 ? fmt(rem) : '00:00';
+    }
+}
+
+function renderMeditation(){
+    var todayStr=new Date().toDateString();
+    var todayCount=(userData.meditation&&userData.meditation.date===todayStr)?(userData.meditation.today||0):0;
+    var streak=(userData.meditation&&userData.meditation.streak)||0;
+    var streakEl=document.getElementById('med-streak');if(streakEl){streakEl.textContent=streak;}
+    var todayEl=document.getElementById('med-today');if(todayEl){todayEl.textContent=todayCount+'';}
+    var dotsEl=document.getElementById('med-streak-dots');
+    if(dotsEl){
+        var html='';
+        for(var i=0;i<7;i++){html+='<div class="med-streak-dot'+(i<streak?' done':'')+'" title="Ngày '+(i+1)+'"></div>';}
+        dotsEl.innerHTML=html;
+    }
+    var ltEl=document.getElementById('med-lt-display');if(ltEl)ltEl.textContent=(userData.linhThach||0)+' 💎';
+    var achMult=getAchievementBuff('meditationBonus');
+    var buffMedEl=document.getElementById('buff-med-ach');if(buffMedEl)buffMedEl.textContent='×'+achMult.toFixed(2);
+    
+    if (userData.meditation && userData.meditation.active) {
+        document.getElementById('med-start-btn').style.display='none';
+        document.getElementById('med-cancel-btn').style.display='block';
+        document.querySelectorAll('.med-time-btn').forEach(function(b){b.disabled=true;});
+        updateMedTimerDisplay();
+    } else {
+        document.getElementById('med-start-btn').style.display='block';
+        document.getElementById('med-cancel-btn').style.display='none';
+        document.querySelectorAll('.med-time-btn').forEach(function(b){b.disabled=false;});
+        var el=document.getElementById('med-timer');
+        if(el) el.textContent=fmt(selectedMedTime*60);
+    }
+}
+
+// ════════════════════════════════════════════
+// FARM TIMER - TỐI ƯU HÓA HIỆU SUẤT
+// ════════════════════════════════════════════
+function startFarmTimer(){if(farmInterval)clearInterval(farmInterval);farmInterval=setInterval(farmTick,1000);}
+
+function farmTick(){
+    if(!userData.farm)return;
+    var now=Date.now();
+    var farmTabActive=document.getElementById('tab-farm').classList.contains('active');
+    var medTabActive=document.getElementById('tab-meditation').classList.contains('active'); // Thêm dòng này
+    
+    var needSave = false;
+    var needRerender = false;
+
+    // Check cây chín
+    userData.farm.plots.forEach(function(plot){
+        if(plot.cropType!==null&&!plot.done&&plot.plantedAt){
+            if(now-plot.plantedAt>=getCropDuration(plot.cropType)*1000){
+                plot.done=true;
+                needRerender=true;
+                needSave=true;
             }
         }
+    });
 
-        function renderFarmUpgrades() {
-            var bs = document.getElementById('btn-upg-speed'); var bf = document.getElementById('btn-upg-furnace');
-            if (!bs || !bf || !userData.farm) return;
-            if (userData.farm.upgrades.speedUp) { bs.textContent = '✓ Mở khóa'; bs.classList.add('owned'); bs.disabled = true; } else { bs.textContent = '5 🏆'; bs.classList.remove('owned'); bs.disabled = false; }
-            if (userData.farm.upgrades.furnaceUp) { bf.textContent = '✓ Mở khóa'; bf.classList.add('owned'); bf.disabled = true; } else { bf.textContent = '10 🏆'; bf.classList.remove('owned'); bf.disabled = false; }
+    // Check đan dược xong
+    var q=userData.farm.factory.queue;
+    if(q.length>0&&q[0].startedAt){
+        var pillIdx=(q[0].pillType!==undefined)?q[0].pillType:0;
+        var factDur=getFactoryDuration(pillIdx)*1000;
+        if(now>=q[0].startedAt+factDur){
+            userData.farm.factory.completedPills[pillIdx]=(userData.farm.factory.completedPills[pillIdx]||0)+1;
+            var nextStart=q[0].startedAt+factDur;
+            q.shift();
+            if(q.length>0&&!q[0].startedAt)q[0].startedAt=nextStart;
+            needSave=true;
+            showFarmStatus("💊 Đan Dược hoàn thành!");
+            if(farmTabActive){renderFactoryQueue();updateFarmResourceDisplay();}
         }
+    }
 
-        function updateFarmResourceDisplay() {
-            var ltEl = document.getElementById('farm-linhthao');
-            var ddEl = document.getElementById('farm-danduo');
-            var pillEl = document.getElementById('farm-selected-pill');
-            if (!userData.farm) return;
-            if (ltEl) ltEl.textContent = userData.farm.linhthao || 0;
-            var total = 0;
-            if (userData.farm.factory && userData.farm.factory.completedPills) {
-                for (var k = 0; k < 5; k++) total += (userData.farm.factory.completedPills[k] || 0);
-            }
-            if (ddEl) ddEl.textContent = total;
-            var selectedPill = userData.farm.factory ? (userData.farm.factory.selectedPill || 0) : 0;
-            if (pillEl) pillEl.textContent = PILLS[selectedPill].name;
+    // ==== THÊM ĐOẠN ĐẾM THỜI GIAN AFK NÀY VÀO ĐÂY ====
+    if (userData.meditation && userData.meditation.active && userData.meditation.startedAt) {
+        var durMs = userData.meditation.durationMins * 60 * 1000;
+        if (now >= userData.meditation.startedAt + durMs) {
+            completeMeditation();
+        } else if (medTabActive) {
+            updateMedTimerDisplay();
         }
+    }
+    // =================================================
 
-        function startFarmTimer() { if (farmInterval) clearInterval(farmInterval); farmInterval = setInterval(farmTick, 1000); }
+    // Nếu có thay đổi trạng thái lớn mới thực hiện ghi đè LocalStorage
+    if (needSave) {
+        userData.farm.lastSave = Date.now();
+        localStorage.setItem(SAVE_KEY, JSON.stringify(userData));
+    }
 
-        // ═══════════════════════════════════════════
-        // FARM TICK — rAF throttled DOM updates
-        // ═══════════════════════════════════════════
-        function farmTick() {
-            if (!userData.farm) return;
-            var now = Date.now();
-            var farmTabActive = document.getElementById('tab-farm').classList.contains('active');
-
-            // ── Always: persist state ──
-            userData.farm.lastSave = now;
-            localStorage.setItem("OppoWaifuDataCloudPro", JSON.stringify(userData));
-
-            // ── Always: check plot completion (state only) ──
-            var needRerender = false;
-            userData.farm.plots.forEach(function(plot) {
-                if (plot.cropType !== null && !plot.done && plot.plantedAt) {
-                    if (now - plot.plantedAt >= getCropDuration(plot.cropType) * 1000) {
-                        plot.done = true; needRerender = true;
+    if(!farmTabActive)return;
+    
+    // ... Phần còn lại của farmTick (RequestAnimationFrame update thời gian cây/lò) giữ nguyên
+    requestAnimationFrame(function(){
+        if(currentFarmTab==='ruong'){
+            if(needRerender){renderFarmPlots();}else{
+                userData.farm.plots.forEach(function(plot,i){
+                    if(plot.cropType!==null&&!plot.done&&plot.plantedAt){
+                        var remaining=Math.ceil((getCropDuration(plot.cropType)*1000-(Date.now()-plot.plantedAt))/1000);
+                        var tEl=document.getElementById("pt-"+i);if(tEl)tEl.textContent=fmt(remaining);
+                        if(CROPS[plot.cropType].duration>=3600){var lblEl=document.getElementById("pt-lbl-"+i);if(lblEl)lblEl.textContent=fmtHuman(remaining);}
                     }
-                }
-            });
-
-            // ── Always: process factory queue completion (state) ──
-            var q = userData.farm.factory.queue;
-            if (q.length > 0 && q[0].startedAt) {
-                var pillIdx = (q[0].pillType !== undefined) ? q[0].pillType : 0;
-                var factDur = getFactoryDuration(pillIdx) * 1000;
-                if (now >= q[0].startedAt + factDur) {
-                    userData.farm.factory.completedPills[pillIdx] = (userData.farm.factory.completedPills[pillIdx] || 0) + 1;
-                    var nextStart = q[0].startedAt + factDur;
-                    q.shift();
-                    if (q.length > 0 && !q[0].startedAt) q[0].startedAt = nextStart;
-                    userData.farm.lastSave = Date.now();
-                    localStorage.setItem("OppoWaifuDataCloudPro", JSON.stringify(userData));
-                    showFarmStatus("💊 Đan Dược hoàn thành!");
-                    if (farmTabActive) { renderFactoryQueue(); updateFarmResourceDisplay(); }
-                }
+                });
             }
-
-            // ── DOM updates only when Farm tab is visible ──
-            if (!farmTabActive) return;
-
-            requestAnimationFrame(function() {
-                if (needRerender) {
-                    renderFarmPlots();
-                } else {
-                    userData.farm.plots.forEach(function(plot, i) {
-                        if (plot.cropType !== null && !plot.done && plot.plantedAt) {
-                            var remaining = Math.ceil((getCropDuration(plot.cropType) * 1000 - (Date.now() - plot.plantedAt)) / 1000);
-                            var tEl = document.getElementById("pt-" + i);
-                            if (tEl) tEl.textContent = fmt(remaining);
-                            if (CROPS[plot.cropType].duration >= 3600) {
-                                var lblEl = document.getElementById("pt-lbl-" + i);
-                                if (lblEl) lblEl.textContent = fmtHuman(remaining);
-                            }
-                        }
-                    });
-                }
-                updateFactoryTimerDisplay(Date.now());
-            });
         }
+        if(currentFarmTab==='lo')updateFactoryTimerDisplay(Date.now());
+    });
+}
+function updateFactoryTimerDisplay(now){
+    var el=document.getElementById('factory-timer');if(!el||!userData.farm)return;
+    var q=userData.farm.factory.queue;
+    if(q.length===0||!q[0].startedAt){el.textContent='--:--';el.style.color='var(--text-muted)';el.style.textShadow='none';return;}
+    var pillIdx=(q[0].pillType!==undefined)?q[0].pillType:0;
+    var dur=getFactoryDuration(pillIdx)*1000;
+    var elp=now-q[0].startedAt;
+    if(pillIdx<=1){el.style.color='var(--cyan)';el.style.textShadow='0 0 15px rgba(0,210,255,0.4)';}
+    else if(pillIdx===2){el.style.color='var(--gold)';el.style.textShadow='0 0 15px rgba(251,191,36,0.4)';}
+    else{el.style.color='var(--purple)';el.style.textShadow='0 0 20px rgba(157,78,221,0.6)';}
+    var remaining=Math.ceil((dur-elp)/1000);
+    el.textContent=remaining>0?fmt(remaining):'00:00';
+}
 
-        function updateFactoryTimerDisplay(now) {
-            var el = document.getElementById('factory-timer'); if (!el || !userData.farm) return;
-            var q = userData.farm.factory.queue;
-            if (q.length === 0 || !q[0].startedAt) {
-                el.textContent = '--:--';
-                el.style.color = 'var(--text-muted)';
-                el.style.textShadow = 'none';
-                return;
-            }
+// ════════════════════════════════════════════
+// TOUCH ANTI-RESET
+// ════════════════════════════════════════════
+let touchStartY=0;
+document.addEventListener('touchstart',function(e){touchStartY=e.touches[0].clientY;},{passive:false});
+document.addEventListener('touchmove',function(e){
+    let touchEndY=e.touches[0].clientY;
+    let tc=document.querySelector('.tab-container');
+    if(touchEndY>touchStartY&&tc&&tc.scrollTop===0){e.preventDefault();}
+},{passive:false});
 
-            var pillIdx = (q[0].pillType !== undefined) ? q[0].pillType : 0;
-            var dur = getFactoryDuration(pillIdx) * 1000;
-            var elp = now - q[0].startedAt;
-
-            if (pillIdx <= 1) {
-                el.style.color = 'var(--cyan)';
-                el.style.textShadow = '0 0 15px rgba(0,210,255,0.4)';
-            } else if (pillIdx === 2) {
-                el.style.color = 'var(--gold)';
-                el.style.textShadow = '0 0 15px rgba(251,191,36,0.4)';
-            } else {
-                el.style.color = 'var(--purple)';
-                el.style.textShadow = '0 0 20px rgba(157,78,221,0.6)';
-            }
-
-            var remaining = Math.ceil((dur - elp) / 1000);
-            el.textContent = remaining > 0 ? fmt(remaining) : '00:00';
-        }
-
-    </script>
+// ════════════════════════════════════════════
+// SWIPE TO CLOSE DRAWER
+// ════════════════════════════════════════════
+var drawerTouchStartX=0;
+document.getElementById('side-drawer').addEventListener('touchstart',function(e){drawerTouchStartX=e.touches[0].clientX;},{passive:true});
+document.getElementById('side-drawer').addEventListener('touchend',function(e){
+    var dx=drawerTouchStartX-e.changedTouches[0].clientX;
+    if(dx>60)closeDrawer();
+},{passive:true});
+</script>
 </body>
 </html>
