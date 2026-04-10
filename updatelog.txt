@@ -31,6 +31,8 @@ Version M0.5.0 (10/4/2026)
   Thêm linh túi 
   Fix tất cả lỗi
 Version SM0.5.1 (10/4/2026)
+  Thêm pháp bảo và buff
+Version SM0.5.2 (10/4/2026)
   Fix các lỗi giao diện và dữ liệu
   Chỉnh lại hiển thị và mô tả
   
