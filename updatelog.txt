@@ -23,5 +23,12 @@ Version B0.4.0 (8/4/2026)
   Thêm nhiều nâng cấp mới cho nông trại
   Qol cải thiện thao tác
   Fix tất cả lỗi 99% 💀
+Version M0.5.0 (10/4/2026)
+  Thêm shop bán pháp bảo
+  Chỉnh lại giao diện thành tựu 
+  Chỉnh lại cơ chế afk
+  Chỉnh lại 1 số nâng cấp và thêm nâng cấp
+  Thêm linh túi 
+  Fix tất cả lỗi
   
   
