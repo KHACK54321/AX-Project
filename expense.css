@@ -1,0 +1,93 @@
+/* ════════════════════════════════════════════
+   EXPENSE TRACKER STYLES
+   ════════════════════════════════════════════ */
+.expense-total-display {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--green);
+    text-align: center;
+    margin: 15px 0;
+    text-shadow: 0 0 15px rgba(16,185,129,0.3);
+}
+.expense-input-group {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+.expense-input {
+    flex: 1;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 6px;
+    color: #fff;
+    padding: 10px;
+    font-size: 14px;
+    outline: none;
+    min-width: 0;
+}
+.expense-input:focus {
+    border-color: var(--cyan);
+}
+.expense-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.expense-row:last-child {
+    border-bottom: none;
+}
+.expense-row-info {
+    display: flex;
+    flex-direction: column;
+}
+.expense-row-label {
+    font-size: 14px;
+    color: #fff;
+}
+.expense-row-time {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+.expense-row-amount {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--gold);
+}
+.expense-history-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+.expense-history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    cursor: pointer;
+}
+.expense-history-header:active {
+    background: rgba(255,255,255,0.05);
+}
+.expense-history-date {
+    font-size: 14px;
+    color: var(--cyan);
+    font-weight: 600;
+}
+.expense-history-total {
+    font-size: 14px;
+    color: var(--green);
+    font-weight: 600;
+}
+.expense-history-body {
+    padding: 0 12px 12px 12px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    display: none;
+}
+.expense-history-body.expanded {
+    display: block;
+}

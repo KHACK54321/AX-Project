@@ -1,0 +1,5 @@
+/* ── MEDITATION TAB (UPDATE AFK) ── */
+.meditation-timer-display{font-size:48px;font-weight:700;color:var(--cyan);
+    font-family:'Courier Prime',monospace;text-align:center;margin:10px 0;
+    text-shadow:0 0 30px rgba(0,210,255,0.4);letter-spacing:4px;}
+.afk-collect-card{text-align:center;padding:20px;border:2px solid var(--cyan);background:rgba(0,210,255,0.05);}

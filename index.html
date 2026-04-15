@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <title>Hệ Thống v0.5.5 (Beta)</title>
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/tabs/character.css">
+    <link rel="stylesheet" href="css/tabs/meditation.css">
+    <link rel="stylesheet" href="css/tabs/farm.css">
+    <link rel="stylesheet" href="css/tabs/achievements.css">
+    <link rel="stylesheet" href="css/tabs/journal.css">
+    <link rel="stylesheet" href="css/tabs/expense.css">
+    
+    <script src="https://accounts.google.com/gsi/client" onload="if(typeof gsiLoaded === 'function') gsiLoaded();" async defer></script>
+    <script src="https://apis.google.com/js/api.js" onload="if(typeof gapiLoaded === 'function') gapiLoaded();" async defer></script>
+</head>
+<body>
+
+<div id="loader">
+    <div class="avatar-container"><img src="" class="rotating-avatar" id="loader-img" alt="System Loader"></div>
+    <div id="hacker-log"></div>
+</div>
+
+<div id="mc-achievement">
+    <div class="mc-icon" id="mc-icon">🏆</div>
+    <div>
+        <div class="mc-header">✦ Thành Tựu Mở Khoá ✦</div>
+        <div class="mc-title" id="mc-title">Nông Dân Tập Sự</div>
+        <div class="mc-desc" id="mc-desc">Thu hoạch 100 cây trồng</div>
+    </div>
+</div>
+
+<div id="toast-container"></div>
+
+<div id="main-app">
+    <button class="hamburger-btn" onclick="toggleDrawer()">☰</button>
+
+    <div id="drawer-overlay" onclick="closeDrawer()"></div>
+
+    <div id="side-drawer">
+        <div class="drawer-header">⚔ Hệ Thống ⚔</div>
+        <div id="drawer-nav">
+            <div class="drawer-item active" id="dnav-tab-checkin" onclick="showTab('tab-checkin')">
+                <span class="di-icon">📅</span><span>Ký Danh</span>
+            </div>
+            <div class="drawer-item" id="dnav-tab-tasks" onclick="showTab('tab-tasks')">
+                <span class="di-icon">📋</span><span>Nhiệm Vụ</span>
+            </div>
+            <div class="drawer-item" id="dnav-tab-realm" onclick="showTab('tab-realm')">
+                <span class="di-icon">⚔️</span><span>Tu Vi</span>
+            </div>
+            <div class="drawer-item" id="dnav-tab-meditation" onclick="showTab('tab-meditation')">
+                <span class="di-icon">💤</span><span>Treo AFK</span>
+            </div>
+            <div class="drawer-item" id="dnav-tab-farm" onclick="showTab('tab-farm')">
+                <span class="di-icon">🌾</span><span>Nông Trại</span>
+            </div>
+            <div class="drawer-item" id="dnav-tab-shop-pb" onclick="showTab('tab-shop-pb')">
+                <span class="di-icon">🏪</span><span>Tiệm Pháp Bảo</span>
+            </div>
+            <div class="drawer-item" id="dnav-tab-inventory-pb" onclick="showTab('tab-inventory-pb')">
+                <span class="di-icon">🎒</span><span>Linh Túi</span>
+            </div>
+            <div class="drawer-item" id="dnav-tab-journal" onclick="showTab('tab-journal')">
+                <span class="di-icon">📔</span><span>Nhật Ký</span>
+            </div>
+            <div class="drawer-item" id="dnav-tab-expense" onclick="showTab('tab-expense')">
+                <span class="di-icon">💰</span><span>Chi Tiêu</span>
+            </div>
+            <div class="drawer-item" id="dnav-tab-achievements" onclick="showTab('tab-achievements')">
+                <span class="di-icon">🏆</span><span>Thành Tựu</span>
+            </div>
+            <div class="drawer-item" id="dnav-tab-system" onclick="showTab('tab-system')">
+                <span class="di-icon">⚙️</span><span>Hệ Thống</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-header">⚔ Hệ Thống ⚔</div>
+
+    <div class="global-res-bar">
+        <div class="gres">
+            <img src="img/linhthach.png" class="gres-icon" style="width:20px;height:20px;object-fit:contain;" alt="💎" onerror="this.outerHTML='<span class=\'gres-icon\'>💎</span>'">
+            <div>
+                <div class="gres-lbl">Linh Thạch</div>
+                <div class="gres-val" id="global-lt">0</div>
+            </div>
+        </div>
+        <div class="gres">
+            <span class="gres-icon">🏆</span>
+            <div>
+                <div class="gres-lbl">Danh Vọng</div>
+                <div class="gres-val" id="global-dv">0</div>
+            </div>
+        </div>
+        <div class="gres">
+            <span class="gres-icon">⚡</span>
+            <div>
+                <div class="gres-lbl">Tu Vi</div>
+                <div class="gres-val" id="global-exp">0</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-container" id="main-scroll">
+
+        <div id="tab-checkin" class="tab-content active"></div>
+        <div id="tab-tasks" class="tab-content"></div>
+        <div id="tab-realm" class="tab-content"></div>
+        <div id="tab-meditation" class="tab-content"></div>
+        <div id="tab-farm" class="tab-content"></div>
+        <div id="tab-shop-pb" class="tab-content"></div>
+        <div id="tab-inventory-pb" class="tab-content"></div>
+        <div id="tab-journal" class="tab-content"></div>
+        <div id="tab-expense" class="tab-content"></div>
+        <div id="tab-achievements" class="tab-content"></div>
+        <div id="tab-system" class="tab-content"></div>
+
+    </div>
+
+    <div id="scroll-toolbar">
+        <button class="stb-btn" onclick="scrollToTop()" title="Về đầu trang">▲</button>
+        <button class="stb-btn" id="stb-toggle" onclick="toggleScrollTb()" title="Ẩn/hiện">≡</button>
+    </div>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/utils.js"></script>
+<script src="tabs/character.js"></script>
+<script src="tabs/meditation.js"></script>
+<script src="tabs/farm.js"></script>
+<script src="tabs/achievements.js"></script>
+<script src="tabs/journal.js"></script>
+<script src="tabs/expense.js"></script>
+<script src="js/core.js"></script>
+<script src="js/gdrive.js"></script>
+</body>
+</html>
