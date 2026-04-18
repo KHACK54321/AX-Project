@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <title>Hệ Thống v0.5.5 (Beta)</title>
+    <title>Hệ Thống v1.0.0 (Pro)</title>
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/tabs/character.css">
     <link rel="stylesheet" href="css/tabs/meditation.css">
@@ -12,9 +12,10 @@
     <link rel="stylesheet" href="css/tabs/achievements.css">
     <link rel="stylesheet" href="css/tabs/journal.css">
     <link rel="stylesheet" href="css/tabs/expense.css">
-    
-    <script src="https://accounts.google.com/gsi/client" onload="if(typeof gsiLoaded === 'function') gsiLoaded();" async defer></script>
-    <script src="https://apis.google.com/js/api.js" onload="if(typeof gapiLoaded === 'function') gapiLoaded();" async defer></script>
+    <link rel="stylesheet" href="css/tabs/gacha.css">
+    <link rel="stylesheet" href="css/tabs/souls.css">
+    <link rel="stylesheet" href="css/tabs/combat.css">
+    <link rel="stylesheet" href="css/tabs/equipment.css">
 </head>
 <body>
 
@@ -45,24 +46,36 @@
             <div class="drawer-item active" id="dnav-tab-checkin" onclick="showTab('tab-checkin')">
                 <span class="di-icon">📅</span><span>Ký Danh</span>
             </div>
+            
+            <div class="drawer-item" id="dnav-tab-combat" onclick="showTab('tab-combat')">
+                <span class="di-icon">🗺️</span><span style="color:var(--gold);font-weight:700;">Chinh Phạt</span>
+            </div>
+
+            <div class="drawer-item" id="dnav-tab-gacha" onclick="showTab('tab-gacha')">
+                <span class="di-icon">🌠</span><span style="color:var(--red);font-weight:700;">Cầu Nguyện</span>
+            </div>
+            
+            <div class="drawer-item" id="dnav-tab-souls" onclick="showTab('tab-souls')">
+                <span class="di-icon">🔮</span><span style="color:var(--purple);font-weight:700;">Linh Hồn</span>
+            </div>
+            
+            <div class="drawer-item" id="dnav-tab-equipment" onclick="showTab('tab-equipment')">
+                <span class="di-icon">🛡️</span><span style="color:var(--cyan);font-weight:700;">Trang Bị & Phân Rã</span>
+            </div>
+
+            <div class="drawer-item" id="dnav-tab-realm" onclick="showTab('tab-realm')">
+                <span class="di-icon">⚔️</span><span>Tu Vi Bản Tôn</span>
+            </div>
             <div class="drawer-item" id="dnav-tab-tasks" onclick="showTab('tab-tasks')">
                 <span class="di-icon">📋</span><span>Nhiệm Vụ</span>
             </div>
-            <div class="drawer-item" id="dnav-tab-realm" onclick="showTab('tab-realm')">
-                <span class="di-icon">⚔️</span><span>Tu Vi</span>
+            <div class="drawer-item" id="dnav-tab-farm" onclick="showTab('tab-farm')">
+                <span class="di-icon">🌾</span><span>Nông Trại & Luyện Đan</span>
             </div>
             <div class="drawer-item" id="dnav-tab-meditation" onclick="showTab('tab-meditation')">
-                <span class="di-icon">💤</span><span>Treo AFK</span>
+                <span class="di-icon">💤</span><span>Treo AFK Tự Động</span>
             </div>
-            <div class="drawer-item" id="dnav-tab-farm" onclick="showTab('tab-farm')">
-                <span class="di-icon">🌾</span><span>Nông Trại</span>
-            </div>
-            <div class="drawer-item" id="dnav-tab-shop-pb" onclick="showTab('tab-shop-pb')">
-                <span class="di-icon">🏪</span><span>Tiệm Pháp Bảo</span>
-            </div>
-            <div class="drawer-item" id="dnav-tab-inventory-pb" onclick="showTab('tab-inventory-pb')">
-                <span class="di-icon">🎒</span><span>Linh Túi</span>
-            </div>
+            
             <div class="drawer-item" id="dnav-tab-journal" onclick="showTab('tab-journal')">
                 <span class="di-icon">📔</span><span>Nhật Ký</span>
             </div>
@@ -105,19 +118,21 @@
     </div>
 
     <div class="tab-container" id="main-scroll">
-
         <div id="tab-checkin" class="tab-content active"></div>
         <div id="tab-tasks" class="tab-content"></div>
         <div id="tab-realm" class="tab-content"></div>
+        
+        <div id="tab-combat" class="tab-content"></div>
+        <div id="tab-gacha" class="tab-content"></div>
+        <div id="tab-souls" class="tab-content"></div>
+        <div id="tab-equipment" class="tab-content"></div>
+        
         <div id="tab-meditation" class="tab-content"></div>
         <div id="tab-farm" class="tab-content"></div>
-        <div id="tab-shop-pb" class="tab-content"></div>
-        <div id="tab-inventory-pb" class="tab-content"></div>
         <div id="tab-journal" class="tab-content"></div>
         <div id="tab-expense" class="tab-content"></div>
         <div id="tab-achievements" class="tab-content"></div>
         <div id="tab-system" class="tab-content"></div>
-
     </div>
 
     <div id="scroll-toolbar">
@@ -134,7 +149,15 @@
 <script src="tabs/achievements.js"></script>
 <script src="tabs/journal.js"></script>
 <script src="tabs/expense.js"></script>
+<script src="tabs/gacha.js"></script>
+<script src="tabs/souls.js"></script>
+<script src="tabs/combat.js"></script>
+<script src="tabs/equipment.js"></script>
+
 <script src="js/core.js"></script>
 <script src="js/gdrive.js"></script>
+
+<script src="https://accounts.google.com/gsi/client" onload="if(typeof gsiLoaded === 'function') gsiLoaded();" async defer></script>
+<script src="https://apis.google.com/js/api.js" onload="if(typeof gapiLoaded === 'function') gapiLoaded();" async defer></script>
 </body>
 </html>
