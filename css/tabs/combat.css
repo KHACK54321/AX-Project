@@ -1,0 +1,111 @@
+/* ════════════════════════════════════════════
+   COMBAT & STORY STYLES
+   ════════════════════════════════════════════ */
+
+.act-grid { display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 15px; }
+.act-card {
+    background: rgba(0,0,0,0.6); border-radius: 8px; padding: 15px;
+    display: flex; justify-content: space-between; align-items: center;
+    border-left: 5px solid #fff; transition: transform 0.2s;
+}
+.act-card.locked { opacity: 0.5; filter: grayscale(1); pointer-events: none; border-color: #555 !important; }
+.act-card:active { transform: scale(0.98); }
+
+.act-info h3 { margin: 0 0 5px 0; font-size: 16px; color: #fff; }
+.act-info p { margin: 0; font-size: 11px; color: var(--text-muted); }
+
+/* BATTLE ARENA */
+#battle-arena { display: none; flex-direction: column; gap: 15px; }
+
+.battle-stage-header {
+    text-align: center; font-size: 20px; font-weight: 800; color: #fff;
+    background: linear-gradient(90deg, transparent, rgba(255,0,0,0.5), transparent);
+    padding: 10px; border-radius: 8px; text-transform: uppercase;
+    text-shadow: 0 0 10px rgba(255,0,0,0.8); margin-bottom: 10px;
+}
+
+.combat-row { display: flex; justify-content: center; gap: 15px; min-height: 140px; }
+
+.combat-entity {
+    width: 90px; display: flex; flex-direction: column; align-items: center;
+    position: relative; transition: transform 0.2s;
+}
+.combat-entity.dead { opacity: 0.2; filter: grayscale(1); transform: scale(0.8); }
+.combat-entity.acting { animation: attackAnim 0.3s ease; z-index: 10; }
+@keyframes attackAnim { 0%{transform:translateY(0) scale(1);} 50%{transform:translateY(-20px) scale(1.1);} 100%{transform:translateY(0) scale(1);} }
+.combat-entity.acting-enemy { animation: attackAnimEnemy 0.3s ease; z-index: 10; }
+@keyframes attackAnimEnemy { 0%{transform:translateY(0) scale(1);} 50%{transform:translateY(20px) scale(1.1);} 100%{transform:translateY(0) scale(1);} }
+
+.c-avatar-wrapper { position: relative; }
+.c-avatar {
+    width: 70px; height: 70px; object-fit: cover; border-radius: 8px;
+    border: 3px solid #fff; background: #111; box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+.boss-avatar { width: 90px; height: 90px; border-radius: 50%; box-shadow: 0 0 20px rgba(255,0,0,0.8); border: 4px solid var(--red); }
+
+.c-hp-bar-bg { width: 100%; height: 8px; background: #333; border-radius: 4px; overflow: hidden; margin-top: 8px; border: 1px solid #000; }
+.c-hp-bar-fill { height: 100%; background: #10B981; width: 100%; transition: width 0.3s ease, background 0.3s; }
+.c-hp-bar-fill.low { background: #EF4444; }
+
+.c-name { font-size: 10px; font-weight: bold; color: #fff; margin-top: 4px; text-align: center; white-space: nowrap; }
+
+/* Status Icons (Buff/Debuffs) */
+.c-status-icons { position: absolute; top: -10px; right: -10px; display: flex; gap: 2px; }
+.status-icon { width: 20px; height: 20px; border-radius: 50%; background: #000; font-size: 10px; display: flex; justify-content: center; align-items: center; border: 1px solid #fff; z-index: 5; }
+
+/* Battle Log Display */
+.battle-logger {
+    background: rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px; height: 180px; overflow-y: auto; padding: 10px;
+    font-size: 12px; font-family: monospace; display: flex; flex-direction: column; gap: 5px;
+}
+.battle-logger::-webkit-scrollbar { width: 4px; }
+.battle-logger::-webkit-scrollbar-track { background: transparent; }
+.battle-logger::-webkit-scrollbar-thumb { background: var(--cyan); border-radius: 4px; }
+
+.log-line { border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 4px; }
+.log-p-dmg { color: #EF4444; font-weight: bold; } 
+.log-e-dmg { color: #10B981; font-weight: bold; } 
+.log-heal { color: #34D399; }
+.log-skill { color: #F59E0B; font-weight: bold; }
+.log-death { color: #6B7280; font-style: italic; }
+
+.combat-controls { display: flex; justify-content: space-between; gap: 10px; margin-top: 10px; }
+
+/* ════════════════════════════════════════════
+   CHEST MODAL (RƯƠNG THƯỞNG)
+   ════════════════════════════════════════════ */
+.chest-modal {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.95); z-index: 1100; display: none;
+    flex-direction: column; justify-content: center; align-items: center;
+    backdrop-filter: blur(5px);
+}
+.chest-modal.active { display: flex; animation: fadeInModal 0.3s ease; }
+
+.chest-icon {
+    font-size: 100px; cursor: pointer; transition: transform 0.3s, filter 0.3s;
+    animation: chestBounce 1s infinite; filter: drop-shadow(0 0 15px rgba(251,191,36,0.5));
+    user-select: none;
+}
+.chest-icon:active { transform: scale(0.9); }
+.chest-icon.opened {
+    animation: none; transform: scale(1.2); filter: drop-shadow(0 0 40px var(--gold));
+    pointer-events: none;
+}
+
+@keyframes chestBounce { 
+    0%, 100% { transform: translateY(0); } 
+    50% { transform: translateY(-15px); } 
+}
+
+.chest-rewards {
+    margin-top: 30px; text-align: center; display: none;
+    animation: popReward 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+@keyframes popReward { 
+    0% { transform: scale(0); opacity: 0; } 
+    100% { transform: scale(1); opacity: 1; } 
+}
+
+.chest-r-item { font-size: 32px; font-weight: 800; margin: 15px 0; text-shadow: 0 0 10px rgba(255,255,255,0.2); }
