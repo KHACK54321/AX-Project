@@ -69,26 +69,10 @@ function renderCharacterTabHTML() {
             <div class="task-row"><span style="font-size:13px;font-weight:500;">Buff Thành Tích Tuần</span><span id="buff-weekly" class="buff-text buff-val">+0%</span></div>
             <div class="task-row"><span style="font-size:13px;font-weight:500;">Buff Luyện Đan (Thành Tựu)</span><span id="buff-alchemy-ach" class="buff-text buff-val">+0%</span></div>
             <div class="task-row"><span style="font-size:13px;font-weight:500;">Buff Bán Cây (Thành Tựu)</span><span id="buff-sell-ach" class="buff-text buff-val">+0%</span></div>
-            <div class="task-row"><span style="font-size:13px;font-weight:500;color:var(--purple);">Buff Pháp Bảo Tu Vi</span><span id="buff-phaobao" class="buff-text" style="color:var(--purple);">+0%</span></div>
+            <div class="task-row"><span style="font-size:13px;font-weight:500;color:var(--purple);">Buff Pháp Bảo</span><span id="buff-phaobao" class="buff-text" style="color:var(--purple);">+0%</span></div>
             <div class="card-header" style="margin-top:14px;padding-bottom:0;border:none;">
                 <h2 style="color:var(--cyan);">TỔNG HỆ SỐ</h2><span id="buff-total" style="color:var(--green);font-size:22px;font-weight:700;">1.00x</span>
             </div>
-        </div>`;
-
-    document.getElementById('tab-shop-pb').innerHTML = `
-        <div class="card">
-            <div class="card-header"><h2>🏪 Cửa Hàng Pháp Bảo</h2><span style="color:var(--cyan);">💎 <span id="shop-pb-lt">0</span></span></div>
-            <p>Mua Pháp bảo tăng cực mạnh chỉ số. Mua xong hãy vào Linh Túi để trang bị.</p>
-            <div id="shop-pb-list"></div>
-        </div>`;
-
-    document.getElementById('tab-inventory-pb').innerHTML = `
-        <div class="card">
-            <div class="card-header"><h2>🎒 Linh Túi (Trang Bị)</h2><span id="pb-equip-count" style="color:var(--gold);font-weight:700;">0/5</span></div>
-            <p>Tối đa trang bị <strong>5 pháp bảo</strong>. Các chỉ số được cộng dồn (Additive) để tránh lạm phát.</p>
-            <div id="equipped-pb-list" style="margin-bottom:15px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px;"></div>
-            <h3>Kho chứa</h3>
-            <div id="inventory-pb-list"></div>
         </div>`;
 
     document.getElementById('tab-system').innerHTML = `
@@ -208,38 +192,4 @@ function isNewerVersion(remote,local) {
     var r=remote.split('.').map(Number),l=local.split('.').map(Number);
     for(var i=0;i<Math.max(r.length,l.length);i++){var rv=r[i]||0,lv=l[i]||0;if(rv>lv)return true;if(rv<lv)return false;}
     return false;
-}
-
-// ════════════════════════════════════════════
-// PHÁP BẢO RENDER
-// ════════════════════════════════════════════
-function buyPhapBao(id) {
-    let item = PHAP_BAO_DATA.find(p => p.id === id);
-    if(userData.pbInv.includes(id) || (userData.linhThach || 0) < item.price) return;
-    userData.linhThach -= item.price; userData.pbInv.push(id);
-    saveData(); renderShopPB(); updateGlobalLT(); updateUI(); renderMeditation(); showToast("Đã mua " + item.name, "success");
-}
-function toggleEquipPB(id) {
-    let idx = userData.pbEquipped.indexOf(id);
-    if(idx > -1) { userData.pbEquipped.splice(idx, 1); }
-    else { if(userData.pbEquipped.length >= 5) { showToast("Tối đa 5 pháp bảo!", "error"); return; } userData.pbEquipped.push(id); }
-    saveData(); renderInventoryPB(); updateUI(); renderMeditation();
-}
-function renderShopPB() {
-    let el = document.getElementById('shop-pb-list'); if(!el) return;
-    document.getElementById('shop-pb-lt').innerText = Math.floor(userData.linhThach || 0);
-    el.innerHTML = PHAP_BAO_DATA.map(pb => {
-        let owned = userData.pbInv.includes(pb.id);
-        return `<div class="upgrade-row ${owned ? 'owned-card' : ''}"><div class="upgrade-info" style="display:flex;gap:10px;align-items:center;"><div style="font-size:32px;">${pb.emoji}</div><div><div class="upgrade-name">${pb.name}</div><div class="upgrade-desc" style="color:var(--cyan);font-weight:600;">${pb.desc}</div></div></div><button class="upg-btn lt-upg-btn" ${owned?'disabled':''} onclick="buyPhapBao('${pb.id}')">${owned?'✅ Sở Hữu':pb.price+'💎'}</button></div>`;
-    }).join('');
-}
-function renderInventoryPB() {
-    let invEl = document.getElementById('inventory-pb-list'); let eqEl = document.getElementById('equipped-pb-list'); if(!invEl || !eqEl) return;
-    document.getElementById('pb-equip-count').innerText = userData.pbEquipped.length + "/5";
-    invEl.innerHTML = userData.pbInv.map(id => { let pb = PHAP_BAO_DATA.find(p => p.id === id); if(userData.pbEquipped.includes(id)) return '';
-        return `<div class="inv-row"><span style="font-size:28px;flex-shrink:0;text-align:center;width:40px;">${pb.emoji}</span><div class="inv-info"><div class="inv-name">${pb.name}</div><div class="inv-count">${pb.desc}</div></div><button class="inv-btn use-btn" onclick="toggleEquipPB('${pb.id}')">Trang bị</button></div>`;
-    }).join('');
-    eqEl.innerHTML = userData.pbEquipped.map(id => { let pb = PHAP_BAO_DATA.find(p => p.id === id);
-        return `<div class="inv-row" style="background:rgba(0,210,255,0.05); border-color:var(--cyan);"><span style="font-size:28px;flex-shrink:0;text-align:center;width:40px;">${pb.emoji}</span><div class="inv-info"><div class="inv-name" style="color:var(--cyan);">${pb.name} (Đang dùng)</div><div class="inv-count" style="color:var(--cyan);">${pb.desc}</div></div><button class="inv-btn sell-btn" onclick="toggleEquipPB('${pb.id}')">Tháo</button></div>`;
-    }).join('');
 }
