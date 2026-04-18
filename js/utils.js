@@ -1,5 +1,5 @@
 // ════════════════════════════════════════════
-// FORMAT HELPERS
+// FORMAT HELPERS & STAT CALCULATOR
 // ════════════════════════════════════════════
 function fmt(s){
     if(s<=0)return"00:00"; s=Math.floor(s);
@@ -13,8 +13,24 @@ function fmtHuman(s){
     var h=Math.floor(s/3600),m=Math.floor((s%3600)/60);if(h>0)return"~"+h+"h "+m+"m";return"~"+m+"m";
 }
 
+function getSoulStats(dbData, sData) {
+    let multiplier = 1 + (sData.level - 1) * 0.1;
+    let hp = Math.floor(dbData.hp * multiplier) + (sData.permHp || 0);
+    let atk = Math.floor(dbData.atk * multiplier) + (sData.permAtk || 0);
+    let spd = Math.floor(dbData.spd * multiplier) + (sData.permSpd || 0);
+
+    let pbHp = getPBBonus('hp');
+    let pbDmg = getPBBonus('dmg');
+
+    return {
+        hp: Math.floor(hp * (1 + pbHp)),
+        atk: Math.floor(atk * (1 + pbDmg)),
+        spd: spd
+    };
+}
+
 // ════════════════════════════════════════════
-// TOAST / NOTIFICATIONS
+// TOAST / ACHIEVEMENTS
 // ════════════════════════════════════════════
 function showToast(msg, type, btnLabel, btnAction) {
     var container=document.getElementById('toast-container');
@@ -35,6 +51,17 @@ function showMcAchievement(icon, title, desc) {
     el.classList.add('show');
     clearTimeout(el._t);
     el._t=setTimeout(function(){el.classList.remove('show');},3500);
+}
+
+function checkAchievements() {
+    if(!userData.achievements) userData.achievements={};
+    ACHIEVEMENTS.forEach(function(a){
+        if(!userData.achievements[a.id] && a.check(userData)){
+            userData.achievements[a.id] = true;
+            showMcAchievement(a.icon, a.name, "Mở khóa Thành Tựu Mới!");
+            showToast("🏆 Thành tựu: "+a.name,'success');
+        }
+    });
 }
 
 // ════════════════════════════════════════════
@@ -74,8 +101,31 @@ function migrateData(data) {
         if(!data.journal) data.journal = {};
         if(!data.expense) data.expense = {};
     }
+    if(v<5) { 
+        if(!data.gacha) data.gacha = { pity5: 0, pity6: 0, totalRolls: 0 };
+        if(!data.souls) data.souls = {};
+    }
+    if(v<6) { 
+        if(!data.team) data.team = [null, null, null];
+    }
+    if(v<7) {
+        if(!data.combat) data.combat = { maxActCleared: 0 };
+    }
+    if(v<8) { // Phase 4 Migration
+        if(typeof data.tinhHoa === 'undefined') data.tinhHoa = 0;
+        if(typeof data.afkChests === 'undefined') data.afkChests = 0;
+        if(typeof data.afkPendingExp === 'undefined') data.afkPendingExp = 0;
+        if(!data.farm.pillInv) data.farm.pillInv = {};
+        
+        // Convert old PB array to 6 fixed slots
+        let oldPb = data.pbEquipped || [];
+        data.pbEquipped = [null, null, null, null, null, null];
+        for(let i=0; i<Math.min(oldPb.length, 6); i++) {
+            data.pbEquipped[i] = oldPb[i];
+        }
+    }
 
-    if(!data.pbInv || !Array.isArray(data.pbInv)) { data.pbInv = []; data.pbEquipped = []; }
+    if(!data.pbInv || !Array.isArray(data.pbInv)) { data.pbInv = []; data.pbEquipped = [null, null, null, null, null, null]; }
     data.schemaVersion=SCHEMA_VERSION;
     return data;
 }
@@ -93,20 +143,6 @@ function getMidnight(d){return new Date(d).setHours(0,0,0,0);}
 function getLastSundayMidnight(){var d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-d.getDay());return d.getTime();}
 
 // ════════════════════════════════════════════
-// ACHIEVEMENTS CHECK
-// ════════════════════════════════════════════
-function checkAchievements() {
-    if(!userData.achievements) userData.achievements={};
-    ACHIEVEMENTS.forEach(function(a){
-        if(!userData.achievements[a.id] && a.check(userData)){
-            userData.achievements[a.id] = true;
-            showMcAchievement(a.icon, a.name, "Mở khóa Thành Tựu Mới!");
-            showToast("🏆 Thành tựu: "+a.name,'success');
-        }
-    });
-}
-
-// ════════════════════════════════════════════
 // CENTRALIZED ADDITIVE BONUS SYSTEM
 // ════════════════════════════════════════════
 function getAchBonus(buffType) {
@@ -118,8 +154,10 @@ function getPBBonus(type) {
     let total = 0;
     if(!userData.pbEquipped) return total;
     userData.pbEquipped.forEach(id => {
-        let pb = PHAP_BAO_DATA.find(p => p.id === id);
-        if(pb && pb.type === type) total += pb.bonus;
+        if(id) {
+            let pb = PHAP_BAO_DATA.find(p => p.id === id);
+            if(pb && pb.type === type) total += pb.bonus;
+        }
     });
     return total;
 }
@@ -151,9 +189,8 @@ function getFactorySpeedMult() {
 function buffClass(val) { if(val>=0.3) return'buff-13p'; if(val>=0.2) return'buff-12'; if(val>=0.1) return'buff-11'; return'buff-10'; }
 
 // ════════════════════════════════════════════
-// AFK RATE HELPERS
+// AFK LIMIT
 // ════════════════════════════════════════════
-function getAfkRate() { return 1.0 * (1.0 + getPBBonus('afk') + getAchBonus('meditation')); }
 function getAfkLimitMs() { return (8 + ((userData.farm.upgrades2.afkCap || 0) * 2)) * 3600 * 1000; }
 
 // ════════════════════════════════════════════
@@ -164,7 +201,6 @@ function updateGlobalLT(){
     document.getElementById('global-lt').textContent=lt;
     var flt=document.getElementById('farm-linhthach');if(flt)flt.textContent=lt;
     var slt=document.getElementById('shop-lt-display');if(slt)slt.textContent=lt;
-    var pbLt=document.getElementById('shop-pb-lt');if(pbLt)pbLt.textContent=lt;
 }
 function updateUI() {
     var btnCi=document.getElementById("btn-checkin");
@@ -207,5 +243,11 @@ function updateUI() {
     document.getElementById("global-lt").innerText=Math.floor(userData.linhThach||0);
     document.getElementById("global-dv").innerText=userData.points||0;
     document.getElementById("global-exp").innerText=userData.exp||0;
-    updateFarmResourceDisplay(); renderFarmUpgrades();
+    
+    if(typeof updateFarmResourceDisplay === 'function') updateFarmResourceDisplay(); 
+    if(typeof renderFarmUpgrades === 'function') renderFarmUpgrades();
+    if(typeof renderGachaTab === 'function') renderGachaTab();
+    if(typeof renderSoulsTab === 'function') renderSoulsTab(); 
+    if(typeof renderCombatTab === 'function') renderCombatTab(); 
+    if(typeof renderEquipmentTab === 'function') renderEquipmentTab();
 }
