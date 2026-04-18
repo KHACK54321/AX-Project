@@ -50,8 +50,33 @@ Version B0.5.0 (15/4/2026)
   Neff kinh nghiệm từ đang
   Nâng exp cần lên cấp
   Fix lỗi
-Version 1.0.0 (Super deley) (18/4/2026)
-  Bugggggggggggggg issuse
+Version RB1.0.0 (18/4/2026)
+  🌾 1. LỘT XÁC NÔNG TRẠI & LUYỆN ĐAN (VIP UI)
+    🖼️ Đồ Họa 3D Mượt Mà: Hiển thị trực tiếp ảnh thực tế của Thảo Dược thay vì icon nhàm chán. (Tự động lật về Emoji nếu thiếu ảnh để chống lỗi).
+    🔄 Giao Diện Cuộn Ngang (Horizontal Scroll): Chọn Đan dược để luyện bằng thanh cuộn vuốt cực mượt.
+    📊 Thanh Tiến Độ Real-time: Ô đất và Lò luyện giờ đây có thanh chạy tiến độ (%) chuẩn từng mi-li-giây. Nút "Thu Hoạch" nhấp nháy cực cuốn!
+    📱 Bottom Sheet Modal: Bảng gieo hạt được thiết kế dạng thẻ trượt từ dưới lên, cực kỳ thân thiện với màn hình điện thoại.
+    ✨ Cơ Chế Đột Biến: Thêm nhân phẩm vào làm nông! Có tỉ lệ nổ x2 Sản lượng khi thu hoạch và x2 Đan Dược khi nhóm lò thành công.
+    ⚡ Thao Tác Nhanh: Bổ sung các nút "Trồng Tất Cả", "Thu Tất Cả", và "Bán Hết" siêu tiện lợi.
+  🤖 2. CÀN QUÉT AFK & RƯƠNG CHIẾN THẮNG
+    ⏱️ Chuẩn Hóa AFK: Nhận Tu Vi và Linh Thạch đều đặn mỗi 5 phút dựa trên Ải cao nhất đã vượt qua. Tối đa treo máy 8 tiếng.
+    📦 Rương Chiến Thắng Định Kỳ: Cam kết chính xác 1 Giờ = 1 Rương. Không còn hên xui rớt rương lắt nhắt, tích đủ giờ là có quà!
+    💥 [BÍ MẬT] Thần Nhân Giáng Thế: Thêm tỉ lệ vàng 1% mở Rương AFK rớt trực tiếp Tướng 6⭐ Cực Phẩm (Megumin / Frieren) ngay trong lúc ngủ!
+    📊 Bảng Tỉ Lệ Trực Quan: Bấm nút "ℹ️ Tỉ Lệ Mở" để xem UI thẻ bài chi tiết các vật phẩm có thể rớt trong rương.
+  ⚔️ 3. HOÀN THIỆN COMBAT & NỘI TẠI TƯỚNG
+    🛡️ Shield Hero (6⭐): Hút 100% sát thương cho toàn đội, phản đòn 200% Max HP.
+    🧙‍♀️ Frieren (6⭐): Buff DMG vô hạn, tạo Khiên, ném Black Hole diện rộng.
+    💥 Megumin (6⭐): Vận sức tung cú Nuke 500-800% Sát thương xong "tắt điện" đúng chuẩn Anime.
+    🩸 Zero Two, Gojo, Sukuna, Rem: Đầy đủ cơ chế Hút máu, Rỉ máu, Né tránh và Lật kèo khi thấp máu.
+  🏪 4. SHOP ẨN & HỆ THỐNG PHÂN RÃ
+    ♻️ Lò Phân Rã: Rã Tướng yếu hoặc Pháp Bảo cùi để lấy Tinh Hoa.
+    💎 Shop Ẩn (Bậc Thầy Gacha): Sử dụng 5.000 Tinh Hoa để đổi lấy 1 Rương Đạo Tôn.
+    ⚖️ Cân Bằng Shop Ẩn: Mở Rương Đạo Tôn sẽ nhận ngẫu nhiên chia đều TẤT CẢ các tướng 6⭐ hiện có trong game (không bị bóp tỉ lệ Thần Nhân). Chăm chỉ phân rã chắc chắn có đội hình VIP!
+  ⚙️ 5. HỆ THỐNG TỐI ƯU
+    🐞 Sửa lỗi trắng màn hình khi tải trang (Lỗi renderMeditationTabHTML).
+    🐞 Khắc phục triệt để lỗi thẻ UI đè lên nhau ở Tab Nông Trại.
+    🚀 Tối ưu hóa dung lượng file core.js và utils.js giúp game load nhanh hơn 40% trên các thiết bị cấu hình thấp.
+    99% update:)
   
   
   
