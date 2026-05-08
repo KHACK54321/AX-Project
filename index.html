@@ -2,319 +2,162 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>AirType - Bàn phím ảo không chạm (Web)</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 20px;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #1e1e1e;
-            color: white;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            user-select: none;
-        }
-        #output {
-            width: 80%;
-            max-width: 800px;
-            height: 80px;
-            font-size: 24px;
-            padding: 10px;
-            margin-bottom: 20px;
-            background: #333;
-            color: #fff;
-            border: 2px solid #555;
-            border-radius: 8px;
-            text-align: center;
-        }
-        #keyboard {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            background: rgba(0,0,0,0.6);
-            padding: 10px;
-            border-radius: 12px;
-            backdrop-filter: blur(10px);
-            border: 1px solid #444;
-        }
-        .row {
-            display: flex;
-            gap: 6px;
-            justify-content: center;
-        }
-        .key {
-            background: #2b2b2b;
-            color: #ddd;
-            border: 1px solid #555;
-            border-radius: 6px;
-            min-width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 14px;
-            transition: 0.1s ease;
-        }
-        .key.wide {
-            min-width: 70px;
-        }
-        .key.space {
-            min-width: 250px;
-        }
-        .key.hover {
-            background: #3a6ea5;
-            border-color: #8ab4f8;
-            color: white;
-            transform: scale(1.05);
-        }
-        .key.click {
-            background: #00bcd4;
-            border-color: #fff;
-            color: #000;
-        }
-        #cursor-dot {
-            position: fixed;
-            width: 15px;
-            height: 15px;
-            background: red;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 999;
-            transform: translate(-50%, -50%);
-            box-shadow: 0 0 10px red;
-            display: none;
-        }
-        #video {
-            position: fixed;
-            bottom: 10px;
-            right: 10px;
-            width: 160px;
-            height: 120px;
-            border: 2px solid #555;
-            border-radius: 8px;
-            z-index: 10;
-            transform: scaleX(-1); /* gương */
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <title>Hệ Thống v1.0.0 (Pro)</title>
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/tabs/character.css">
+    <link rel="stylesheet" href="css/tabs/meditation.css">
+    <link rel="stylesheet" href="css/tabs/farm.css">
+    <link rel="stylesheet" href="css/tabs/achievements.css">
+    <link rel="stylesheet" href="css/tabs/journal.css">
+    <link rel="stylesheet" href="css/tabs/expense.css">
+    <link rel="stylesheet" href="css/tabs/gacha.css">
+    <link rel="stylesheet" href="css/tabs/souls.css">
+    <link rel="stylesheet" href="css/tabs/combat.css">
+    <link rel="stylesheet" href="css/tabs/equipment.css">
 </head>
 <body>
 
-    <!-- Ô hiển thị văn bản đã gõ -->
-    <input type="text" id="output" placeholder="Văn bản sẽ hiện ở đây..." readonly>
+<div id="loader">
+    <div class="avatar-container"><img src="" class="rotating-avatar" id="loader-img" alt="System Loader"></div>
+    <div id="hacker-log"></div>
+</div>
 
-    <!-- Bàn phím ảo -->
-    <div id="keyboard"></div>
+<div id="mc-achievement">
+    <div class="mc-icon" id="mc-icon">🏆</div>
+    <div>
+        <div class="mc-header">✦ Thành Tựu Mở Khoá ✦</div>
+        <div class="mc-title" id="mc-title">Nông Dân Tập Sự</div>
+        <div class="mc-desc" id="mc-desc">Thu hoạch 100 cây trồng</div>
+    </div>
+</div>
 
-    <!-- Con trỏ đỏ theo ngón tay -->
-    <div id="cursor-dot"></div>
+<div id="toast-container"></div>
 
-    <!-- Khung camera nhỏ (ẩn nếu không muốn thấy) -->
-    <video id="video" autoplay playsinline></video>
+<div id="main-app">
+    <button class="hamburger-btn" onclick="toggleDrawer()">☰</button>
 
-    <!-- Import MediaPipe Hands -->
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3/camera_utils.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4/hands.js"></script>
+    <div id="drawer-overlay" onclick="closeDrawer()"></div>
 
-    <script>
-        const outputField = document.getElementById('output');
-        const keyboardDiv = document.getElementById('keyboard');
-        const cursorDot = document.getElementById('cursor-dot');
-        const videoElement = document.getElementById('video');
+    <div id="side-drawer">
+        <div class="drawer-header">⚔ Hệ Thống ⚔</div>
+        <div id="drawer-nav">
+            <div class="drawer-item active" id="dnav-tab-checkin" onclick="showTab('tab-checkin')">
+                <span class="di-icon">📅</span><span>Ký Danh</span>
+            </div>
+            
+            <div class="drawer-item" id="dnav-tab-combat" onclick="showTab('tab-combat')">
+                <span class="di-icon">🗺️</span><span style="color:var(--gold);font-weight:700;">Chinh Phạt</span>
+            </div>
 
-        // Định nghĩa bàn phím (giống bản Python)
-        const keyboardLayout = [
-            ['Exit','`','1','2','3','4','5','6','7','8','9','0','-','=','BS'],
-            ['Tab','q','w','e','r','t','y','u','i','o','p','[',']','\\'],
-            ['Caps','a','s','d','f','g','h','j','k','l',';',"'",'Enter'],
-            ['Shift','z','x','c','v','b','n','m',',','.','/','Shift'],
-            ['Ctrl','Win','Alt','Space','Alt','Ctrl']
-        ];
+            <div class="drawer-item" id="dnav-tab-gacha" onclick="showTab('tab-gacha')">
+                <span class="di-icon">🌠</span><span style="color:var(--red);font-weight:700;">Cầu Nguyện</span>
+            </div>
+            
+            <div class="drawer-item" id="dnav-tab-souls" onclick="showTab('tab-souls')">
+                <span class="di-icon">🔮</span><span style="color:var(--purple);font-weight:700;">Linh Hồn</span>
+            </div>
+            
+            <div class="drawer-item" id="dnav-tab-equipment" onclick="showTab('tab-equipment')">
+                <span class="di-icon">🛡️</span><span style="color:var(--cyan);font-weight:700;">Trang Bị & Phân Rã</span>
+            </div>
 
-        const specialKeys = {
-            'BS': 'Backspace',
-            'Tab': 'Tab',
-            'Caps': 'CapsLock',
-            'Enter': 'Enter',
-            'Shift': 'Shift',
-            'Ctrl': 'Control',
-            'Alt': 'Alt',
-            'Win': 'Meta',
-            'Space': ' '
-        };
+            <div class="drawer-item" id="dnav-tab-realm" onclick="showTab('tab-realm')">
+                <span class="di-icon">⚔️</span><span>Tu Vi Bản Tôn</span>
+            </div>
+            <div class="drawer-item" id="dnav-tab-tasks" onclick="showTab('tab-tasks')">
+                <span class="di-icon">📋</span><span>Nhiệm Vụ</span>
+            </div>
+            <div class="drawer-item" id="dnav-tab-farm" onclick="showTab('tab-farm')">
+                <span class="di-icon">🌾</span><span>Nông Trại & Luyện Đan</span>
+            </div>
+            <div class="drawer-item" id="dnav-tab-meditation" onclick="showTab('tab-meditation')">
+                <span class="di-icon">💤</span><span>Treo AFK Tự Động</span>
+            </div>
+            
+            <div class="drawer-item" id="dnav-tab-journal" onclick="showTab('tab-journal')">
+                <span class="di-icon">📔</span><span>Nhật Ký</span>
+            </div>
+            <div class="drawer-item" id="dnav-tab-expense" onclick="showTab('tab-expense')">
+                <span class="di-icon">💰</span><span>Chi Tiêu</span>
+            </div>
+            <div class="drawer-item" id="dnav-tab-achievements" onclick="showTab('tab-achievements')">
+                <span class="di-icon">🏆</span><span>Thành Tựu</span>
+            </div>
+            <div class="drawer-item" id="dnav-tab-system" onclick="showTab('tab-system')">
+                <span class="di-icon">⚙️</span><span>Hệ Thống</span>
+            </div>
+        </div>
+    </div>
 
-        // Xây dựng bàn phím HTML
-        keyboardLayout.forEach((row) => {
-            const rowDiv = document.createElement('div');
-            rowDiv.className = 'row';
-            row.forEach(label => {
-                const keyDiv = document.createElement('div');
-                keyDiv.className = 'key';
-                if (label === 'Space') keyDiv.classList.add('space');
-                if (['Exit','Tab','Caps','Enter','Shift','Ctrl','Alt','Win','BS'].includes(label))
-                    keyDiv.classList.add('wide');
-                keyDiv.textContent = label;
-                keyDiv.dataset.key = label;
-                rowDiv.appendChild(keyDiv);
-            });
-            keyboardDiv.appendChild(rowDiv);
-        });
+    <div class="app-header">⚔ Hệ Thống ⚔</div>
 
-        // MediaPipe Hands
-        const hands = new Hands({
-            locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4/${file}`
-        });
+    <div class="global-res-bar">
+        <div class="gres">
+            <img src="img/linhthach.png" class="gres-icon" style="width:20px;height:20px;object-fit:contain;" alt="💎" onerror="this.outerHTML='<span class=\'gres-icon\'>💎</span>'">
+            <div>
+                <div class="gres-lbl">Linh Thạch</div>
+                <div class="gres-val" id="global-lt">0</div>
+            </div>
+        </div>
+        <div class="gres">
+            <span class="gres-icon">🏆</span>
+            <div>
+                <div class="gres-lbl">Danh Vọng</div>
+                <div class="gres-val" id="global-dv">0</div>
+            </div>
+        </div>
+        <div class="gres">
+            <span class="gres-icon">⚡</span>
+            <div>
+                <div class="gres-lbl">Tu Vi</div>
+                <div class="gres-val" id="global-exp">0</div>
+            </div>
+        </div>
+    </div>
 
-        hands.setOptions({
-            maxNumHands: 1,
-            modelComplexity: 1,
-            minDetectionConfidence: 0.7,
-            minTrackingConfidence: 0.7
-        });
+    <div class="tab-container" id="main-scroll">
+        <div id="tab-checkin" class="tab-content active"></div>
+        <div id="tab-tasks" class="tab-content"></div>
+        <div id="tab-realm" class="tab-content"></div>
+        
+        <div id="tab-combat" class="tab-content"></div>
+        <div id="tab-gacha" class="tab-content"></div>
+        <div id="tab-souls" class="tab-content"></div>
+        <div id="tab-equipment" class="tab-content"></div>
+        
+        <div id="tab-meditation" class="tab-content"></div>
+        <div id="tab-farm" class="tab-content"></div>
+        <div id="tab-journal" class="tab-content"></div>
+        <div id="tab-expense" class="tab-content"></div>
+        <div id="tab-achievements" class="tab-content"></div>
+        <div id="tab-system" class="tab-content"></div>
+    </div>
 
-        hands.onResults(onHandResults);
+    <div id="scroll-toolbar">
+        <button class="stb-btn" onclick="scrollToTop()" title="Về đầu trang">▲</button>
+        <button class="stb-btn" id="stb-toggle" onclick="toggleScrollTb()" title="Ẩn/hiện">≡</button>
+    </div>
+</div>
 
-        // Camera
-        const cameraUtils = new Camera(videoElement, {
-            onFrame: async () => {
-                await hands.send({image: videoElement});
-            },
-            width: 640,
-            height: 480
-        });
-        cameraUtils.start();
+<script src="js/data.js"></script>
+<script src="js/utils.js"></script>
+<script src="tabs/character.js"></script>
+<script src="tabs/meditation.js"></script>
+<script src="tabs/farm.js"></script>
+<script src="tabs/achievements.js"></script>
+<script src="tabs/journal.js"></script>
+<script src="tabs/expense.js"></script>
+<script src="tabs/gacha.js"></script>
+<script src="tabs/souls.js"></script>
+<script src="tabs/combat.js"></script>
+<script src="tabs/equipment.js"></script>
 
-        // Biến theo dõi
-        let isPinching = false;
-        let prevPinching = false;
-        let currentFingerX = 0, currentFingerY = 0;
-        let hoveredKeyElement = null;
-        let clickedKeyElement = null;
+<script src="js/core.js"></script>
+<script src="js/gdrive.js"></script>
 
-        function onHandResults(results) {
-            if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
-                const landmarks = results.multiHandLandmarks[0];
-                const indexTip = landmarks[8];  // ngón trỏ
-                const thumbTip = landmarks[4];  // ngón cái
-
-                // Lấy toạ độ theo video (đã flip ngang do transform: scaleX(-1))
-                // Video width/height
-                const vidW = videoElement.videoWidth;
-                const vidH = videoElement.videoHeight;
-
-                // Chuyển đổi sang pixel trên cửa sổ (giữ nguyên tỉ lệ)
-                // Vì video bị flip ngang nên phải đảo x = 1 - x
-                const ix = (1 - indexTip.x) * vidW;
-                const iy = indexTip.y * vidH;
-                const tx = (1 - thumbTip.x) * vidW;
-                const ty = thumbTip.y * vidH;
-
-                // Tỉ lệ video so với hiển thị thực tế của video element (có thể khác)
-                const displayW = videoElement.clientWidth;
-                const displayH = videoElement.clientHeight;
-                const scaleX = displayW / vidW;
-                const scaleY = displayH / vidH;
-
-                // Toạ độ ngón trỏ trên toàn trang (gốc từ video)
-                const videoRect = videoElement.getBoundingClientRect();
-                const fingerScreenX = videoRect.left + ix * scaleX;
-                const fingerScreenY = videoRect.top + iy * scaleY;
-
-                // Cập nhật con trỏ đỏ
-                cursorDot.style.display = 'block';
-                cursorDot.style.left = fingerScreenX + 'px';
-                cursorDot.style.top = fingerScreenY + 'px';
-                currentFingerX = fingerScreenX;
-                currentFingerY = fingerScreenY;
-
-                // Phát hiện pinch
-                const dist = Math.sqrt((ix - tx)**2 + (iy - ty)**2);
-                const pinchThreshold = 40; // pixel (tuỳ chỉnh)
-                prevPinching = isPinching;
-                isPinching = dist < pinchThreshold;
-
-                // Hover
-                const elements = document.elementsFromPoint(fingerScreenX, fingerScreenY);
-                let newHover = null;
-                for (let el of elements) {
-                    if (el.classList.contains('key')) {
-                        newHover = el;
-                        break;
-                    }
-                }
-
-                // Xoá hover cũ
-                if (hoveredKeyElement && hoveredKeyElement !== newHover) {
-                    hoveredKeyElement.classList.remove('hover');
-                }
-                // Thêm hover mới
-                if (newHover && newHover !== hoveredKeyElement) {
-                    newHover.classList.add('hover');
-                }
-                hoveredKeyElement = newHover;
-
-                // Xử lý pinch (click)
-                if (isPinching && !prevPinching) {
-                    if (newHover) {
-                        // Hiệu ứng click
-                        newHover.classList.add('click');
-                        clickedKeyElement = newHover;
-                        triggerKey(newHover.dataset.key);
-                        setTimeout(() => {
-                            if (clickedKeyElement === newHover) {
-                                newHover.classList.remove('click');
-                                // Nếu vẫn hover thì giữ màu hover
-                                if (hoveredKeyElement === newHover) {
-                                    newHover.classList.add('hover');
-                                }
-                            }
-                        }, 200);
-                    }
-                } else if (!isPinching && prevPinching) {
-                    if (clickedKeyElement) {
-                        clickedKeyElement.classList.remove('click');
-                        if (hoveredKeyElement === clickedKeyElement) {
-                            hoveredKeyElement.classList.add('hover');
-                        }
-                        clickedKeyElement = null;
-                    }
-                }
-            } else {
-                // Không có tay
-                cursorDot.style.display = 'none';
-                if (hoveredKeyElement) {
-                    hoveredKeyElement.classList.remove('hover');
-                    hoveredKeyElement = null;
-                }
-            }
-        }
-
-        function triggerKey(label) {
-            if (label === 'Exit') {
-                // Dừng camera và thông báo
-                cameraUtils.stop();
-                alert('AirType đã dừng. Tải lại trang để dùng tiếp.');
-                return;
-            }
-            if (label === 'Space') {
-                outputField.value += ' ';
-            } else if (label === 'BS') {
-                outputField.value = outputField.value.slice(0, -1);
-            } else if (['Tab','Caps','Enter','Shift','Ctrl','Alt','Win'].includes(label)) {
-                // Các phím đặc biệt không gõ ký tự, có thể mô phỏng bằng event (tạm bỏ qua)
-                console.log('Pressed special key:', label);
-            } else {
-                outputField.value += label;
-            }
-        }
-
-        // Đảm bảo camera dừng khi rời trang
-        window.addEventListener('beforeunload', () => {
-            cameraUtils.stop();
-        });
-    </script>
+<script src="https://accounts.google.com/gsi/client" onload="if(typeof gsiLoaded === 'function') gsiLoaded();" async defer></script>
+<script src="https://apis.google.com/js/api.js" onload="if(typeof gapiLoaded === 'function') gapiLoaded();" async defer></script>
 </body>
 </html>
