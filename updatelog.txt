@@ -81,6 +81,10 @@ Version SM1.0.01 (21/4/2026)
   Buff exp lên cấp
   Tăng giá rương 6 sao
   Ngừng phát triển cho đến khi học đc skill HTML, JacaScript and CSS (Vẫn sữa thông tin nhỏ, Thêm vài thứ lặt vặt)
+Version B2.0.0BetaT (10/5/2026)
+  Bước vào giai đoạn tôi ưu và chỉnh sữa code! soon...
+
+
   
   
   
