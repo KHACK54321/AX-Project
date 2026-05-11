@@ -245,6 +245,11 @@ input,textarea,select{user-select:text;}
 input[type=range]{width:100%;-webkit-appearance:none;appearance:none;height:3px;border-radius:2px;outline:none;background:rgba(255,255,255,.1);cursor:pointer;}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;background:var(--cyan);border-radius:50%;cursor:pointer;box-shadow:0 0 10px rgba(0,212,255,.4);}
 
+/* ===== SCROLL TO TOP ===== */
+#scroll-top{position:fixed;right:13px;bottom:calc(var(--nav-h) + var(--safe) + 10px);z-index:99;width:34px;height:34px;border-radius:50%;background:rgba(0,212,255,.15);border:1px solid rgba(0,212,255,.35);color:var(--cyan);font-size:15px;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;backdrop-filter:blur(8px);}
+#scroll-top.vis{opacity:1;pointer-events:all;}
+#scroll-top:active{transform:scale(.88);background:rgba(0,212,255,.28);}
+
 /* ===== CONFIRM ===== */
 .cov{position:fixed;inset:0;background:rgba(2,5,15,.9);z-index:300;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;}
 .cov.open{opacity:1;pointer-events:all;}
@@ -452,7 +457,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
           </div>
           <button class="btn-s" onclick="openUpdateLog()">XEM</button>
         </div>
-        <div class="app-info" style="padding:10px 0 0">//&nbsp;NHẬT KÝ v2.0<br>DATA STORED ON DEVICE<br>NO CLOUD&nbsp;·&nbsp;NO TRACKING</div>
+        <div class="app-info" style="padding:10px 0 0">//&nbsp;NHẬT KÝ v2.1<br>DATA STORED ON DEVICE<br>NO CLOUD&nbsp;·&nbsp;NO TRACKING</div>
       </div>
 
     </div>
@@ -547,6 +552,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 <!-- File inputs -->
 <input type="file" id="file-gallery" accept="image/*" style="display:none">
 <input type="file" id="file-camera" accept="image/*" capture="environment" style="display:none">
+<button id="scroll-top" onclick="document.getElementById('content').scrollTo({top:0,behavior:'smooth'})">▲</button>
 <div id="toast"></div>
 
 <script>
@@ -1221,6 +1227,11 @@ function doConfirm(type){
 
 ['jm','lm','hm'].forEach(id=>{document.getElementById(id).addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});});
 document.getElementById('cov').addEventListener('click',function(e){if(e.target===this)closeCov();});
+
+/* ===== SCROLL TO TOP ===== */
+document.getElementById('content').addEventListener('scroll',function(){
+  document.getElementById('scroll-top').classList.toggle('vis',this.scrollTop>120);
+});
 
 /* ===== INIT ===== */
 (function init(){
