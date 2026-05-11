@@ -15,7 +15,14 @@ Version SM1.0.01 (21/4/2026)
 Version B2.0.0BetaT (10/5/2026)
   Bước vào giai đoạn tôi ưu và chỉnh sữa code! soon...
 Version B2.0.0R (11/5/2026) ✅  
-  
+  Làm lại toàn bộ ứng dụng dể sử dụng hơn
+  Loại bỏ các tính năng:
+    +Tu vi
+    +MiniGame
+    +Luyện đang Cây trồng
+    +.......
+  Nâng cấp đồ họa 
+  Hiệu ứng âm thanh soon....
 
   
   
