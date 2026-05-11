@@ -1,89 +1,21 @@
 Version M0.1.0 (31/03/2026)
 Version M0.1.0 (1/4/2026)
-  Cập nhật lại giao diện load
 Version M0.2.0 (2/4/2026)
-  Chỉnh lại hệ thống nhiệm vụ 
-  Chỉnh lại hệ thống điểm danh
-  Thêm Tính năng thành tựu +buff exp
-  Chỉnh lại danh sách cảnh giới
 Version M0.3.0 (4/4/2026)
-  Thêm tính năng trồng linh thảo 
-  Thêm Tính năng luyện đang dược
-  Fix lỗi
-Version M0.3.1 (4/4/2026)
-  Fix lỗi kéo
-  Neff tất cả đang 
+Version M0.3.1 (4/4/2026) 
 Version B0.4.0 (8/4/2026)
-  Chỉnh lại toàn bộ cấu chúc giao diện
-  Thêm tất cả ảnh cho cây trồng và đang dược
-  Thêm đơn vị tiền tệ: Linh thạch
-  Thêm Shop và lò luyện đang kèm ảnh lò luyện
-  Thêm chức nâng afk 
-  Thêm thành tựu mới và buff
-  Thêm nhiều nâng cấp mới cho nông trại
-  Qol cải thiện thao tác
-  Fix tất cả lỗi 99% 💀
 Version M0.5.0 (10/4/2026)
-  Thêm shop bán pháp bảo
-  Chỉnh lại giao diện thành tựu 
-  Chỉnh lại cơ chế afk
-  Chỉnh lại 1 số nâng cấp và thêm nâng cấp
-  Thêm linh túi 
-  Fix tất cả lỗi
 Version SM0.5.1 (10/4/2026)
-  Thêm pháp bảo và buff
 Version SM0.5.2 (10/4/2026)
-  Fix các lỗi giao diện và dữ liệu
-  Chỉnh lại hiển thị và mô tả
 Version M0.5.3 (10/4/2026) ✅  
-  Chỉnh lại cơ chế afk lần 2
-  Thêm nâng cấp cho afk
-  Fix lỗi sikibidi 🗿
 Version SM0.5.4 (12/4/2026)
-  Neff giá tiền bán cây và số cây thu hoặc 
-  Neff giá đang 
 Version B0.5.0 (15/4/2026)
-  🌟Tái cấu chúc file🌟
-  Thêm tính năng ⭐ Đánh giá cuộc sống (Daily Journal)
-  Thêm tính năng 💰 Quản lý chi tiêu
-  Thêm tính năng liên kết gmail lưu data
-  Neff kinh nghiệm từ đang
-  Nâng exp cần lên cấp
-  Fix lỗi
-Version RB1.0.0 (18/4/2026)
-  🌾 1. LỘT XÁC NÔNG TRẠI & LUYỆN ĐAN (VIP UI)
-    🖼️ Đồ Họa 3D Mượt Mà: Hiển thị trực tiếp ảnh thực tế của Thảo Dược thay vì icon nhàm chán. (Tự động lật về Emoji nếu thiếu ảnh để chống lỗi).
-    🔄 Giao Diện Cuộn Ngang (Horizontal Scroll): Chọn Đan dược để luyện bằng thanh cuộn vuốt cực mượt.
-    📊 Thanh Tiến Độ Real-time: Ô đất và Lò luyện giờ đây có thanh chạy tiến độ (%) chuẩn từng mi-li-giây. Nút "Thu Hoạch" nhấp nháy cực cuốn!
-    📱 Bottom Sheet Modal: Bảng gieo hạt được thiết kế dạng thẻ trượt từ dưới lên, cực kỳ thân thiện với màn hình điện thoại.
-    ✨ Cơ Chế Đột Biến: Thêm nhân phẩm vào làm nông! Có tỉ lệ nổ x2 Sản lượng khi thu hoạch và x2 Đan Dược khi nhóm lò thành công.
-    ⚡ Thao Tác Nhanh: Bổ sung các nút "Trồng Tất Cả", "Thu Tất Cả", và "Bán Hết" siêu tiện lợi.
-  🤖 2. CÀN QUÉT AFK & RƯƠNG CHIẾN THẮNG
-    ⏱️ Chuẩn Hóa AFK: Nhận Tu Vi và Linh Thạch đều đặn mỗi 5 phút dựa trên Ải cao nhất đã vượt qua. Tối đa treo máy 8 tiếng.
-    📦 Rương Chiến Thắng Định Kỳ: Cam kết chính xác 1 Giờ = 1 Rương. Không còn hên xui rớt rương lắt nhắt, tích đủ giờ là có quà!
-    💥 [BÍ MẬT] Thần Nhân Giáng Thế: Thêm tỉ lệ vàng 1% mở Rương AFK rớt trực tiếp Tướng 6⭐ Cực Phẩm (Megumin / Frieren) ngay trong lúc ngủ!
-    📊 Bảng Tỉ Lệ Trực Quan: Bấm nút "ℹ️ Tỉ Lệ Mở" để xem UI thẻ bài chi tiết các vật phẩm có thể rớt trong rương.
-  ⚔️ 3. HOÀN THIỆN COMBAT & NỘI TẠI TƯỚNG
-    🛡️ Shield Hero (6⭐): Hút 100% sát thương cho toàn đội, phản đòn 200% Max HP.
-    🧙‍♀️ Frieren (6⭐): Buff DMG vô hạn, tạo Khiên, ném Black Hole diện rộng.
-    💥 Megumin (6⭐): Vận sức tung cú Nuke 500-800% Sát thương xong "tắt điện" đúng chuẩn Anime.
-    🩸 Zero Two, Gojo, Sukuna, Rem: Đầy đủ cơ chế Hút máu, Rỉ máu, Né tránh và Lật kèo khi thấp máu.
-  🏪 4. SHOP ẨN & HỆ THỐNG PHÂN RÃ
-    ♻️ Lò Phân Rã: Rã Tướng yếu hoặc Pháp Bảo cùi để lấy Tinh Hoa.
-    💎 Shop Ẩn (Bậc Thầy Gacha): Sử dụng 5.000 Tinh Hoa để đổi lấy 1 Rương Đạo Tôn.
-    ⚖️ Cân Bằng Shop Ẩn: Mở Rương Đạo Tôn sẽ nhận ngẫu nhiên chia đều TẤT CẢ các tướng 6⭐ hiện có trong game (không bị bóp tỉ lệ Thần Nhân). Chăm chỉ phân rã chắc chắn có đội hình VIP!
-  ⚙️ 5. HỆ THỐNG TỐI ƯU
-    🐞 Sửa lỗi trắng màn hình khi tải trang (Lỗi renderMeditationTabHTML).
-    🐞 Khắc phục triệt để lỗi thẻ UI đè lên nhau ở Tab Nông Trại.
-    🚀 Tối ưu hóa dung lượng file core.js và utils.js giúp game load nhanh hơn 40% trên các thiết bị cấu hình thấp.
-    99% update:)
+Version RB1.0.0 (18/4/2026) ✅  
 Version SM1.0.01 (21/4/2026)
-  Buff exp lên cấp
-  Tăng giá rương 6 sao
-  Ngừng phát triển cho đến khi học đc skill HTML, JacaScript and CSS (Vẫn sữa thông tin nhỏ, Thêm vài thứ lặt vặt)
 Version B2.0.0BetaT (10/5/2026)
   Bước vào giai đoạn tôi ưu và chỉnh sữa code! soon...
-
+Version B2.0.0R (11/5/2026) ✅  
+  
 
   
   
