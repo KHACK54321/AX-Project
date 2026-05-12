@@ -23,6 +23,11 @@ Version B2.0.0R (11/5/2026) ✅
     +.......
   Nâng cấp đồ họa 
   Hiệu ứng âm thanh soon....
+Version FU2.0.1 (12/5/2026) 🐞
+  Fix tăng năng ảnh chuyển sang lưu trên máy
+  Làm lại giao diện cài đặt
+  Tối ưu
+  
 
   
   
