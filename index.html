@@ -137,12 +137,93 @@ input,textarea,select{user-select:text;}
 .mi-m{font-size:13px;font-weight:500;}
 .mi-a{font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;color:var(--amber);}
 
+/* ===== CUSTOM DATE PICKER ===== */
+let dpYear=0,dpMonth=0,dpPhotoDates=new Set();
+
+function openDatePicker(){
+  const now=new Date();
+  dpYear=now.getFullYear();
+  dpMonth=now.getMonth();
+  dpPhotoDates=new Set();
+  // Mở lịch ngay, load ảnh sau
+  document.getElementById('dp-modal').classList.add('open');
+  renderDpGrid();
+  idbGetAll().then(photos=>{
+    dpPhotoDates=new Set(photos.map(p=>p.date));
+    renderDpGrid();
+  }).catch(()=>{});
+}
+function closeDatePicker(){
+  document.getElementById('dp-modal').classList.remove('open');
+}
+function dpPrevMonth(){
+  dpMonth--;if(dpMonth<0){dpMonth=11;dpYear--;}
+  renderDpGrid();
+}
+function dpNextMonth(){
+  dpMonth++;if(dpMonth>11){dpMonth=0;dpYear++;}
+  renderDpGrid();
+}
+function renderDpGrid(){
+  const MONTHS=['Tháng 1','Tháng 2','Tháng 3','Tháng 4','Tháng 5','Tháng 6',
+                'Tháng 7','Tháng 8','Tháng 9','Tháng 10','Tháng 11','Tháng 12'];
+  document.getElementById('dp-month-lbl').textContent=`${MONTHS[dpMonth]} ${dpYear}`;
+  const td=today();
+  const firstDay=new Date(dpYear,dpMonth,1).getDay(); // 0=Sun
+  const daysInMonth=new Date(dpYear,dpMonth+1,0).getDate();
+  let html='';
+  // Empty cells before first day
+  for(let i=0;i<firstDay;i++) html+=`<div class="dp-day empty"></div>`;
+  for(let d=1;d<=daysInMonth;d++){
+    const ds=`${dpYear}-${String(dpMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isToday=ds===td;
+    const hasPhoto=dpPhotoDates.has(ds);
+    const isSel=ds===lkFilterDateVal;
+    const isSun=(new Date(dpYear,dpMonth,d).getDay()===0);
+    const isSat=(new Date(dpYear,dpMonth,d).getDay()===6);
+    let cls='dp-day';
+    if(isToday)cls+=' today';
+    if(hasPhoto)cls+=' has-photo';
+    if(isSel)cls+=' selected';
+    const col=isSun||isSat?'color:rgba(255,59,92,.7)':'';
+    html+=`<div class="${cls}" style="${col}" onclick="dpPickDate('${ds}')">${d}</div>`;
+  }
+  document.getElementById('dp-grid').innerHTML=html;
+}
+function dpPickDate(ds){
+  closeDatePicker();
+  lkFilterDate(ds);
+}
+document.getElementById('dp-modal').addEventListener('click',function(e){if(e.target===this)closeDatePicker();});
+
 /* ===== LOCKET - TIMELINE ===== */
 .cam-btns{display:flex;gap:8px;margin-bottom:10px;}
 .cam-btn{flex:1;background:rgba(0,212,255,.03);border:1px dashed rgba(0,212,255,.2);border-radius:var(--r);padding:16px 8px;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;transition:all .2s;}
 .cam-btn:active{border-color:var(--cyan);background:rgba(0,212,255,.07);}
 .cam-btn-ico{font-size:26px;}
 .cam-btn-txt{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:.5px;text-align:center;}
+
+/* Custom date picker calendar */
+.dp-day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:50%;font-family:'IBM Plex Mono',monospace;font-size:12px;cursor:pointer;border:1px solid transparent;transition:all .15s;color:var(--text2);position:relative;}
+.dp-day:active{transform:scale(.88);}
+.dp-day.today{border-color:rgba(0,212,255,.4);color:var(--cyan);}
+.dp-day.has-photo{color:var(--text);}
+.dp-day.has-photo::after{content:'';position:absolute;bottom:2px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--amber);}
+.dp-day.selected{background:var(--cyan);color:var(--bg);border-color:var(--cyan);}
+.dp-day.selected::after{background:var(--bg);}
+.dp-day.empty{pointer-events:none;}
+.dp-day.other-month{color:var(--text3);opacity:.4;}
+
+/* Date filter bar */
+#lk-filter-bar{display:flex;align-items:center;gap:7px;margin-bottom:10px;flex-wrap:wrap;position:relative;}
+.lk-flt-all,.lk-flt-date{background:rgba(0,212,255,.06);border:1px solid rgba(0,212,255,.2);border-radius:20px;padding:6px 13px;color:var(--text2);font-family:'IBM Plex Mono',monospace;font-size:10px;cursor:pointer;letter-spacing:.5px;transition:all .2s;white-space:nowrap;}
+.lk-flt-all.on,.lk-flt-date.on{background:rgba(0,212,255,.18);border-color:var(--cyan);color:var(--cyan);}
+.lk-flt-all:active,.lk-flt-date:active{transform:scale(.95);}
+#lk-active-date{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--amber);background:rgba(255,170,0,.1);border:1px solid rgba(255,170,0,.25);border-radius:20px;padding:5px 11px;display:flex;align-items:center;gap:5px;}
+#lk-active-date .x-btn{cursor:pointer;color:var(--amber);font-size:11px;}
+
+/* Download button on card */
+.tl-card-dl{position:absolute;top:7px;left:7px;background:rgba(6,11,24,.82);border:1px solid var(--border);border-radius:3px;width:26px;height:26px;color:var(--cyan);font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;text-decoration:none;}
 
 /* Timeline styles */
 .tl-group{margin-bottom:20px;position:relative;}
@@ -153,7 +234,7 @@ input,textarea,select{user-select:text;}
 .tl-photos{padding-left:20px;border-left:1px solid rgba(0,212,255,.15);}
 .tl-card{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:10px;position:relative;}
 .tl-card-img{width:100%;max-height:320px;object-fit:cover;display:block;}
-.tl-card-info{padding:9px 11px;display:flex;justify-content:space-between;align-items:flex-start;}
+.tl-card-info{padding:9px 11px;display:flex;justify-content:space-between;align-items:center;gap:8px;}
 .tl-card-time{font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:var(--text3);}
 .tl-card-desc{font-size:12.5px;color:var(--text2);line-height:1.45;margin-top:3px;}
 .tl-card-del{position:absolute;top:7px;right:7px;background:rgba(6,11,24,.82);border:1px solid var(--border);border-radius:3px;width:26px;height:26px;color:var(--text2);font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
@@ -244,6 +325,10 @@ input,textarea,select{user-select:text;}
 .slider-w{margin:7px 0 8px;}
 input[type=range]{width:100%;-webkit-appearance:none;appearance:none;height:3px;border-radius:2px;outline:none;background:rgba(255,255,255,.1);cursor:pointer;}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;background:var(--cyan);border-radius:50%;cursor:pointer;box-shadow:0 0 10px rgba(0,212,255,.4);}
+
+.set-del-btn{background:rgba(255,59,92,.06);border:1px solid rgba(255,59,92,.2);border-radius:var(--r2);padding:12px 8px;color:var(--red);font-size:18px;cursor:pointer;text-align:center;line-height:1.5;transition:all .2s;font-family:'IBM Plex Mono',monospace;}
+.set-del-btn span{display:block;font-size:10px;color:var(--text3);margin-top:3px;letter-spacing:.3px;}
+.set-del-btn:active{background:rgba(255,59,92,.15);border-color:rgba(255,59,92,.4);}
 
 /* ===== SCROLL TO TOP ===== */
 #scroll-top{position:fixed;right:13px;bottom:calc(var(--nav-h) + var(--safe) + 10px);z-index:99;width:34px;height:34px;border-radius:50%;background:rgba(0,212,255,.15);border:1px solid rgba(0,212,255,.35);color:var(--cyan);font-size:15px;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;backdrop-filter:blur(8px);}
@@ -363,7 +448,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 
     <!-- LOCKET -->
     <div class="tp" id="tp-locket">
-      <div class="th">
+      <!-- Header row -->
+      <div class="th" style="margin-bottom:8px;">
         <div class="stitle">LOCKET</div>
         <div class="tl-photo-cnt" id="photo-cnt"><span>0</span> ảnh</div>
       </div>
@@ -378,6 +464,12 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
           <div class="cam-btn-txt">CHỤP ẢNH</div>
         </div>
       </div>
+      <!-- Date filter bar -->
+      <div id="lk-filter-bar">
+        <button class="lk-flt-all on" id="lk-btn-all" onclick="lkFilterAll()">📅 TẤT CẢ</button>
+        <button class="lk-flt-date" onclick="openDatePicker()">🔍 CHỌN NGÀY</button>
+        <div id="lk-active-date" style="display:none;"></div>
+      </div>
       <!-- Timeline -->
       <div id="photo-timeline"></div>
     </div>
@@ -385,79 +477,62 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     <!-- SETTINGS -->
     <div class="tp" id="tp-settings">
 
-      <!-- Nền -->
+      <!-- Giao diện -->
       <div class="gc">
-        <div class="label">GIAO DIỆN NỀN</div>
+        <div class="label">🎨 GIAO DIỆN</div>
+
         <div class="si-item">
           <div>
-            <div class="si-item-lbl">🎨 Nền Anime</div>
-            <div class="si-desc">Random ảnh nền anime từ thư mục img/</div>
+            <div class="si-item-lbl">Nền Anime</div>
+            <div class="si-desc">Random ảnh từ thư mục <code style="color:var(--cyan);font-size:10px">img/1.png → img/N.png</code></div>
           </div>
           <div class="sw" id="sw-anime" onclick="toggleAnimeBg()"></div>
         </div>
-        <div class="si-item" id="bg-count-row" style="display:none">
-          <div>
-            <div class="si-item-lbl">🖼️ Số lượng ảnh nền</div>
-            <div class="si-desc">Tổng số file img/1.png → img/N.png</div>
+
+        <div id="bg-extra" style="display:none;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px 0 4px;">
+            <div style="background:rgba(0,212,255,.05);border:1px solid var(--border);border-radius:var(--r2);padding:10px;text-align:center;">
+              <div style="font-size:10px;color:var(--text3);margin-bottom:6px;letter-spacing:.5px">SỐ ẢNH NỀN</div>
+              <input id="bg-count-input" type="number" min="1" max="999" value="10"
+                style="width:100%;background:transparent;border:none;color:var(--cyan);font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;text-align:center;outline:none;"
+                onchange="saveBgCount(this.value)">
+            </div>
+            <div style="background:rgba(0,212,255,.05);border:1px solid var(--border);border-radius:var(--r2);padding:10px;text-align:center;">
+              <div style="font-size:10px;color:var(--text3);margin-bottom:6px;letter-spacing:.5px">ĐỔI MỖI (GIÂY)</div>
+              <input id="bg-interval-input" type="number" min="0" max="3600" value="0"
+                style="width:100%;background:transparent;border:none;color:var(--amber);font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;text-align:center;outline:none;"
+                onchange="saveBgInterval(this.value)">
+            </div>
           </div>
-          <input id="bg-count-input" type="number" min="1" max="999" value="10"
-            style="width:56px;background:rgba(0,212,255,.06);border:1px solid var(--border);border-radius:var(--r2);padding:5px 8px;color:var(--cyan);font-family:'IBM Plex Mono',monospace;font-size:13px;text-align:center;outline:none;"
-            onchange="saveBgCount(this.value)">
-        </div>
-        <div class="si-item" id="bg-interval-row" style="display:none">
-          <div>
-            <div class="si-item-lbl">⏱️ Đổi nền mỗi</div>
-            <div class="si-desc">Giây (0 = không tự đổi)</div>
-          </div>
-          <input id="bg-interval-input" type="number" min="0" max="3600" value="0"
-            style="width:56px;background:rgba(0,212,255,.06);border:1px solid var(--border);border-radius:var(--r2);padding:5px 8px;color:var(--cyan);font-family:'IBM Plex Mono',monospace;font-size:13px;text-align:center;outline:none;"
-            onchange="saveBgInterval(this.value)">
-        </div>
-        <div id="bg-preview-row" style="display:none;padding:8px 0 4px;">
-          <button class="btn-s" style="font-size:10px;width:100%;" onclick="randomBg()">🔀 ĐỔI NỀN NGẪU NHIÊN</button>
+          <button class="btn-s" style="width:100%;margin-top:2px;" onclick="randomBg()">🔀 ĐỔI NỀN NGẪU NHIÊN</button>
         </div>
       </div>
 
-      <!-- Hệ thống -->
+      <!-- Dữ liệu -->
       <div class="gc">
-        <div class="label">CÀI ĐẶT HỆ THỐNG</div>
-        <div class="si-item">
-          <div><div class="si-item-lbl">↺ Reset điểm danh</div><div class="si-desc">Đặt lại số ngày về 1</div></div>
-          <button class="btn-d" onclick="doConfirm('att')">RESET</button>
+        <div class="label">🗃️ DỮ LIỆU</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;">
+          <button class="set-del-btn" onclick="doConfirm('journal')">📖<br><span>Xóa nhật ký</span></button>
+          <button class="set-del-btn" onclick="doConfirm('exp')">💰<br><span>Xóa chi tiêu</span></button>
+          <button class="set-del-btn" onclick="doConfirm('photos')">📷<br><span>Xóa ảnh Locket</span></button>
+          <button class="set-del-btn" onclick="doConfirm('habits')">🎯<br><span>Xóa thói quen</span></button>
         </div>
-        <div class="si-item">
-          <div><div class="si-item-lbl">✕ Xóa nhật ký</div><div class="si-desc">Xóa tất cả bài viết</div></div>
-          <button class="btn-d" onclick="doConfirm('journal')">XÓA</button>
-        </div>
-        <div class="si-item">
-          <div><div class="si-item-lbl">✕ Xóa chi tiêu</div><div class="si-desc">Xóa toàn bộ lịch sử</div></div>
-          <button class="btn-d" onclick="doConfirm('exp')">XÓA</button>
-        </div>
-        <div class="si-item">
-          <div><div class="si-item-lbl">✕ Xóa ảnh Locket</div><div class="si-desc">Xóa tất cả ảnh đã lưu</div></div>
-          <button class="btn-d" onclick="doConfirm('photos')">XÓA</button>
-        </div>
-        <div class="si-item">
-          <div><div class="si-item-lbl">✕ Xóa thói quen</div><div class="si-desc">Xóa tất cả habits</div></div>
-          <button class="btn-d" onclick="doConfirm('habits')">XÓA</button>
-        </div>
-        <div class="si-item">
-          <div><div class="si-item-lbl">⚠ Xóa tất cả dữ liệu</div><div class="si-desc">Khởi động lại hoàn toàn</div></div>
-          <button class="btn-d" onclick="doConfirm('all')">XÓA TẤT CẢ</button>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:7px;">
+          <button class="btn-s" style="width:100%;font-size:10px;" onclick="doConfirm('att')">↺ RESET ĐIỂM DANH</button>
+          <button class="btn-d" style="width:100%;font-size:10px;" onclick="doConfirm('all')">⚠ XÓA TẤT CẢ</button>
         </div>
       </div>
 
-      <!-- Update log -->
+      <!-- Phiên bản -->
       <div class="gc">
-        <div class="label">PHIÊN BẢN</div>
-        <div class="si-item">
+        <div class="label">📋 PHIÊN BẢN</div>
+        <div class="si-item" style="padding:10px 0;">
           <div>
-            <div class="si-item-lbl">📋 Nhật ký cập nhật</div>
-            <div class="si-desc">Xem lịch sử phiên bản phần mềm</div>
+            <div class="si-item-lbl" style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--cyan)">//&nbsp;NHẬT KÝ v2.2</div>
+            <div class="si-desc" style="margin-top:4px;">Lưu cục bộ · Không cloud · Không tracking</div>
           </div>
-          <button class="btn-s" onclick="openUpdateLog()">XEM</button>
+          <button class="btn-s" onclick="openUpdateLog()">CHANGELOG</button>
         </div>
-        <div class="app-info" style="padding:10px 0 0">//&nbsp;NHẬT KÝ v2.1<br>DATA STORED ON DEVICE<br>NO CLOUD&nbsp;·&nbsp;NO TRACKING</div>
       </div>
 
     </div>
@@ -521,6 +596,39 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     <div class="mfooter">
       <button class="btn-cancel" onclick="closeLM()">HỦY</button>
       <button class="btn-save" onclick="savePh()">LƯU ẢNH</button>
+    </div>
+  </div>
+</div>
+
+<!-- CUSTOM DATE PICKER -->
+<div class="mov" id="dp-modal">
+  <div class="ms" style="padding-bottom:calc(20px + var(--safe));">
+    <div class="mh"></div>
+    <div class="mtitle">// CHỌN NGÀY XEM</div>
+
+    <!-- Month navigator -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <button onclick="dpPrevMonth()" style="background:rgba(0,212,255,.08);border:1px solid var(--border);border-radius:var(--r2);width:36px;height:36px;color:var(--cyan);font-size:18px;cursor:pointer;">‹</button>
+      <div id="dp-month-lbl" style="font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;color:var(--text);letter-spacing:1px;"></div>
+      <button onclick="dpNextMonth()" style="background:rgba(0,212,255,.08);border:1px solid var(--border);border-radius:var(--r2);width:36px;height:36px;color:var(--cyan);font-size:18px;cursor:pointer;">›</button>
+    </div>
+
+    <!-- Day-of-week header -->
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:5px;">
+      <div style="text-align:center;font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--red);padding:4px 0;">CN</div>
+      <div style="text-align:center;font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--text3);padding:4px 0;">T2</div>
+      <div style="text-align:center;font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--text3);padding:4px 0;">T3</div>
+      <div style="text-align:center;font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--text3);padding:4px 0;">T4</div>
+      <div style="text-align:center;font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--text3);padding:4px 0;">T5</div>
+      <div style="text-align:center;font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--text3);padding:4px 0;">T6</div>
+      <div style="text-align:center;font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--red);padding:4px 0;">T7</div>
+    </div>
+
+    <!-- Calendar grid -->
+    <div id="dp-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;"></div>
+
+    <div style="margin-top:14px;">
+      <button class="btn-cancel" onclick="closeDatePicker()" style="width:100%;padding:11px;border:none;border-radius:var(--r2);font-size:13px;font-weight:600;font-family:'IBM Plex Mono',monospace;cursor:pointer;background:rgba(255,255,255,.06);color:var(--text2);">ĐÓNG</button>
     </div>
   </div>
 </div>
@@ -973,22 +1081,91 @@ function delHab(id){
   });
 }
 
-/* ===== LOCKET - TIMELINE ===== */
+/* ===== INDEXEDDB — ẢNH LOCKET (vô hạn) ===== */
+const IDB_NAME='NhatKyDB',IDB_STORE='photos',IDB_VER=1;
+let _db=null;
+
+function openDB(){
+  return new Promise((res,rej)=>{
+    if(_db){res(_db);return;}
+    const req=indexedDB.open(IDB_NAME,IDB_VER);
+    req.onupgradeneeded=e=>{
+      const db=e.target.result;
+      if(!db.objectStoreNames.contains(IDB_STORE)){
+        const store=db.createObjectStore(IDB_STORE,{keyPath:'id'});
+        store.createIndex('date','date',{unique:false});
+      }
+    };
+    req.onsuccess=e=>{_db=e.target.result;res(_db);};
+    req.onerror=e=>rej(e.target.error);
+  });
+}
+
+function idbGetAll(){
+  return openDB().then(db=>new Promise((res,rej)=>{
+    const tx=db.transaction(IDB_STORE,'readonly');
+    const req=tx.objectStore(IDB_STORE).getAll();
+    req.onsuccess=()=>res(req.result||[]);
+    req.onerror=e=>rej(e.target.error);
+  }));
+}
+function idbPut(item){
+  return openDB().then(db=>new Promise((res,rej)=>{
+    const tx=db.transaction(IDB_STORE,'readwrite');
+    const req=tx.objectStore(IDB_STORE).put(item);
+    req.onsuccess=()=>res();
+    req.onerror=e=>rej(e.target.error);
+  }));
+}
+function idbDelete(id){
+  return openDB().then(db=>new Promise((res,rej)=>{
+    const tx=db.transaction(IDB_STORE,'readwrite');
+    const req=tx.objectStore(IDB_STORE).delete(id);
+    req.onsuccess=()=>res();
+    req.onerror=e=>rej(e.target.error);
+  }));
+}
+function idbDeleteAll(){
+  return openDB().then(db=>new Promise((res,rej)=>{
+    const tx=db.transaction(IDB_STORE,'readwrite');
+    const req=tx.objectStore(IDB_STORE).clear();
+    req.onsuccess=()=>res();
+    req.onerror=e=>rej(e.target.error);
+  }));
+}
+function idbCount(){
+  return openDB().then(db=>new Promise((res,rej)=>{
+    const tx=db.transaction(IDB_STORE,'readonly');
+    const req=tx.objectStore(IDB_STORE).count();
+    req.onsuccess=()=>res(req.result||0);
+    req.onerror=()=>res(0);
+  }));
+}
+
+/* sync photo count to home */
+function syncPhotoCount(){
+  idbCount().then(n=>{
+    const el=document.getElementById('s-photos');
+    if(el)el.textContent=n;
+  });
+}
+
+/* ===== LOCKET UI ===== */
 let pendingPhoto=null;
+let pendingBlob=null;
+let lkFilterMode='all';
+let lkFilterDateVal='';
 
 function trigGallery(){document.getElementById('file-gallery').click();}
 function trigCamera(){document.getElementById('file-camera').click();}
 
 function handlePhotoFile(file){
   if(!file)return;
-  const r=new FileReader();
-  r.onload=ev=>{
-    pendingPhoto=ev.target.result;
-    document.getElementById('locket-prev-img').src=pendingPhoto;
-    document.getElementById('locket-desc').value='';
-    document.getElementById('lm').classList.add('open');
-  };
-  r.readAsDataURL(file);
+  pendingBlob=file;
+  const url=URL.createObjectURL(file);
+  document.getElementById('locket-prev-img').src=url;
+  document.getElementById('locket-desc').value='';
+  document.getElementById('lm').classList.add('open');
 }
 
 document.getElementById('file-gallery').addEventListener('change',function(e){
@@ -998,77 +1175,170 @@ document.getElementById('file-camera').addEventListener('change',function(e){
   handlePhotoFile(e.target.files[0]);this.value='';
 });
 
-function closeLM(){document.getElementById('lm').classList.remove('open');pendingPhoto=null;}
+function closeLM(){
+  document.getElementById('lm').classList.remove('open');
+  pendingPhoto=null;pendingBlob=null;
+}
 
 function savePh(){
-  if(!pendingPhoto){closeLM();return;}
+  if(!pendingBlob){closeLM();return;}
   const desc=document.getElementById('locket-desc').value.trim();
   const n=new Date();
   const t=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
-  const photos=ls(K.photos)||[];
-  // No hard limit — warn when storage might be tight
-  const entry={id:Date.now()+'',dataUrl:pendingPhoto,date:today(),time:t,desc};
-  photos.unshift(entry);
-  try{
-    lss(K.photos,photos);
-    toast('> ĐÃ LƯU ẢNH');
-  }catch(e){
-    // Storage full — remove last entry and warn
-    photos.shift();
-    toast('!! BỘ NHỚ THIẾT BỊ ĐẦY');
-    closeLM();return;
-  }
-  closeLM();renderLocket();renderHome();
+  const id=Date.now()+'_'+Math.random().toString(36).slice(2,6);
+
+  // Convert blob → ArrayBuffer for IndexedDB (compact, no base64 overhead)
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    const entry={
+      id,
+      date:today(),
+      time:t,
+      desc,
+      type:pendingBlob.type||'image/jpeg',
+      data:ev.target.result   // ArrayBuffer
+    };
+    idbPut(entry).then(()=>{
+      toast('> ĐÃ LƯU ẢNH — VÔ HẠN 🎉');
+      closeLM();renderLocket();syncPhotoCount();
+    }).catch(()=>{
+      toast('!! LỖI LƯU — THỬ LẠI');closeLM();
+    });
+  };
+  reader.readAsArrayBuffer(pendingBlob);
+}
+
+function lkFilterAll(){
+  lkFilterMode='all';lkFilterDateVal='';
+  document.getElementById('lk-btn-all').classList.add('on');
+  document.getElementById('lk-active-date').style.display='none';
+  renderLocket();
+}
+function lkFilterDate(val){
+  if(!val)return;
+  lkFilterMode='date';lkFilterDateVal=val;
+  document.getElementById('lk-btn-all').classList.remove('on');
+  const ad=document.getElementById('lk-active-date');
+  ad.style.display='flex';
+  ad.innerHTML=`📅 ${fmtDate(val)} <span class="x-btn" onclick="lkFilterAll()">✕</span>`;
+  renderLocket();
+}
+
+function ab2url(ab,type){
+  const blob=new Blob([ab],{type:type||'image/jpeg'});
+  return URL.createObjectURL(blob);
+}
+
+function downloadPhoto(id){
+  openDB().then(db=>new Promise((res,rej)=>{
+    const tx=db.transaction(IDB_STORE,'readonly');
+    const req=tx.objectStore(IDB_STORE).get(id);
+    req.onsuccess=()=>res(req.result);
+    req.onerror=e=>rej(e.target.error);
+  })).then(p=>{
+    if(!p)return;
+    const url=ab2url(p.data,p.type);
+    const a=document.createElement('a');
+    a.href=url;
+    const ext=(p.type||'image/jpeg').split('/')[1]||'jpg';
+    a.download=`NhatKy_${p.date}_${p.time.replace(':','-')}_${id.slice(-4)}.${ext}`;
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+    setTimeout(()=>URL.revokeObjectURL(url),3000);
+    toast('> ĐÃ TẢI ẢNH VỀ MÁY');
+  }).catch(()=>toast('!! LỖI TẢI ẢNH'));
 }
 
 function renderLocket(){
-  const photos=ls(K.photos)||[];
-  const cnt=document.getElementById('photo-cnt');
-  cnt.innerHTML=`<span>${photos.length}</span> ảnh`;
-
   const tl=document.getElementById('photo-timeline');
-  if(!photos.length){
-    tl.innerHTML=`<div class="empty"><div class="empty-ico">📸</div><div class="empty-txt">CHƯA CÓ ẢNH NÀO<br>NHẤN NÚT TRÊN ĐỂ THÊM ẢNH</div></div>`;
-    return;
-  }
+  tl.innerHTML=`<div class="ul-loading">// ĐANG TẢI...</div>`;
 
-  // Group by date, newest first
-  const grouped={};
-  photos.forEach(p=>{
-    if(!grouped[p.date])grouped[p.date]=[];
-    grouped[p.date].push(p);
-  });
-  const sortedDates=Object.keys(grouped).sort((a,b)=>b.localeCompare(a));
+  idbGetAll().then(photos=>{
+    // Sort newest first
+    photos.sort((a,b)=>b.id.localeCompare(a.id));
+    const total=photos.length;
+    document.getElementById('photo-cnt').innerHTML=`<span>${total}</span> ảnh`;
 
-  tl.innerHTML=sortedDates.map(date=>{
-    const dayPhotos=grouped[date];
-    const cards=dayPhotos.map(p=>`
-      <div class="tl-card">
-        <img class="tl-card-img" src="${p.dataUrl}" alt="${p.desc||''}" loading="lazy">
-        <div class="tl-card-info">
-          <div>
-            <div class="tl-card-time">${p.time}</div>
-            ${p.desc?`<div class="tl-card-desc">${p.desc}</div>`:''}
+    let display=photos;
+    if(lkFilterMode==='date'&&lkFilterDateVal){
+      display=photos.filter(p=>p.date===lkFilterDateVal);
+    }
+
+    if(!photos.length){
+      tl.innerHTML=`<div class="empty"><div class="empty-ico">📸</div><div class="empty-txt">CHƯA CÓ ẢNH NÀO<br>NHẤN NÚT TRÊN ĐỂ THÊM ẢNH</div></div>`;
+      return;
+    }
+    if(!display.length){
+      tl.innerHTML=`<div class="empty"><div class="empty-ico">🔍</div><div class="empty-txt">KHÔNG CÓ ẢNH VÀO NGÀY NÀY<br><span style="color:var(--text3);font-size:10px">${fmtDate(lkFilterDateVal)}</span></div></div>`;
+      return;
+    }
+
+    // Group by date
+    const grouped={};
+    display.forEach(p=>{
+      if(!grouped[p.date])grouped[p.date]=[];
+      grouped[p.date].push(p);
+    });
+    const sortedDates=Object.keys(grouped).sort((a,b)=>b.localeCompare(a));
+
+    // Build HTML — images loaded lazily via blob URLs
+    tl.innerHTML=sortedDates.map(date=>{
+      const dayPhotos=grouped[date];
+      const cards=dayPhotos.map(p=>`
+        <div class="tl-card" id="card-${p.id}">
+          <img class="tl-card-img" id="img-${p.id}" alt="${p.desc||''}" loading="lazy"
+            style="background:rgba(0,212,255,.06);min-height:140px;">
+          <div class="tl-card-info">
+            <div>
+              <div class="tl-card-time">${p.time}</div>
+              ${p.desc?`<div class="tl-card-desc">${p.desc}</div>`:''}
+            </div>
+            <button onclick="downloadPhoto('${p.id}')"
+              style="background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.25);border-radius:4px;padding:5px 9px;color:var(--cyan);font-family:'IBM Plex Mono',monospace;font-size:9px;cursor:pointer;white-space:nowrap;flex-shrink:0;">⬇ LƯU</button>
           </div>
-        </div>
-        <button class="tl-card-del" onclick="delPhoto('${p.id}')">✕</button>
-      </div>`).join('');
-    return `
-      <div class="tl-group">
-        <div class="tl-marker">
-          <div class="tl-dot"></div>
-          <div class="tl-date">${fmtDateFull(date)}</div>
-          <div class="tl-line-h"></div>
-          <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--text3);white-space:nowrap">${dayPhotos.length} ảnh</div>
-        </div>
-        <div class="tl-photos">${cards}</div>
-      </div>`;
-  }).join('');
+          <button class="tl-card-del" onclick="delPhoto('${p.id}')">✕</button>
+        </div>`).join('');
+      return `
+        <div class="tl-group">
+          <div class="tl-marker">
+            <div class="tl-dot"></div>
+            <div class="tl-date">${fmtDateFull(date)}</div>
+            <div class="tl-line-h"></div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--text3);white-space:nowrap">${dayPhotos.length} ảnh</div>
+          </div>
+          <div class="tl-photos">${cards}</div>
+        </div>`;
+    }).join('');
+
+    // Load images lazily via IntersectionObserver
+    display.forEach(p=>{
+      const imgEl=document.getElementById('img-'+p.id);
+      if(!imgEl)return;
+      const obs=new IntersectionObserver(entries=>{
+        entries.forEach(en=>{
+          if(en.isIntersecting){
+            obs.disconnect();
+            const url=ab2url(p.data,p.type);
+            imgEl.src=url;
+            imgEl.onload=()=>{imgEl.style.minHeight='';};
+          }
+        });
+      },{rootMargin:'200px'});
+      obs.observe(imgEl);
+    });
+  });
 }
 
 function delPhoto(id){
   doConfirmCustom('XÓA ẢNH','Xóa ảnh này khỏi Locket?',()=>{
-    const ph=ls(K.photos)||[];lss(K.photos,ph.filter(p=>p.id!==id));renderLocket();renderHome();toast('> ĐÃ XÓA');
+    idbDelete(id).then(()=>{
+      document.getElementById('card-'+id)?.remove();
+      idbCount().then(n=>{
+        document.getElementById('photo-cnt').innerHTML=`<span>${n}</span> ảnh`;
+        syncPhotoCount();
+        if(n===0)renderLocket();
+      });
+      toast('> ĐÃ XÓA');
+    });
   });
 }
 
@@ -1077,9 +1347,7 @@ function renderSettings(){
   const animeOn=!!ls(K.animeBg);
   const sw=document.getElementById('sw-anime');
   sw.classList.toggle('on',animeOn);
-  document.getElementById('bg-count-row').style.display=animeOn?'flex':'none';
-  document.getElementById('bg-interval-row').style.display=animeOn?'flex':'none';
-  document.getElementById('bg-preview-row').style.display=animeOn?'block':'none';
+  document.getElementById('bg-extra').style.display=animeOn?'block':'none';
   if(animeOn){
     document.getElementById('bg-count-input').value=ls(K.bgCount)||10;
     document.getElementById('bg-interval-input').value=ls(K.bgInterval)||0;
@@ -1090,11 +1358,9 @@ function toggleAnimeBg(){
   const cur=!!ls(K.animeBg);
   lss(K.animeBg,!cur);
   if(!cur){
-    // Turning on
     lss(K.bgCount,ls(K.bgCount)||10);
     randomBg();
   }else{
-    // Turning off
     clearAnimeBgInterval();
     const bgImg=document.getElementById('bg-img');
     const bgOv=document.getElementById('bg-overlay');
@@ -1214,13 +1480,12 @@ function doConfirm(type){
     if(type==='att'||type==='all'){lss(K.fl,today());}
     if(type==='journal'||type==='all')localStorage.removeItem(K.journal);
     if(type==='exp'||type==='all'){[K.expToday,K.expDate,K.expDaily,K.expMonthly].forEach(k=>localStorage.removeItem(k));lss(K.expDate,today());}
-    if(type==='photos'||type==='all')localStorage.removeItem(K.photos);
+    if(type==='photos'||type==='all'){idbDeleteAll().then(()=>{syncPhotoCount();if(curTab==='locket')renderLocket();});}
     if(type==='habits'||type==='all'){localStorage.removeItem(K.habits);localStorage.removeItem(K.habLog);}
     renderHome();
     if(curTab==='journal')renderJournal();
     if(curTab==='expense')renderExpense();
     if(curTab==='habits')renderHabits();
-    if(curTab==='locket')renderLocket();
     toast('> ĐÃ XÓA DỮ LIỆU');
   });
 }
