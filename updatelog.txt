@@ -27,6 +27,16 @@ Version FU2.0.1 (12/5/2026) 🐞
   Fix tăng năng ảnh chuyển sang lưu trên máy
   Làm lại giao diện cài đặt
   Tối ưu
+Version B2.1.0 (14/5/2026) 🏦 and 🐞
+  Thêm tính năng bank
+  Sữa lỗi filter date
+  Thêm emoji cho nhật ký 
+  Bổ sung thêm xx emoji
+  Fix lỗi 
+  Hiệu ứng âm thanh 
+  Tính năng sổ nợ:)
+  soon.... 2.2
+  
   
 
   
