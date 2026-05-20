@@ -38,6 +38,8 @@ Version B2.1.0 (14/5/2026) 🏦 and 🐞
   soon.... 2.2
 Version T-2.2.0 (19/5/2026) ⚙️⚠️
   Update đã xong bước vào giai đoạn test code
+(20/5/2026)
+  Error
 
   
   
